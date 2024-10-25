@@ -246,9 +246,9 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = "US1",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "03389193-950d-4480-b099-908ac04732bf",
+                            ConcurrencyStamp = "abd13cf0-2f98-4690-8e66-eeb4da5e9c00",
                             Email = "john.doe@example.com",
                             EmailConfirmed = false,
                             FirstName = "John",
@@ -263,9 +263,9 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "2",
+                            Id = "US2",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "f150db86-ef12-406e-bee9-5c0eecad483f",
+                            ConcurrencyStamp = "469ab14c-564c-4461-8fa3-a87f17d26d6f",
                             Email = "jane.smith@example.com",
                             EmailConfirmed = false,
                             FirstName = "Jane",
@@ -280,9 +280,9 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "3",
+                            Id = "US3",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "5a28b5d6-1fba-44b9-8691-122be765c467",
+                            ConcurrencyStamp = "1693a449-764f-46aa-ae7e-93733901e86b",
                             Email = "michael.j@example.com",
                             EmailConfirmed = false,
                             FirstName = "Michael",
@@ -297,9 +297,9 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "4",
+                            Id = "US4",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "b6721080-2237-48b9-b75b-abc8b52300a7",
+                            ConcurrencyStamp = "7a34f458-52a7-4338-860f-3a84fd733419",
                             Email = "emily.d@example.com",
                             EmailConfirmed = false,
                             FirstName = "Emily",
@@ -314,9 +314,9 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "5",
+                            Id = "US5",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "d65bfde0-6143-4ee2-a28a-6384238fc7b1",
+                            ConcurrencyStamp = "89cbf8b9-d7d2-4d49-9be2-cd041c145fc5",
                             Email = "chris.b@example.com",
                             EmailConfirmed = false,
                             FirstName = "Chris",
@@ -336,7 +336,7 @@ namespace PM.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("MemberId")
+                    b.Property<string>("PositionWorkOfMemberId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("Member Id");
@@ -348,7 +348,7 @@ namespace PM.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("MemberId");
+                    b.HasIndex("PositionWorkOfMemberId");
 
                     b.HasIndex("TaskId");
 
@@ -357,33 +357,33 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            MemberId = "1",
-                            TaskId = "1"
+                            Id = "MIT1",
+                            PositionWorkOfMemberId = "PWOM1",
+                            TaskId = "TA1"
                         },
                         new
                         {
-                            Id = "2",
-                            MemberId = "2",
-                            TaskId = "2"
+                            Id = "MIT2",
+                            PositionWorkOfMemberId = "PWOM2",
+                            TaskId = "TA2"
                         },
                         new
                         {
-                            Id = "3",
-                            MemberId = "3",
-                            TaskId = "3"
+                            Id = "MIT3",
+                            PositionWorkOfMemberId = "PWOM3",
+                            TaskId = "TA3"
                         },
                         new
                         {
-                            Id = "4",
-                            MemberId = "4",
-                            TaskId = "4"
+                            Id = "MIT4",
+                            PositionWorkOfMemberId = "PWOM4",
+                            TaskId = "TA4"
                         },
                         new
                         {
-                            Id = "5",
-                            MemberId = "5",
-                            TaskId = "5"
+                            Id = "MIT5",
+                            PositionWorkOfMemberId = "PWOM5",
+                            TaskId = "TA5"
                         });
                 });
 
@@ -416,43 +416,43 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3589),
-                            EndAt = new DateTime(2024, 11, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3592),
+                            Id = "PL1",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2312),
+                            EndAt = new DateTime(2024, 11, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2314),
                             PlanName = "Plan A",
-                            StartAt = new DateTime(2024, 10, 23, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3590)
+                            StartAt = new DateTime(2024, 10, 26, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2313)
                         },
                         new
                         {
-                            Id = "2",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3597),
-                            EndAt = new DateTime(2024, 12, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3598),
+                            Id = "PL2",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2320),
+                            EndAt = new DateTime(2024, 12, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2321),
                             PlanName = "Plan B",
-                            StartAt = new DateTime(2024, 10, 24, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3598)
+                            StartAt = new DateTime(2024, 10, 27, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2320)
                         },
                         new
                         {
-                            Id = "3",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3600),
-                            EndAt = new DateTime(2025, 1, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3601),
+                            Id = "PL3",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2322),
+                            EndAt = new DateTime(2025, 1, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2323),
                             PlanName = "Plan C",
-                            StartAt = new DateTime(2024, 10, 25, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3600)
+                            StartAt = new DateTime(2024, 10, 28, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2323)
                         },
                         new
                         {
-                            Id = "4",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3602),
-                            EndAt = new DateTime(2025, 2, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3603),
+                            Id = "PL4",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2328),
+                            EndAt = new DateTime(2025, 2, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2329),
                             PlanName = "Plan D",
-                            StartAt = new DateTime(2024, 10, 26, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3603)
+                            StartAt = new DateTime(2024, 10, 29, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2329)
                         },
                         new
                         {
-                            Id = "5",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3605),
-                            EndAt = new DateTime(2025, 3, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3607),
+                            Id = "PL5",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2331),
+                            EndAt = new DateTime(2025, 3, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2332),
                             PlanName = "Plan E",
-                            StartAt = new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3605)
+                            StartAt = new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2331)
                         });
                 });
 
@@ -482,33 +482,33 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            PlanId = "1",
-                            ProjectId = "1"
+                            Id = "PLIP1",
+                            PlanId = "PL1",
+                            ProjectId = "PR1"
                         },
                         new
                         {
-                            Id = "2",
-                            PlanId = "2",
-                            ProjectId = "2"
+                            Id = "PLIP2",
+                            PlanId = "PL2",
+                            ProjectId = "PR2"
                         },
                         new
                         {
-                            Id = "3",
-                            PlanId = "3",
-                            ProjectId = "3"
+                            Id = "PLIP3",
+                            PlanId = "PL3",
+                            ProjectId = "PR3"
                         },
                         new
                         {
-                            Id = "4",
-                            PlanId = "4",
-                            ProjectId = "4"
+                            Id = "PLIP4",
+                            PlanId = "PL4",
+                            ProjectId = "PR4"
                         },
                         new
                         {
-                            Id = "5",
-                            PlanId = "5",
-                            ProjectId = "5"
+                            Id = "PLIP5",
+                            PlanId = "PL5",
+                            ProjectId = "PR5"
                         });
                 });
 
@@ -517,13 +517,10 @@ namespace PM.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PositionId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Position Id");
-
                     b.Property<string>("PostitionInProjectId")
-                        .HasColumnType("nvarchar(450)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Position Id");
 
                     b.Property<string>("UserId")
                         .IsRequired()
@@ -541,33 +538,33 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            PositionId = "1",
-                            UserId = "1"
+                            Id = "PWOM1",
+                            PostitionInProjectId = "POIP1",
+                            UserId = "US1"
                         },
                         new
                         {
-                            Id = "2",
-                            PositionId = "2",
-                            UserId = "2"
+                            Id = "PWOM2",
+                            PostitionInProjectId = "POIP2",
+                            UserId = "US2"
                         },
                         new
                         {
-                            Id = "3",
-                            PositionId = "3",
-                            UserId = "3"
+                            Id = "PWOM3",
+                            PostitionInProjectId = "POIP3",
+                            UserId = "US3"
                         },
                         new
                         {
-                            Id = "4",
-                            PositionId = "4",
-                            UserId = "4"
+                            Id = "PWOM4",
+                            PostitionInProjectId = "POIP4",
+                            UserId = "US4"
                         },
                         new
                         {
-                            Id = "5",
-                            PositionId = "5",
-                            UserId = "5"
+                            Id = "PWOM5",
+                            PostitionInProjectId = "POIP5",
+                            UserId = "US5"
                         });
                 });
 
@@ -600,38 +597,38 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = "POIP1",
                             PositionDescription = "Project Manager",
                             PositionName = "Manager",
-                            ProjectId = "1"
+                            ProjectId = "PR1"
                         },
                         new
                         {
-                            Id = "2",
+                            Id = "POIP2",
                             PositionDescription = "Software Developer",
                             PositionName = "Developer",
-                            ProjectId = "2"
+                            ProjectId = "PR2"
                         },
                         new
                         {
-                            Id = "3",
+                            Id = "POIP3",
                             PositionDescription = "Software Tester",
                             PositionName = "Tester",
-                            ProjectId = "3"
+                            ProjectId = "PR3"
                         },
                         new
                         {
-                            Id = "4",
+                            Id = "POIP4",
                             PositionDescription = "UI/UX Designer",
                             PositionName = "Designer",
-                            ProjectId = "4"
+                            ProjectId = "PR4"
                         },
                         new
                         {
-                            Id = "5",
+                            Id = "POIP5",
                             PositionDescription = "DevOps Engineer",
                             PositionName = "DevOps",
-                            ProjectId = "5"
+                            ProjectId = "PR5"
                         });
                 });
 
@@ -648,6 +645,10 @@ namespace PM.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("Is Deleted");
+
+                    b.Property<bool>("IsModified")
+                        .HasColumnType("bit")
+                        .HasColumnName("Is Modified");
 
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
@@ -676,9 +677,10 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            CreateAt = "10/22/2024 9:59:51 PM",
+                            Id = "PR1",
+                            CreateAt = "10/25/2024 10:48:07 AM",
                             IsDeleted = false,
+                            IsModified = true,
                             ProjectDescription = "First project description",
                             ProjectName = "Project Alpha",
                             ProjectVersion = "1.0",
@@ -686,9 +688,10 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "2",
-                            CreateAt = "10/22/2024 9:59:51 PM",
+                            Id = "PR2",
+                            CreateAt = "10/25/2024 10:48:07 AM",
                             IsDeleted = false,
+                            IsModified = true,
                             ProjectDescription = "Second project description",
                             ProjectName = "Project Beta",
                             ProjectVersion = "1.1",
@@ -696,9 +699,10 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "3",
-                            CreateAt = "10/22/2024 9:59:51 PM",
+                            Id = "PR3",
+                            CreateAt = "10/25/2024 10:48:07 AM",
                             IsDeleted = false,
+                            IsModified = false,
                             ProjectDescription = "Third project description",
                             ProjectName = "Project Gamma",
                             ProjectVersion = "1.2",
@@ -706,9 +710,10 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "4",
-                            CreateAt = "10/22/2024 9:59:51 PM",
+                            Id = "Pr4",
+                            CreateAt = "10/25/2024 10:48:07 AM",
                             IsDeleted = false,
+                            IsModified = false,
                             ProjectDescription = "Fourth project description",
                             ProjectName = "Project Delta",
                             ProjectVersion = "1.3",
@@ -716,9 +721,10 @@ namespace PM.Persistence.Migrations
                         },
                         new
                         {
-                            Id = "5",
-                            CreateAt = "10/22/2024 9:59:51 PM",
+                            Id = "Pr5",
+                            CreateAt = "10/25/2024 10:48:07 AM",
                             IsDeleted = false,
+                            IsModified = false,
                             ProjectDescription = "Fifth project description",
                             ProjectName = "Project Epsilon",
                             ProjectVersion = "2.0",
@@ -736,7 +742,7 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("Project Id");
 
-                    b.Property<string>("RoleId")
+                    b.Property<string>("RoleInProjectId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)")
                         .HasColumnName("Role Id");
@@ -745,40 +751,40 @@ namespace PM.Persistence.Migrations
 
                     b.HasIndex("ProjectId");
 
-                    b.HasIndex("RoleId");
+                    b.HasIndex("RoleInProjectId");
 
                     b.ToTable("Role Application User In Project");
 
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            ProjectId = "1",
-                            RoleId = "1"
+                            Id = "RAUIP1",
+                            ProjectId = "PR1",
+                            RoleInProjectId = "RIP1"
                         },
                         new
                         {
-                            Id = "2",
-                            ProjectId = "2",
-                            RoleId = "2"
+                            Id = "RAUIP2",
+                            ProjectId = "PR2",
+                            RoleInProjectId = "RIP2"
                         },
                         new
                         {
-                            Id = "3",
-                            ProjectId = "3",
-                            RoleId = "3"
+                            Id = "RAUIP3",
+                            ProjectId = "PR3",
+                            RoleInProjectId = "RIP3"
                         },
                         new
                         {
-                            Id = "4",
-                            ProjectId = "4",
-                            RoleId = "4"
+                            Id = "RAUIP4",
+                            ProjectId = "PR4",
+                            RoleInProjectId = "RIP4"
                         },
                         new
                         {
-                            Id = "5",
-                            ProjectId = "5",
-                            RoleId = "5"
+                            Id = "RAUIP5",
+                            ProjectId = "PR5",
+                            RoleInProjectId = "RIP5"
                         });
                 });
 
@@ -804,31 +810,31 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
+                            Id = "RIP1",
                             RoleDescription = "Administrator Role",
                             RoleName = "Admin"
                         },
                         new
                         {
-                            Id = "2",
+                            Id = "RIP2",
                             RoleDescription = "Contributor Role",
                             RoleName = "Contributor"
                         },
                         new
                         {
-                            Id = "3",
+                            Id = "RIP3",
                             RoleDescription = "Viewer Role",
                             RoleName = "Viewer"
                         },
                         new
                         {
-                            Id = "4",
+                            Id = "RIP4",
                             RoleDescription = "Editor Role",
                             RoleName = "Editor"
                         },
                         new
                         {
-                            Id = "5",
+                            Id = "RIP5",
                             RoleDescription = "Owner Role",
                             RoleName = "Owner"
                         });
@@ -873,50 +879,50 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3542),
-                            EndAt = new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3550),
-                            StartAt = new DateTime(2024, 10, 23, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3543),
+                            Id = "TA1",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2271),
+                            EndAt = new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2279),
+                            StartAt = new DateTime(2024, 10, 26, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2273),
                             TaskDescription = "Task description for project 1",
                             TaskName = "Task 1",
                             TaskStatus = "Pending"
                         },
                         new
                         {
-                            Id = "2",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3552),
-                            EndAt = new DateTime(2024, 10, 28, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3553),
-                            StartAt = new DateTime(2024, 10, 24, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3552),
+                            Id = "TA2",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2280),
+                            EndAt = new DateTime(2024, 10, 31, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2282),
+                            StartAt = new DateTime(2024, 10, 27, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2281),
                             TaskDescription = "Task description for project 2",
                             TaskName = "Task 2",
                             TaskStatus = "Completed"
                         },
                         new
                         {
-                            Id = "3",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3554),
-                            EndAt = new DateTime(2024, 10, 29, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3555),
-                            StartAt = new DateTime(2024, 10, 25, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3555),
+                            Id = "TA3",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2283),
+                            EndAt = new DateTime(2024, 11, 1, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2284),
+                            StartAt = new DateTime(2024, 10, 28, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2283),
                             TaskDescription = "Task description for project 3",
                             TaskName = "Task 3",
                             TaskStatus = "In Progress"
                         },
                         new
                         {
-                            Id = "4",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3557),
-                            EndAt = new DateTime(2024, 10, 30, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3558),
-                            StartAt = new DateTime(2024, 10, 26, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3557),
+                            Id = "TA4",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2285),
+                            EndAt = new DateTime(2024, 11, 2, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2286),
+                            StartAt = new DateTime(2024, 10, 29, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2285),
                             TaskDescription = "Task description for project 4",
                             TaskName = "Task 4",
                             TaskStatus = "On Hold"
                         },
                         new
                         {
-                            Id = "5",
-                            CreateAt = new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3559),
-                            EndAt = new DateTime(2024, 10, 31, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3560),
-                            StartAt = new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3559),
+                            Id = "TA5",
+                            CreateAt = new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2287),
+                            EndAt = new DateTime(2024, 11, 3, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2288),
+                            StartAt = new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2287),
                             TaskDescription = "Task description for project 5",
                             TaskName = "Task 5",
                             TaskStatus = "Pending"
@@ -949,33 +955,33 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "1",
-                            PlanId = "1",
-                            TaskId = "1"
+                            Id = "TIP1",
+                            PlanId = "PL1",
+                            TaskId = "TA1"
                         },
                         new
                         {
-                            Id = "2",
-                            PlanId = "2",
-                            TaskId = "2"
+                            Id = "TIP2",
+                            PlanId = "PL2",
+                            TaskId = "TA2"
                         },
                         new
                         {
-                            Id = "3",
-                            PlanId = "3",
-                            TaskId = "3"
+                            Id = "TIP3",
+                            PlanId = "PL3",
+                            TaskId = "TA3"
                         },
                         new
                         {
-                            Id = "4",
-                            PlanId = "4",
-                            TaskId = "4"
+                            Id = "TIP4",
+                            PlanId = "PL4",
+                            TaskId = "TA4"
                         },
                         new
                         {
-                            Id = "5",
-                            PlanId = "5",
-                            TaskId = "5"
+                            Id = "TIP5",
+                            PlanId = "PL5",
+                            TaskId = "TA5"
                         });
                 });
 
@@ -1034,7 +1040,7 @@ namespace PM.Persistence.Migrations
                 {
                     b.HasOne("PM.Domain.DTOs.PositionWorkOfMemberDTO", "PositionWorkOfMember")
                         .WithMany()
-                        .HasForeignKey("MemberId")
+                        .HasForeignKey("PositionWorkOfMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1072,7 +1078,9 @@ namespace PM.Persistence.Migrations
                 {
                     b.HasOne("PM.Domain.DTOs.PostitionInProjectDTO", "PostitionInProject")
                         .WithMany()
-                        .HasForeignKey("PostitionInProjectId");
+                        .HasForeignKey("PostitionInProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("PM.Domain.DTOs.ApplicationUser", "User")
                         .WithMany()
@@ -1106,7 +1114,7 @@ namespace PM.Persistence.Migrations
 
                     b.HasOne("PM.Domain.DTOs.RoleInProjectDTO", "RoleInProject")
                         .WithMany()
-                        .HasForeignKey("RoleId")
+                        .HasForeignKey("RoleInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

@@ -15,7 +15,7 @@ namespace PM.Domain.DTOs
         public string Id { get; set; }
         [ForeignKey(nameof(PositionWorkOfMember))]
         [Column(name:"Member Id")]
-        public string MemberId { get; set; } = string.Empty;
+        public string PositionWorkOfMemberId { get; set; } = string.Empty;
         public virtual PositionWorkOfMemberDTO PositionWorkOfMember { get; set; }
         [ForeignKey(nameof(TaskDTO))]
         [Column(name:"Task Id")]

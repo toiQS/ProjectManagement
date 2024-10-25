@@ -20,7 +20,7 @@ namespace PM.Domain.DTOs
         public virtual ProjectDTO ProjectDTO { get; set; }
         [ForeignKey(nameof(RoleInProject))]
         [Column(name:"Role Id")]
-        public string RoleId { get; set; } = string.Empty;
+        public string RoleInProjectId { get; set; } = string.Empty;
         public virtual RoleInProjectDTO RoleInProject { get; set; }
     }
 }

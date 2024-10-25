@@ -26,6 +26,8 @@ namespace PM.Domain.DTOs
         public string CreateAt { get; set; }
         [Column(name:"Is Deleted")]
         public bool IsDeleted { get; set; }
+        [Column(name:"Is Modified")]
+        public bool IsModified { get; set; }
     }
 }
 #endregion

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PM.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class PMaddingmodelentities : Migration
+    public partial class PMEditidseedingdata : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,8 @@ namespace PM.Persistence.Migrations
                     ProjectVersion = table.Column<string>(name: "Project Version", type: "nvarchar(max)", nullable: false),
                     ProjectStatus = table.Column<string>(name: "Project Status", type: "nvarchar(max)", nullable: false),
                     CreateAt = table.Column<string>(name: "Create At", type: "nvarchar(max)", nullable: false),
-                    IsDeleted = table.Column<bool>(name: "Is Deleted", type: "bit", nullable: false)
+                    IsDeleted = table.Column<bool>(name: "Is Deleted", type: "bit", nullable: false),
+                    IsModified = table.Column<bool>(name: "Is Modified", type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -325,18 +326,18 @@ namespace PM.Persistence.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PositionId = table.Column<string>(name: "Position Id", type: "nvarchar(max)", nullable: false),
-                    PostitionInProjectId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    PositionId = table.Column<string>(name: "Position Id", type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(name: "User Id", type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Position Work Of Member", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Position Work Of Member_Position In Project_PostitionInProjectId",
-                        column: x => x.PostitionInProjectId,
+                        name: "FK_Position Work Of Member_Position In Project_Position Id",
+                        column: x => x.PositionId,
                         principalTable: "Position In Project",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Position Work Of Member_Users_User Id",
                         column: x => x.UserId,
@@ -375,23 +376,23 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Create At", "End At", "Plan Name", "Start At" },
                 values: new object[,]
                 {
-                    { "1", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3589), new DateTime(2024, 11, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3592), "Plan A", new DateTime(2024, 10, 23, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3590) },
-                    { "2", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3597), new DateTime(2024, 12, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3598), "Plan B", new DateTime(2024, 10, 24, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3598) },
-                    { "3", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3600), new DateTime(2025, 1, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3601), "Plan C", new DateTime(2024, 10, 25, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3600) },
-                    { "4", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3602), new DateTime(2025, 2, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3603), "Plan D", new DateTime(2024, 10, 26, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3603) },
-                    { "5", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3605), new DateTime(2025, 3, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3607), "Plan E", new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3605) }
+                    { "PL1", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2312), new DateTime(2024, 11, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2314), "Plan A", new DateTime(2024, 10, 26, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2313) },
+                    { "PL2", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2320), new DateTime(2024, 12, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2321), "Plan B", new DateTime(2024, 10, 27, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2320) },
+                    { "PL3", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2322), new DateTime(2025, 1, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2323), "Plan C", new DateTime(2024, 10, 28, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2323) },
+                    { "PL4", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2328), new DateTime(2025, 2, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2329), "Plan D", new DateTime(2024, 10, 29, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2329) },
+                    { "PL5", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2331), new DateTime(2025, 3, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2332), "Plan E", new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2331) }
                 });
 
             migrationBuilder.InsertData(
                 table: "Project",
-                columns: new[] { "Id", "Create At", "Is Deleted", "Project Description", "Project Name", "Project Version", "Project Status" },
+                columns: new[] { "Id", "Create At", "Is Deleted", "Is Modified", "Project Description", "Project Name", "Project Version", "Project Status" },
                 values: new object[,]
                 {
-                    { "1", "10/22/2024 9:59:51 PM", false, "First project description", "Project Alpha", "1.0", "In Progress" },
-                    { "2", "10/22/2024 9:59:51 PM", false, "Second project description", "Project Beta", "1.1", "Completed" },
-                    { "3", "10/22/2024 9:59:51 PM", false, "Third project description", "Project Gamma", "1.2", "On Hold" },
-                    { "4", "10/22/2024 9:59:51 PM", false, "Fourth project description", "Project Delta", "1.3", "Cancelled" },
-                    { "5", "10/22/2024 9:59:51 PM", false, "Fifth project description", "Project Epsilon", "2.0", "In Progress" }
+                    { "PR1", "10/25/2024 10:48:07 AM", false, true, "First project description", "Project Alpha", "1.0", "In Progress" },
+                    { "PR2", "10/25/2024 10:48:07 AM", false, true, "Second project description", "Project Beta", "1.1", "Completed" },
+                    { "PR3", "10/25/2024 10:48:07 AM", false, false, "Third project description", "Project Gamma", "1.2", "On Hold" },
+                    { "Pr4", "10/25/2024 10:48:07 AM", false, false, "Fourth project description", "Project Delta", "1.3", "Cancelled" },
+                    { "Pr5", "10/25/2024 10:48:07 AM", false, false, "Fifth project description", "Project Epsilon", "2.0", "In Progress" }
                 });
 
             migrationBuilder.InsertData(
@@ -399,11 +400,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Role Description", "Role Name" },
                 values: new object[,]
                 {
-                    { "1", "Administrator Role", "Admin" },
-                    { "2", "Contributor Role", "Contributor" },
-                    { "3", "Viewer Role", "Viewer" },
-                    { "4", "Editor Role", "Editor" },
-                    { "5", "Owner Role", "Owner" }
+                    { "RIP1", "Administrator Role", "Admin" },
+                    { "RIP2", "Contributor Role", "Contributor" },
+                    { "RIP3", "Viewer Role", "Viewer" },
+                    { "RIP4", "Editor Role", "Editor" },
+                    { "RIP5", "Owner Role", "Owner" }
                 });
 
             migrationBuilder.InsertData(
@@ -411,11 +412,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Create At", "End At", "Start At", "Task Description", "Task Name", "Task Status" },
                 values: new object[,]
                 {
-                    { "1", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3542), new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3550), new DateTime(2024, 10, 23, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3543), "Task description for project 1", "Task 1", "Pending" },
-                    { "2", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3552), new DateTime(2024, 10, 28, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3553), new DateTime(2024, 10, 24, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3552), "Task description for project 2", "Task 2", "Completed" },
-                    { "3", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3554), new DateTime(2024, 10, 29, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3555), new DateTime(2024, 10, 25, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3555), "Task description for project 3", "Task 3", "In Progress" },
-                    { "4", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3557), new DateTime(2024, 10, 30, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3558), new DateTime(2024, 10, 26, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3557), "Task description for project 4", "Task 4", "On Hold" },
-                    { "5", new DateTime(2024, 10, 22, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3559), new DateTime(2024, 10, 31, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3560), new DateTime(2024, 10, 27, 21, 59, 51, 879, DateTimeKind.Local).AddTicks(3559), "Task description for project 5", "Task 5", "Pending" }
+                    { "TA1", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2271), new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2279), new DateTime(2024, 10, 26, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2273), "Task description for project 1", "Task 1", "Pending" },
+                    { "TA2", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2280), new DateTime(2024, 10, 31, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2282), new DateTime(2024, 10, 27, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2281), "Task description for project 2", "Task 2", "Completed" },
+                    { "TA3", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2283), new DateTime(2024, 11, 1, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2284), new DateTime(2024, 10, 28, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2283), "Task description for project 3", "Task 3", "In Progress" },
+                    { "TA4", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2285), new DateTime(2024, 11, 2, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2286), new DateTime(2024, 10, 29, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2285), "Task description for project 4", "Task 4", "On Hold" },
+                    { "TA5", new DateTime(2024, 10, 25, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2287), new DateTime(2024, 11, 3, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2288), new DateTime(2024, 10, 30, 10, 48, 7, 733, DateTimeKind.Local).AddTicks(2287), "Task description for project 5", "Task 5", "Pending" }
                 });
 
             migrationBuilder.InsertData(
@@ -423,11 +424,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "AccessFailedCount", "ConcurrencyStamp", "Email", "EmailConfirmed", "First Name", "Full Name", "Last Name", "LockoutEnabled", "LockoutEnd", "NormalizedEmail", "NormalizedUserName", "PasswordHash", "Path Image", "Phone", "PhoneNumber", "PhoneNumberConfirmed", "SecurityStamp", "TwoFactorEnabled", "UserName" },
                 values: new object[,]
                 {
-                    { "1", 0, "03389193-950d-4480-b099-908ac04732bf", "john.doe@example.com", false, "John", "John Doe", "Doe", false, null, null, null, null, "john.jpg", "123456789", null, false, null, false, "john_doe" },
-                    { "2", 0, "f150db86-ef12-406e-bee9-5c0eecad483f", "jane.smith@example.com", false, "Jane", "Jane Smith", "Smith", false, null, null, null, null, "jane.jpg", "987654321", null, false, null, false, "jane_smith" },
-                    { "3", 0, "5a28b5d6-1fba-44b9-8691-122be765c467", "michael.j@example.com", false, "Michael", "Michael Johnson", "Johnson", false, null, null, null, null, "michael.jpg", "234567890", null, false, null, false, "michael_j" },
-                    { "4", 0, "b6721080-2237-48b9-b75b-abc8b52300a7", "emily.d@example.com", false, "Emily", "Emily Davis", "Davis", false, null, null, null, null, "emily.jpg", "345678901", null, false, null, false, "emily_d" },
-                    { "5", 0, "d65bfde0-6143-4ee2-a28a-6384238fc7b1", "chris.b@example.com", false, "Chris", "Chris Brown", "Brown", false, null, null, null, null, "chris.jpg", "456789012", null, false, null, false, "chris_b" }
+                    { "US1", 0, "abd13cf0-2f98-4690-8e66-eeb4da5e9c00", "john.doe@example.com", false, "John", "John Doe", "Doe", false, null, null, null, null, "john.jpg", "123456789", null, false, null, false, "john_doe" },
+                    { "US2", 0, "469ab14c-564c-4461-8fa3-a87f17d26d6f", "jane.smith@example.com", false, "Jane", "Jane Smith", "Smith", false, null, null, null, null, "jane.jpg", "987654321", null, false, null, false, "jane_smith" },
+                    { "US3", 0, "1693a449-764f-46aa-ae7e-93733901e86b", "michael.j@example.com", false, "Michael", "Michael Johnson", "Johnson", false, null, null, null, null, "michael.jpg", "234567890", null, false, null, false, "michael_j" },
+                    { "US4", 0, "7a34f458-52a7-4338-860f-3a84fd733419", "emily.d@example.com", false, "Emily", "Emily Davis", "Davis", false, null, null, null, null, "emily.jpg", "345678901", null, false, null, false, "emily_d" },
+                    { "US5", 0, "89cbf8b9-d7d2-4d49-9be2-cd041c145fc5", "chris.b@example.com", false, "Chris", "Chris Brown", "Brown", false, null, null, null, null, "chris.jpg", "456789012", null, false, null, false, "chris_b" }
                 });
 
             migrationBuilder.InsertData(
@@ -435,11 +436,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Plan Id", "Project Id" },
                 values: new object[,]
                 {
-                    { "1", "1", "1" },
-                    { "2", "2", "2" },
-                    { "3", "3", "3" },
-                    { "4", "4", "4" },
-                    { "5", "5", "5" }
+                    { "PLIP1", "PL1", "PR1" },
+                    { "PLIP2", "PL2", "PR2" },
+                    { "PLIP3", "PL3", "PR3" },
+                    { "PLIP4", "PL4", "PR4" },
+                    { "PLIP5", "PL5", "PR5" }
                 });
 
             migrationBuilder.InsertData(
@@ -447,23 +448,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Position Description", "Position Name", "Project Id" },
                 values: new object[,]
                 {
-                    { "1", "Project Manager", "Manager", "1" },
-                    { "2", "Software Developer", "Developer", "2" },
-                    { "3", "Software Tester", "Tester", "3" },
-                    { "4", "UI/UX Designer", "Designer", "4" },
-                    { "5", "DevOps Engineer", "DevOps", "5" }
-                });
-
-            migrationBuilder.InsertData(
-                table: "Position Work Of Member",
-                columns: new[] { "Id", "Position Id", "PostitionInProjectId", "User Id" },
-                values: new object[,]
-                {
-                    { "1", "1", null, "1" },
-                    { "2", "2", null, "2" },
-                    { "3", "3", null, "3" },
-                    { "4", "4", null, "4" },
-                    { "5", "5", null, "5" }
+                    { "POIP1", "Project Manager", "Manager", "PR1" },
+                    { "POIP2", "Software Developer", "Developer", "PR2" },
+                    { "POIP3", "Software Tester", "Tester", "PR3" },
+                    { "POIP4", "UI/UX Designer", "Designer", "PR4" },
+                    { "POIP5", "DevOps Engineer", "DevOps", "PR5" }
                 });
 
             migrationBuilder.InsertData(
@@ -471,11 +460,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Project Id", "Role Id" },
                 values: new object[,]
                 {
-                    { "1", "1", "1" },
-                    { "2", "2", "2" },
-                    { "3", "3", "3" },
-                    { "4", "4", "4" },
-                    { "5", "5", "5" }
+                    { "RAUIP1", "PR1", "RIP1" },
+                    { "RAUIP2", "PR2", "RIP2" },
+                    { "RAUIP3", "PR3", "RIP3" },
+                    { "RAUIP4", "PR4", "RIP4" },
+                    { "RAUIP5", "PR5", "RIP5" }
                 });
 
             migrationBuilder.InsertData(
@@ -483,11 +472,23 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Plan Id", "Task Id" },
                 values: new object[,]
                 {
-                    { "1", "1", "1" },
-                    { "2", "2", "2" },
-                    { "3", "3", "3" },
-                    { "4", "4", "4" },
-                    { "5", "5", "5" }
+                    { "TIP1", "PL1", "TA1" },
+                    { "TIP2", "PL2", "TA2" },
+                    { "TIP3", "PL3", "TA3" },
+                    { "TIP4", "PL4", "TA4" },
+                    { "TIP5", "PL5", "TA5" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Position Work Of Member",
+                columns: new[] { "Id", "Position Id", "User Id" },
+                values: new object[,]
+                {
+                    { "PWOM1", "POIP1", "US1" },
+                    { "PWOM2", "POIP2", "US2" },
+                    { "PWOM3", "POIP3", "US3" },
+                    { "PWOM4", "POIP4", "US4" },
+                    { "PWOM5", "POIP5", "US5" }
                 });
 
             migrationBuilder.InsertData(
@@ -495,11 +496,11 @@ namespace PM.Persistence.Migrations
                 columns: new[] { "Id", "Member Id", "Task Id" },
                 values: new object[,]
                 {
-                    { "1", "1", "1" },
-                    { "2", "2", "2" },
-                    { "3", "3", "3" },
-                    { "4", "4", "4" },
-                    { "5", "5", "5" }
+                    { "MIT1", "PWOM1", "TA1" },
+                    { "MIT2", "PWOM2", "TA2" },
+                    { "MIT3", "PWOM3", "TA3" },
+                    { "MIT4", "PWOM4", "TA4" },
+                    { "MIT5", "PWOM5", "TA5" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -528,9 +529,9 @@ namespace PM.Persistence.Migrations
                 column: "Project Id");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Position Work Of Member_PostitionInProjectId",
+                name: "IX_Position Work Of Member_Position Id",
                 table: "Position Work Of Member",
-                column: "PostitionInProjectId");
+                column: "Position Id");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Position Work Of Member_User Id",
