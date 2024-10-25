@@ -1,4 +1,5 @@
-﻿using PM.Domain.DTOs;
+﻿using Microsoft.AspNetCore.Hosting;
+using PM.Domain.DTOs;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -29,6 +30,20 @@ namespace PM.Persistence.Services
         public async Task<bool> UpdateAsync(string id, RoleInProjectDTO roleInProjectDTO)
         {
             return await _repository.UpdateAsync(id, roleInProjectDTO);
+        }
+        public async Task<string> GetNameRoleByRoleId(string roleId)
+        {
+            try
+            {
+                var getRole = await _context.RoleInProject.FindAsync(roleId);
+                if (getRole == null) return string.Empty;
+                return getRole.RoleName;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return string.Empty;
+            }
         }
     }
 }

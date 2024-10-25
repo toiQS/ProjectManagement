@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PM.Persistence.Context;
 
@@ -11,9 +12,11 @@ using PM.Persistence.Context;
 namespace PM.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241025084350_PM-Upgrade-data")]
+    partial class PMUpgradedata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -242,6 +245,93 @@ namespace PM.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "US1",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "e698111c-9876-4bbd-a4bc-6403a642d8f2",
+                            Email = "john.doe@example.com",
+                            EmailConfirmed = false,
+                            FirstName = "John",
+                            FullName = "John Doe",
+                            LastName = "Doe",
+                            LockoutEnabled = false,
+                            PathImage = "john.jpg",
+                            Phone = "123456789",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "john_doe"
+                        },
+                        new
+                        {
+                            Id = "US2",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "4980d039-330e-428b-a658-645e3eb0d310",
+                            Email = "jane.smith@example.com",
+                            EmailConfirmed = false,
+                            FirstName = "Jane",
+                            FullName = "Jane Smith",
+                            LastName = "Smith",
+                            LockoutEnabled = false,
+                            PathImage = "jane.jpg",
+                            Phone = "987654321",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "jane_smith"
+                        },
+                        new
+                        {
+                            Id = "US3",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "b97dab2d-df94-47be-b6f2-fd0d64b0eac5",
+                            Email = "michael.j@example.com",
+                            EmailConfirmed = false,
+                            FirstName = "Michael",
+                            FullName = "Michael Johnson",
+                            LastName = "Johnson",
+                            LockoutEnabled = false,
+                            PathImage = "michael.jpg",
+                            Phone = "234567890",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "michael_j"
+                        },
+                        new
+                        {
+                            Id = "US4",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "9571a0a2-4f84-4e0e-9321-1a8008f25a32",
+                            Email = "emily.d@example.com",
+                            EmailConfirmed = false,
+                            FirstName = "Emily",
+                            FullName = "Emily Davis",
+                            LastName = "Davis",
+                            LockoutEnabled = false,
+                            PathImage = "emily.jpg",
+                            Phone = "345678901",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "emily_d"
+                        },
+                        new
+                        {
+                            Id = "US5",
+                            AccessFailedCount = 0,
+                            ConcurrencyStamp = "692e00e6-d9f8-4212-aecd-26bbc1dc697f",
+                            Email = "chris.b@example.com",
+                            EmailConfirmed = false,
+                            FirstName = "Chris",
+                            FullName = "Chris Brown",
+                            LastName = "Brown",
+                            LockoutEnabled = false,
+                            PathImage = "chris.jpg",
+                            Phone = "456789012",
+                            PhoneNumberConfirmed = false,
+                            TwoFactorEnabled = false,
+                            UserName = "chris_b"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.MemberInTaskDTO", b =>
@@ -266,6 +356,38 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("Member In Task");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "MIT1",
+                            PositionWorkOfMemberId = "PWOM1",
+                            TaskId = "TA1"
+                        },
+                        new
+                        {
+                            Id = "MIT2",
+                            PositionWorkOfMemberId = "PWOM2",
+                            TaskId = "TA2"
+                        },
+                        new
+                        {
+                            Id = "MIT3",
+                            PositionWorkOfMemberId = "PWOM3",
+                            TaskId = "TA3"
+                        },
+                        new
+                        {
+                            Id = "MIT4",
+                            PositionWorkOfMemberId = "PWOM4",
+                            TaskId = "TA4"
+                        },
+                        new
+                        {
+                            Id = "MIT5",
+                            PositionWorkOfMemberId = "PWOM5",
+                            TaskId = "TA5"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.PlanDTOs", b =>
@@ -293,6 +415,48 @@ namespace PM.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Plan");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PL1",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(323),
+                            EndAt = new DateTime(2024, 11, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(326),
+                            PlanName = "Plan A",
+                            StartAt = new DateTime(2024, 10, 26, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(324)
+                        },
+                        new
+                        {
+                            Id = "PL2",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(334),
+                            EndAt = new DateTime(2024, 12, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(335),
+                            PlanName = "Plan B",
+                            StartAt = new DateTime(2024, 10, 27, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(334)
+                        },
+                        new
+                        {
+                            Id = "PL3",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(336),
+                            EndAt = new DateTime(2025, 1, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(337),
+                            PlanName = "Plan C",
+                            StartAt = new DateTime(2024, 10, 28, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(337)
+                        },
+                        new
+                        {
+                            Id = "PL4",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(339),
+                            EndAt = new DateTime(2025, 2, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(340),
+                            PlanName = "Plan D",
+                            StartAt = new DateTime(2024, 10, 29, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(339)
+                        },
+                        new
+                        {
+                            Id = "PL5",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(341),
+                            EndAt = new DateTime(2025, 3, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(342),
+                            PlanName = "Plan E",
+                            StartAt = new DateTime(2024, 10, 30, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(342)
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.PlanInProjectDTO", b =>
@@ -317,6 +481,38 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Plan In Project");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PLIP1",
+                            PlanId = "PL1",
+                            ProjectId = "PR1"
+                        },
+                        new
+                        {
+                            Id = "PLIP2",
+                            PlanId = "PL2",
+                            ProjectId = "PR2"
+                        },
+                        new
+                        {
+                            Id = "PLIP3",
+                            PlanId = "PL3",
+                            ProjectId = "PR3"
+                        },
+                        new
+                        {
+                            Id = "PLIP4",
+                            PlanId = "PL4",
+                            ProjectId = "PR4"
+                        },
+                        new
+                        {
+                            Id = "PLIP5",
+                            PlanId = "PL5",
+                            ProjectId = "PR5"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMemberDTO", b =>
@@ -341,6 +537,38 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Position Work Of Member");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PWOM1",
+                            PostitionInProjectId = "POIP1",
+                            UserId = "US1"
+                        },
+                        new
+                        {
+                            Id = "PWOM2",
+                            PostitionInProjectId = "POIP2",
+                            UserId = "US2"
+                        },
+                        new
+                        {
+                            Id = "PWOM3",
+                            PostitionInProjectId = "POIP3",
+                            UserId = "US3"
+                        },
+                        new
+                        {
+                            Id = "PWOM4",
+                            PostitionInProjectId = "POIP4",
+                            UserId = "US4"
+                        },
+                        new
+                        {
+                            Id = "PWOM5",
+                            PostitionInProjectId = "POIP5",
+                            UserId = "US5"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.PostitionInProjectDTO", b =>
@@ -368,6 +596,43 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("ProjectId");
 
                     b.ToTable("Position In Project");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "POIP1",
+                            PositionDescription = "Project Manager",
+                            PositionName = "Manager",
+                            ProjectId = "PR1"
+                        },
+                        new
+                        {
+                            Id = "POIP2",
+                            PositionDescription = "Software Developer",
+                            PositionName = "Developer",
+                            ProjectId = "PR2"
+                        },
+                        new
+                        {
+                            Id = "POIP3",
+                            PositionDescription = "Software Tester",
+                            PositionName = "Tester",
+                            ProjectId = "PR3"
+                        },
+                        new
+                        {
+                            Id = "POIP4",
+                            PositionDescription = "UI/UX Designer",
+                            PositionName = "Designer",
+                            ProjectId = "PR4"
+                        },
+                        new
+                        {
+                            Id = "POIP5",
+                            PositionDescription = "DevOps Engineer",
+                            PositionName = "DevOps",
+                            ProjectId = "PR5"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.ProjectDTO", b =>
@@ -380,13 +645,13 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Create At");
 
-                    b.Property<bool>("IsAccessed")
-                        .HasColumnType("bit")
-                        .HasColumnName("Is Accessed");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("Is Deleted");
+
+                    b.Property<bool>("IsModified")
+                        .HasColumnType("bit")
+                        .HasColumnName("Is Modified");
 
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
@@ -411,6 +676,63 @@ namespace PM.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Project");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "PR1",
+                            CreateAt = "10/25/2024 3:43:49 PM",
+                            IsDeleted = false,
+                            IsModified = true,
+                            ProjectDescription = "First project description",
+                            ProjectName = "Project Alpha",
+                            ProjectVersion = "1.0",
+                            Projectstatus = "In Progress"
+                        },
+                        new
+                        {
+                            Id = "PR2",
+                            CreateAt = "10/25/2024 3:43:49 PM",
+                            IsDeleted = false,
+                            IsModified = true,
+                            ProjectDescription = "Second project description",
+                            ProjectName = "Project Beta",
+                            ProjectVersion = "1.1",
+                            Projectstatus = "Completed"
+                        },
+                        new
+                        {
+                            Id = "PR3",
+                            CreateAt = "10/25/2024 3:43:49 PM",
+                            IsDeleted = false,
+                            IsModified = false,
+                            ProjectDescription = "Third project description",
+                            ProjectName = "Project Gamma",
+                            ProjectVersion = "1.2",
+                            Projectstatus = "On Hold"
+                        },
+                        new
+                        {
+                            Id = "Pr4",
+                            CreateAt = "10/25/2024 3:43:49 PM",
+                            IsDeleted = false,
+                            IsModified = false,
+                            ProjectDescription = "Fourth project description",
+                            ProjectName = "Project Delta",
+                            ProjectVersion = "1.3",
+                            Projectstatus = "Cancelled"
+                        },
+                        new
+                        {
+                            Id = "Pr5",
+                            CreateAt = "10/25/2024 3:43:49 PM",
+                            IsDeleted = false,
+                            IsModified = false,
+                            ProjectDescription = "Fifth project description",
+                            ProjectName = "Project Epsilon",
+                            ProjectVersion = "2.0",
+                            Projectstatus = "In Progress"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProjectDTO", b =>
@@ -442,6 +764,43 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("RoleInProjectId");
 
                     b.ToTable("Role Application User In Project");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "RAUIP1",
+                            ApplicationUserId = "US1",
+                            ProjectId = "PR1",
+                            RoleInProjectId = "RIP1"
+                        },
+                        new
+                        {
+                            Id = "RAUIP2",
+                            ApplicationUserId = "US2",
+                            ProjectId = "PR2",
+                            RoleInProjectId = "RIP2"
+                        },
+                        new
+                        {
+                            Id = "RAUIP3",
+                            ApplicationUserId = "US3",
+                            ProjectId = "PR3",
+                            RoleInProjectId = "RIP3"
+                        },
+                        new
+                        {
+                            Id = "RAUIP4",
+                            ApplicationUserId = "US4",
+                            ProjectId = "PR4",
+                            RoleInProjectId = "RIP4"
+                        },
+                        new
+                        {
+                            Id = "RAUIP5",
+                            ApplicationUserId = "US5",
+                            ProjectId = "PR5",
+                            RoleInProjectId = "RIP5"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.RoleInProjectDTO", b =>
@@ -462,6 +821,38 @@ namespace PM.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Role In Project");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "RIP1",
+                            RoleDescription = "Administrator Role",
+                            RoleName = "Admin"
+                        },
+                        new
+                        {
+                            Id = "RIP2",
+                            RoleDescription = "Contributor Role",
+                            RoleName = "Contributor"
+                        },
+                        new
+                        {
+                            Id = "RIP3",
+                            RoleDescription = "Viewer Role",
+                            RoleName = "Viewer"
+                        },
+                        new
+                        {
+                            Id = "RIP4",
+                            RoleDescription = "Editor Role",
+                            RoleName = "Editor"
+                        },
+                        new
+                        {
+                            Id = "RIP5",
+                            RoleDescription = "Owner Role",
+                            RoleName = "Owner"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.TaskDTO", b =>
@@ -499,6 +890,58 @@ namespace PM.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Task");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "TA1",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(275),
+                            EndAt = new DateTime(2024, 10, 30, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(282),
+                            StartAt = new DateTime(2024, 10, 26, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(275),
+                            TaskDescription = "Task description for project 1",
+                            TaskName = "Task 1",
+                            TaskStatus = "Pending"
+                        },
+                        new
+                        {
+                            Id = "TA2",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(284),
+                            EndAt = new DateTime(2024, 10, 31, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(285),
+                            StartAt = new DateTime(2024, 10, 27, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(285),
+                            TaskDescription = "Task description for project 2",
+                            TaskName = "Task 2",
+                            TaskStatus = "Completed"
+                        },
+                        new
+                        {
+                            Id = "TA3",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(287),
+                            EndAt = new DateTime(2024, 11, 1, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(288),
+                            StartAt = new DateTime(2024, 10, 28, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(287),
+                            TaskDescription = "Task description for project 3",
+                            TaskName = "Task 3",
+                            TaskStatus = "In Progress"
+                        },
+                        new
+                        {
+                            Id = "TA4",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(289),
+                            EndAt = new DateTime(2024, 11, 2, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(290),
+                            StartAt = new DateTime(2024, 10, 29, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(289),
+                            TaskDescription = "Task description for project 4",
+                            TaskName = "Task 4",
+                            TaskStatus = "On Hold"
+                        },
+                        new
+                        {
+                            Id = "TA5",
+                            CreateAt = new DateTime(2024, 10, 25, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(291),
+                            EndAt = new DateTime(2024, 11, 3, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(294),
+                            StartAt = new DateTime(2024, 10, 30, 15, 43, 49, 607, DateTimeKind.Local).AddTicks(294),
+                            TaskDescription = "Task description for project 5",
+                            TaskName = "Task 5",
+                            TaskStatus = "Pending"
+                        });
                 });
 
             modelBuilder.Entity("PM.Domain.DTOs.TaskInPlanDTO", b =>
@@ -523,6 +966,38 @@ namespace PM.Persistence.Migrations
                     b.HasIndex("TaskId");
 
                     b.ToTable("Task In Plan");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "TIP1",
+                            PlanId = "PL1",
+                            TaskId = "TA1"
+                        },
+                        new
+                        {
+                            Id = "TIP2",
+                            PlanId = "PL2",
+                            TaskId = "TA2"
+                        },
+                        new
+                        {
+                            Id = "TIP3",
+                            PlanId = "PL3",
+                            TaskId = "TA3"
+                        },
+                        new
+                        {
+                            Id = "TIP4",
+                            PlanId = "PL4",
+                            TaskId = "TA4"
+                        },
+                        new
+                        {
+                            Id = "TIP5",
+                            PlanId = "PL5",
+                            TaskId = "TA5"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

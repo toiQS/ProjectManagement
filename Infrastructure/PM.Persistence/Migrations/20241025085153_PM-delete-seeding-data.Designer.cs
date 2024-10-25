@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PM.Persistence.Context;
 
@@ -11,9 +12,11 @@ using PM.Persistence.Context;
 namespace PM.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241025085153_PM-delete-seeding-data")]
+    partial class PMdeleteseedingdata
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -380,13 +383,13 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Create At");
 
-                    b.Property<bool>("IsAccessed")
-                        .HasColumnType("bit")
-                        .HasColumnName("Is Accessed");
-
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("Is Deleted");
+
+                    b.Property<bool>("IsModified")
+                        .HasColumnType("bit")
+                        .HasColumnName("Is Modified");
 
                     b.Property<string>("ProjectDescription")
                         .IsRequired()

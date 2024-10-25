@@ -12,5 +12,7 @@ namespace PM.Persistence.IServices
         public Task<bool> AddAsync(RoleApplicationUserInProjectDTO roleApplicationUserInProjectDTO);
         public Task<bool> UpdateAsync(string id, RoleApplicationUserInProjectDTO roleApplicationUserInProjectDTO);
         public Task<bool> RemoveAsync(string id);
+        public Task<IEnumerable<RoleApplicationUserInProjectDTO>> GetProjectsUserJoined(string userid);
+
     }
 }

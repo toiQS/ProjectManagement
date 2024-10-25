@@ -22,5 +22,9 @@ namespace PM.Domain.DTOs
         [Column(name:"Role Id")]
         public string RoleInProjectId { get; set; } = string.Empty;
         public virtual RoleInProjectDTO RoleInProject { get; set; }
+        [ForeignKey(nameof(ApplicationUser))]
+        [Column(name:"Application User Id")]
+        public string ApplicationUserId { get; set; } = string.Empty;
+        public virtual ApplicationUser ApplicationUser { get; set; }
     }
 }
