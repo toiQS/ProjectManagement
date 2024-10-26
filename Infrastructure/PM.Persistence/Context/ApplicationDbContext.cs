@@ -40,8 +40,13 @@ namespace PM.Persistence.Context
                 }
             }
 
-           
-            
+            modelBuilder.Entity<PositionWorkOfMemberDTO>()
+             .HasOne(p => p.RoleApplicationUserInProject)
+             .WithMany()
+             .HasForeignKey(p => p.RoleApplicationUserInProjectId)
+             .OnDelete(DeleteBehavior.NoAction);
+
+
         }
 
     }
