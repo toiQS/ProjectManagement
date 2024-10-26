@@ -4,13 +4,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PM.Domain.DTOs;
 using PM.Persistence.Context;
-using PM.Persistence.IServices;
-using PM.Persistence.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PM.Persistence.Configurations
 {
@@ -27,7 +20,7 @@ namespace PM.Persistence.Configurations
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddScoped<IProjectServices, ProjectServices>();
+            
         }
 
         private static void AddRepositories(IServiceCollection services)
