@@ -24,8 +24,10 @@ namespace PM.DomainServices
             _roleInProjectServices = roleInProjectServices;
             _roleApplicationUserInProjectServices = applicationUserInProjectServices;
         }
-        public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined()
+        public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
         {
+            ///kiểm tra id người dùng có tồn tại trên hệ thống hay không
+            ///lấy nhanh sách dự án người dùng đã tham gia
             return new List<ProjectDTO>();
         }
         public async Task<Dictionary<string, string>> GetProjectsByName(string text)

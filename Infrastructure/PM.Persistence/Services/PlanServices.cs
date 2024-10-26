@@ -12,13 +12,13 @@ namespace PM.Persistence.Services
     public class PlanServices : IPlanServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<PlanDTOs> _planRepository;
-        public PlanServices(ApplicationDbContext context, IRepository<PlanDTOs> planRepository)
+        private readonly IRepository<PlanDTO> _planRepository;
+        public PlanServices(ApplicationDbContext context, IRepository<PlanDTO> planRepository)
         {
             _context = context;
             _planRepository = planRepository;
         }
-        public async Task<bool> AddAsync(PlanDTOs planDTO)
+        public async Task<bool> AddAsync(PlanDTO planDTO)
         {
             return await _planRepository.AddAsync(planDTO);
         }
@@ -26,7 +26,7 @@ namespace PM.Persistence.Services
         {
             return await _planRepository.DeleteAsync(Id);
         }
-        public async Task<bool> Update(string Id, PlanDTOs planDTO)
+        public async Task<bool> Update(string Id, PlanDTO planDTO)
         {
             return await _planRepository.UpdateAsync(Id, planDTO);
         }

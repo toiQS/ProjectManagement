@@ -9,8 +9,8 @@ namespace PM.Persistence.IServices
 {
     public interface IPlanServices
     {
-        public Task<bool> AddAsync(PlanDTOs planDTO);
+        public Task<bool> AddAsync(PlanDTO planDTO);
         public Task<bool> RemoveAsync(string Id);
-        public Task<bool> Update(string Id, PlanDTOs planDTO);
+        public Task<bool> Update(string Id, PlanDTO planDTO);
     }
 }

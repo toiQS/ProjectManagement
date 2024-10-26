@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PM.Domain.DTOs
 {
     [Table(name:"Plan")]
-    public class PlanDTOs
+    public class PlanDTO
     {
         [Key]
         public string Id { get; set; }

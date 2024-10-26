@@ -16,7 +16,7 @@ namespace PM.Domain.DTOs
         [ForeignKey(nameof(Plan))]
         [Column(name: "Plan Id")]
         public string PlanId { get; set; } = string.Empty;
-        public virtual PlanDTOs Plan { get; set; }
+        public virtual PlanDTO Plan { get; set; }
         [ForeignKey(nameof(TaskDTO))]
         [Column(name:"Task Id")]
         public string TaskId { get; set; } = string.Empty;

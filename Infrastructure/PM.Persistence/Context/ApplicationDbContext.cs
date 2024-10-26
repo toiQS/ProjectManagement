@@ -15,7 +15,7 @@ namespace PM.Persistence.Context
         #region register entities
         public DbSet<ApplicationUser> ApplicationUser {  get; set; }
         public DbSet<MemberInTaskDTO> MemberInTask { get; set; }
-        public DbSet<PlanDTOs> PlanDTO { get; set; }
+        public DbSet<PlanDTO> PlanDTO { get; set; }
         public DbSet<PlanInProjectDTO> PlanInProject { get; set; }
         public DbSet<PositionWorkOfMemberDTO> PositionWorkOfMember { get; set; }
         public DbSet<PostitionInProjectDTO> PostitionInProject { get; set; }

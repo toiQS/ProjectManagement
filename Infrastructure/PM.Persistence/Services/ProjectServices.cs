@@ -2,18 +2,12 @@
 using PM.Domain.DTOs;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
     public class ProjectServices : IProjectServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IServiceProvider _serviceProvider;
         private readonly IRepository<ProjectDTO> _repository;
         public ProjectServices(ApplicationDbContext context, IRepository<ProjectDTO> repository)
         {
@@ -49,7 +43,7 @@ namespace PM.Persistence.Services
         {
             try
             {
-                var getProject = await _context.ProjectDTO.AsNoTracking().Where(x => x.Id == projectId).FirstOrDefaultAsync();
+                var getProject = await _context.ProjectDTO.Where(x => x.Id == projectId).FirstOrDefaultAsync();
                 if (getProject == null) return new ProjectDTO();
                 return getProject;
             }
