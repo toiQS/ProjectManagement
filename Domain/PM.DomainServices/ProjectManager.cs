@@ -24,11 +24,18 @@ namespace PM.DomainServices
             _roleInProjectServices = roleInProjectServices;
             _roleApplicationUserInProjectServices = applicationUserInProjectServices;
         }
-        public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
+        // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
+        public async Task<Dictionary<string, object>> GetListProjecUserJoined(string userId)
         {
-            ///kiểm tra id người dùng có tồn tại trên hệ thống hay không
-            ///lấy nhanh sách dự án người dùng đã tham gia
-            return new List<ProjectDTO>();
+            ///kiểm tra id người dùng có tồn tại trên hệ thống hay không, nếu không trả về 0
+            ///lấy nhanh sách dự án người dùng đã tham gia 
+            ///trả về tên dự án, tên người sỡ hữu, trình trạng dự án
+            /// 
+            // check user is existed on system
+            return new Dictionary<string, object>
+            {
+                { "", userId },
+            };
         }
         public async Task<Dictionary<string, string>> GetProjectsByName(string text)
         {
@@ -48,7 +55,6 @@ namespace PM.DomainServices
             ///
 
             //authenticate user
-            if(userId == null) throw new ArgumentNullException("userId");
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if (findUser != null) return 0;
             // get list project user joined

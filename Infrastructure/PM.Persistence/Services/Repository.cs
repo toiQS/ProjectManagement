@@ -17,7 +17,7 @@ namespace PM.Persistence.Services
         {
             try
             {
-                return await _dbSet.ToArrayAsync();
+                return await _dbSet.AsNoTracking().ToArrayAsync();
             }
             catch (Exception ex)
             {

@@ -44,6 +44,14 @@ namespace PM.Persistence.Services
                 return new List<RoleApplicationUserInProjectDTO>();
             }
         }
+        public async Task<IEnumerable<RoleApplicationUserInProjectDTO>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+        public async Task<RoleApplicationUserInProjectDTO> GetRoleApplicationUserInProjectById(string Id)
+        {
+            return await _repository.GetValueAsync(Id);
+        }
 
     }
 }

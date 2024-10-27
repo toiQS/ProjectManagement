@@ -30,5 +30,13 @@ namespace PM.Persistence.Services
         {
             return await _repository.DeleteAsync(Id);
         }
+        public async Task<PlanInProjectDTO> GetByIdAsync(string id)
+        {
+            return await _repository.GetValueAsync(id);
+        }
+        public async Task<IEnumerable<PlanInProjectDTO>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
     }
 }

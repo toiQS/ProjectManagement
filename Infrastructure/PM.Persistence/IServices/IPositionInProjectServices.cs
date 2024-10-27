@@ -12,5 +12,7 @@ namespace PM.Persistence.IServices
         public Task<bool> AddAsync(PostitionInProjectDTO postitionInProjectDTO);
         public Task<bool> DeleteAsync(string Id);
         public Task<bool> UpdateAsync(string Id, PostitionInProjectDTO postitionInProjectDTO);
+        public Task<IEnumerable<PostitionInProjectDTO>> GetAllAsync();
+        public Task<PostitionInProjectDTO> GetPostitionInProjectById(string Id);
     }
 }

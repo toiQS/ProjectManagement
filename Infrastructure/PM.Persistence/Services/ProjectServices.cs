@@ -41,17 +41,8 @@ namespace PM.Persistence.Services
         }
         public async Task<ProjectDTO> GetProjectAsync(string projectId)
         {
-            try
-            {
-                var getProject = await _context.ProjectDTO.Where(x => x.Id == projectId).FirstOrDefaultAsync();
-                if (getProject == null) return new ProjectDTO();
-                return getProject;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"{ex.Message}");
-                return new ProjectDTO();    
-            }
+            return await _repository.GetValueAsync(projectId);
         }
+        
     }
 }

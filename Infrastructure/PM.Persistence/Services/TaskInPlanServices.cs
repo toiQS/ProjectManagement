@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
-    public class TaskInPlanServices
+    public class TaskInPlanServices : ITaskInPlanServices
     {
         private readonly ApplicationDbContext _context;
         private readonly IRepository<TaskInPlanDTO> _repository;
@@ -29,6 +29,14 @@ namespace PM.Persistence.Services
         public async Task<bool> RemoveAsync(string Id)
         {
             return await _repository.DeleteAsync(Id);
+        }
+        public async Task<IEnumerable<TaskInPlanDTO>> GetAllTasks()
+        {
+            return await _repository.GetAllAsync();
+        }
+        public async Task<TaskInPlanDTO> GetTaskInPlanById(string Id)
+        {
+            return await _repository.GetValueAsync(Id);
         }
     }
 }

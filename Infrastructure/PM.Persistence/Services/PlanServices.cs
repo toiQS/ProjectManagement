@@ -30,5 +30,13 @@ namespace PM.Persistence.Services
         {
             return await _planRepository.UpdateAsync(Id, planDTO);
         }
+        public async Task<IEnumerable<PlanDTO>> GetAllAsync()
+        {
+            return await _planRepository.GetAllAsync();
+        }
+        public async Task<PlanDTO> GetById(string Id)
+        {
+            return await _planRepository.GetValueAsync(Id);
+        }
     }
 }

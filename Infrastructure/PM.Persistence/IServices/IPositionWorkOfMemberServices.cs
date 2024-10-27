@@ -7,10 +7,13 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.IServices
 {
-    public interface IPositionWorkInProjectServices
+    public interface IPositionWorkOfMemberServices
     {
         public Task<bool> AddAsync(PositionWorkOfMemberDTO positionWorkOfMemberDTO);
         public Task<bool> RemoveAsync(string id);
         public Task<bool> UpdateAsync(string id, PositionWorkOfMemberDTO positionWorkOfMemberDTO);
+        public Task<IEnumerable<PositionWorkOfMemberDTO>> GetAllAsync();
+        public Task<PositionWorkOfMemberDTO> GetPositionWorkOfMemberById(string id);
+
     }
 }

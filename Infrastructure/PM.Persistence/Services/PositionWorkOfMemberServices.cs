@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
-    public class PositionWorkInProjectServices : IPositionWorkInProjectServices
+    public class PositionWorkInProjectServices : IPositionWorkOfMemberServices
     {
         private readonly ApplicationDbContext _context;
         private readonly IRepository<PositionWorkOfMemberDTO> _repository;
@@ -29,6 +29,14 @@ namespace PM.Persistence.Services
         public async Task<bool> UpdateAsync(string id, PositionWorkOfMemberDTO positionWorkOfMemberDTO)
         {
             return await _repository.UpdateAsync(id, positionWorkOfMemberDTO);
+        }
+        public async Task<IEnumerable<PositionWorkOfMemberDTO>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+        public async Task<PositionWorkOfMemberDTO> GetPositionWorkOfMemberById(string id)
+        {
+            return await _repository.GetValueAsync(id);
         }
     }
 }

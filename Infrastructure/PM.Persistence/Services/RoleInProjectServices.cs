@@ -35,7 +35,7 @@ namespace PM.Persistence.Services
         {
             try
             {
-                var getRole = await _context.RoleInProject.FindAsync(roleId);
+                var getRole =  await _repository.GetValueAsync(roleId);
                 if (getRole == null) return string.Empty;
                 return getRole.RoleName;
             }
@@ -44,6 +44,14 @@ namespace PM.Persistence.Services
                 Console.WriteLine(ex.Message);
                 return string.Empty;
             }
+        }
+        public async Task<IEnumerable<RoleInProjectDTO>> GetAllAsync()
+        {
+            return await _repository.GetAllAsync();
+        }
+        public async Task<RoleInProjectDTO> GetRoleInProjectByRoleId(string Id)
+        {
+            return await _repository.GetValueAsync(Id);
         }
     }
 }
