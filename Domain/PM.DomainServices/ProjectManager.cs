@@ -72,15 +72,53 @@ namespace PM.DomainServices
             {
                 var project = await _projectServices.GetProjectAsync(item.ProjectId);
                 string status = "";
+                
+
+                var listMember = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectsByProjectId(item.ProjectId);
+                if(listMember == null) 
+                {
+                    finalResult.Add(new Dictionary<string, object>
+                    {
+                        {"Message",$"Can't find memeber in project {item.ProjectId}"}
+                    });
+                    return finalResult;
+                }
+                string OwnerName = "";
+                foreach(var member in listMember)
+                {
+                    var findOwn = await _roleInProjectServices.GetNameRoleByRoleId(member.RoleInProjectId);
+                    if( findOwn == "Owner")
+                    {
+                        var user = await _applicationUserServices.GetApplicationUserAsync(member.ApplicationUserId);
+                        if(user != null) 
+                        {
+                            finalResult.Add(new Dictionary<string, object>
+                            {
+                                {"Message",$"Can't find User in Project {item.ProjectId}"}
+                            });
+                            return finalResult;
+                        }
+                        OwnerName = user.UserName;
+                    }
+                    else
+                    {
+                        finalResult.Add(new Dictionary<string, object>
+                        {
+                            {"Message",$"Can't find role user in project {item.ProjectId}"}
+                        });
+                        return finalResult;
+                    }
+                }
                 if(project != null)
                 {
-                    
+                    if(project.IsAccessed == true ) status = "Đang hoạt động";
+                    else status = "Không hoạt động";
                     finalResult.Add(new Dictionary<string, object>
                     {
                         
                         {"Project Name:", project.ProjectName},
                         {"Owner:",""},
-                        {"Status:",""}
+                        {"Status:",status}
                     });
                 }
                 else

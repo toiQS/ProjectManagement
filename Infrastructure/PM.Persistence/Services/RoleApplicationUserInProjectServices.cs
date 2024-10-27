@@ -52,6 +52,19 @@ namespace PM.Persistence.Services
         {
             return await _repository.GetValueAsync(Id);
         }
+        public async Task<IEnumerable<RoleApplicationUserInProjectDTO>> GetRoleApplicationUserInProjectsByProjectId(string projectId)
+        {
+            try
+            {
+                var getData = await _context.RoleApplicationUserInProject.Where(x => x.ProjectId == projectId).ToArrayAsync();
+                return getData;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}", ex);
+                return new List<RoleApplicationUserInProjectDTO>();
+            }
+        }
 
     }
 }
