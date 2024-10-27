@@ -1,4 +1,7 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using PM.Domain.DTOs;
 using PM.Persistence.IServices;
 using System;
@@ -25,17 +28,70 @@ namespace PM.DomainServices
             _roleApplicationUserInProjectServices = applicationUserInProjectServices;
         }
         // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
-        public async Task<Dictionary<string, object>> GetListProjecUserJoined(string userId)
+        public async Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId)
         {
-            ///kiểm tra id người dùng có tồn tại trên hệ thống hay không, nếu không trả về 0
+            ///kiểm tra id người dùng có tồn tại trên hệ thống hay không,
             ///lấy nhanh sách dự án người dùng đã tham gia 
-            ///trả về tên dự án, tên người sỡ hữu, trình trạng dự án
-            /// 
+            ///trả về cuối cùng tên dự án, tên người sỡ hữu, trình trạng dự án
+            ///các thông tin trả về sẽ dùng dictionary phù hợp cho nhiều loại thông tin và dữ liệu trả về linh hoạt hơn
+            ///
+
+
+            // khai báo kiểu dữ liệu trả về
+            var finalResult = new List<Dictionary<string, object>>();
             // check user is existed on system
-            return new Dictionary<string, object>
+            var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if(findUser == null)
             {
-                { "", userId },
-            };
+                // return new Dictionary<string, object>()
+                // {
+                //     {"Message","Can't find User"}
+                // };
+                finalResult.Add(new Dictionary<string, object>
+                {
+                   {"Message","Can't find User"}
+                });
+                return finalResult;
+            }
+            // get list project user joined
+            var listRoleApplicationUserInProject = await _roleApplicationUserInProjectServices.GetProjectsUserJoined(userId);
+            if(listRoleApplicationUserInProject == null)
+            {
+                // return new Dictionary<string, object>()
+                // {
+                //     {"Message","Can't find any project user joined"}
+                // };
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    {"Message","Can't find any project user joined"}
+                });
+                return finalResult;
+            }
+            
+            foreach(var item in listRoleApplicationUserInProject)
+            {
+                var project = await _projectServices.GetProjectAsync(item.ProjectId);
+                string status = "";
+                if(project != null)
+                {
+                    
+                    finalResult.Add(new Dictionary<string, object>
+                    {
+                        
+                        {"Project Name:", project.ProjectName},
+                        {"Owner:",""},
+                        {"Status:",""}
+                    });
+                }
+                else
+                {
+                    finalResult.Add(new Dictionary<string, object>()
+                    {
+                        {"Message","Can't find project or can't get owner name."}
+                    });
+                }
+            }
+            return finalResult;
         }
         public async Task<Dictionary<string, string>> GetProjectsByName(string text)
         {
