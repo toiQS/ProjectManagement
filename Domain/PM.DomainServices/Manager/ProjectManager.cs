@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace PM.DomainServices
+namespace PM.DomainServices.Manager
 {
     class ProjectManager
     {
