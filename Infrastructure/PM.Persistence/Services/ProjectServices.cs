@@ -43,6 +43,20 @@ namespace PM.Persistence.Services
         {
             return await _repository.GetValueAsync(projectId);
         }
+        public async Task<IEnumerable<ProjectDTO>> GetProjectsByProjectName(string ProjectName)
+        {
+            try
+            {
+                var getData = await _context.ProjectDTO.Where(x=> x.ProjectName.ToLower().Contains(ProjectName.ToLower())).ToListAsync();
+                return getData;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"{ex.Message}");
+                return Enumerable.Empty<ProjectDTO>();
+            }
+        }
+
         
     }
 }

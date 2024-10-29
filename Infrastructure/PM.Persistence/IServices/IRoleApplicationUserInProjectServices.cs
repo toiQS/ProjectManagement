@@ -16,6 +16,6 @@ namespace PM.Persistence.IServices
         public Task<IEnumerable<RoleApplicationUserInProjectDTO>> GetAllAsync();
         public Task<RoleApplicationUserInProjectDTO> GetRoleApplicationUserInProjectById(string Id);
         public Task<IEnumerable<RoleApplicationUserInProjectDTO>> GetRoleApplicationUserInProjectsByProjectId(string ProjectId);
-
+        public Task<RoleApplicationUserInProjectDTO> GetRoleApplicationUserInProjectByUserIdAndProjectId(string UserId, string ProjectId);  
     }
 }

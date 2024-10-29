@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -43,10 +44,6 @@ namespace PM.DomainServices
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if(findUser == null)
             {
-                // return new Dictionary<string, object>()
-                // {
-                //     {"Message","Can't find User"}
-                // };
                 finalResult.Add(new Dictionary<string, object>
                 {
                    {"Message","Can't find User"}
@@ -57,10 +54,6 @@ namespace PM.DomainServices
             var listRoleApplicationUserInProject = await _roleApplicationUserInProjectServices.GetProjectsUserJoined(userId);
             if(listRoleApplicationUserInProject == null)
             {
-                // return new Dictionary<string, object>()
-                // {
-                //     {"Message","Can't find any project user joined"}
-                // };
                 finalResult.Add(new Dictionary<string, object>
                 {
                     {"Message","Can't find any project user joined"}
@@ -131,29 +124,118 @@ namespace PM.DomainServices
             }
             return finalResult;
         }
-        public async Task<Dictionary<string, string>> GetProjectsByName(string text)
+        public async Task<List<Dictionary<string,object>>> GetListAllListProjectByNameAndUserJoined(string userId, string projectName)
         {
-            return new Dictionary<string, string>()
+            ///kiểm tra người dùng có tồn tại trên hệ thống hay không
+            ///lấy thông tin toàn bộ thông tin dự án mà người dùng đã tham gia
+            ///kiểm tra những dự án nào có chứa từ khóa đang tìm kiếm
+            ///trả về danh sanh sách dữ liệu
+            ///
+
+            //declare a value return 
+            var finalResult = new List<Dictionary<string, object>>();
+            //check user is existed in system
+             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if(findUser == null)
+            {
+                finalResult.Add(new Dictionary<string, object>
                 {
-                    {"a", "1"},
-                    {"b", "2"},
-                    {"c", "3"},
-                };
+                   {"Message","Can't find User"}
+                });
+                return finalResult;
+            }
+            //get list project contain project name value
+            var getProjectListContainProjectName = await _projectServices.GetProjectsByProjectName(projectName);
+            if(getProjectListContainProjectName == null)
+            {
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    {"Message","Can't get data project"}
+                });
+                return finalResult;
+            }
+            string roleName="";
+            //Get list project name user joined
+            foreach(var item in getProjectListContainProjectName)
+            {
+                var isCheck = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectByUserIdAndProjectId(userId, item.Id);
+                if(isCheck != null) 
+                {
+                    var findOwn = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectsByProjectId(item.Id);
+                    if (findOwn == null)
+                    {
+                        finalResult.Add(new Dictionary<string,object>()
+                        {
+                            {"Message","Cant't get list member in this project " + item.ProjectName}
+                        });
+                        return finalResult;
+                    }
+                    
+                    foreach (var itemRole in findOwn)
+                    {
+                        var getRoleNameInProject = await _roleInProjectServices.GetRoleInProjectByRoleId(itemRole.RoleInProjectId);
+                        if (getRoleNameInProject == null)
+                        {
+                            finalResult.Add(new Dictionary<string, object>()
+                            {
+                                {"Message","Can't get list role information"}
+                            });
+                            return finalResult;
+                        }
+                        if(getRoleNameInProject.RoleName == "Owner")
+                        {
+                            roleName = getRoleNameInProject.RoleName;
+                        }
+                    }
+                    string status;
+                    if(item.IsAccessed == true ) status = "Đang hoạt động";
+                    else status = "Không hoạt động";
+                    if(string.IsNullOrEmpty(roleName))
+                    {
+                        finalResult.Add(new Dictionary<string, object>()
+                        {
+                            {"Message","Can't assign data"}
+                        });
+                    }
+                    finalResult.Add(new Dictionary<string,object>()
+                    {
+                        {"Project Name:",item.ProjectName},
+                        {"Owner:",roleName},
+                        {"Status:",status}
+                    });
+                }
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    {"Message","Can't get project user joined by project id and user id"}
+                });
+                return finalResult;
+            }
+            return finalResult;
         }
-        public async Task<int> AddProject(string userId, ProjectDTO project)
+        public async Task<Dictionary<string,string>> AddProject(string userId, ProjectDTO project)
         {
             ///kiểm tra thông tin người dùng ai đang tạo, có tồn tại trên hệ thống hay chưa, nếu không trả về 0
             ///kiểm tra tên dự án có trùng lặp trong quyền sở hữu của người dùng hay không, nếu tồn đã tồn tại trả về 2
             ///kiểm tra thời gian bắt đầu dự án còn đang triển khai dự án nào khác mà người sỡ hữu có tham gia hay không, nếu có trả về 3
             ///tạo thành công trả kết quả về là 1, nếu tạo không thành công sẽ trả về 4
             ///
-
+            
+            //declare a value return
+            var finalResult = new Dictionary<string, string>();
             //authenticate user
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
-            if (findUser != null) return 0;
+            if (findUser != null)
+            {
+                finalResult.Add("Message:","Can't find User");
+                return finalResult;
+            }
             // get list project user joined
             var arrayProjectUserHasOwned = new List<RoleApplicationUserInProjectDTO>(); //declaration a new array contains project user has owned
             var getListProjectuserJoined = await _roleApplicationUserInProjectServices.GetProjectsUserJoined(userId);
+            if(getListProjectuserJoined == null)
+            {
+                finalResult.Add("Message:","Can't get list project user joined");
+            }
             foreach (var item in getListProjectuserJoined)
             {
                 if (await _roleInProjectServices.GetNameRoleByRoleId(item.RoleInProjectId) == "Owner")
@@ -161,18 +243,29 @@ namespace PM.DomainServices
                     arrayProjectUserHasOwned.Add(item);
                 }
             }
+            if (arrayProjectUserHasOwned.Count() == 0)
+            {
+                finalResult.Add("Message:","Can't find project user has owner");
+                return finalResult;
+            }
             // check if project name exists
             foreach (var item in arrayProjectUserHasOwned)
             {
                 var getProject = await _projectServices.GetProjectAsync(item.ProjectId);
                 if (getProject.ProjectName == project.ProjectName)
                 {
-                    return 2;
+                    finalResult.Add("Message:","There is a project, has name is same with new project");
+                    return finalResult;
                 }
             }
             var isCreate = await _projectServices.AddAsync(project);
-            if (isCreate == false) return 4;
-            return 1;
+            if (isCreate == false)
+            {
+                finalResult.Add("Message:","there are some error when creating new project");
+                return finalResult;
+            }
+            finalResult.Add("Message:","creating is success");
+            return finalResult;
         }
         public async Task<int> TemporaryDeleteProject(string userId, string projectId)
         {
