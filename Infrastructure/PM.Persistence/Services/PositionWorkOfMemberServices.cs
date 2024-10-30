@@ -1,4 +1,5 @@
-﻿using PM.Domain.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using PM.Domain.DTOs;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -38,5 +39,17 @@ namespace PM.Persistence.Services
         {
             return await _repository.GetValueAsync(id);
         }
+        public async Task<PositionWorkOfMemberDTO> GetPositionWorkOfMemberByRoleApplicationUserIdAndPositionInProjectId(string userId, string positionWorkOfMemberId)
+        {
+            try
+            {
+                return await _context.PositionWorkOfMember.Where( x=> x.RoleApplicationUserInProjectId == userId && x.PostitionInProjectId == positionWorkOfMemberId).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new PositionWorkOfMemberDTO();
+            }
+        }        
     }
 }

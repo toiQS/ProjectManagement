@@ -14,5 +14,6 @@ namespace PM.Persistence.IServices
         public Task<bool> UpdateAsync(string id, TaskInPlanDTO taskInPlanDTO);
         public Task<TaskInPlanDTO> GetTaskInPlanById(string Id);
         public Task<IEnumerable<TaskInPlanDTO>> GetAllTasks();
+        public Task<IEnumerable<TaskInPlanDTO>> GetAllTaskInPlanByPlanId(string planId);
     }
 }

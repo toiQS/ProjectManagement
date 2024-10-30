@@ -1,4 +1,5 @@
-﻿using PM.Domain.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using PM.Domain.DTOs;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -37,6 +38,18 @@ namespace PM.Persistence.memberInTask
         public async Task<MemberInTaskDTO> GetMemberInTaskASync(string id)
         {
             return await _repository.GetValueAsync(id);
+        }
+        public async Task<IEnumerable<MemberInTaskDTO>> GetAllMemberInTaskByPositionWorkOfMemberId(string id)
+        {
+            try
+            {
+                return await _context.MemberInTask.Where(x => x.PositionWorkOfMemberId == id).ToArrayAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Enumerable.Empty<MemberInTaskDTO>();
+            }
         }
     }
 }

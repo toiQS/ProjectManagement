@@ -3,30 +3,51 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Diagnostics;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using Microsoft.IdentityModel.Tokens;
 using PM.Domain.DTOs;
+using PM.DomainServices.IManager;
 using PM.Persistence.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 
 
 namespace PM.DomainServices.Manager
 {
-    class ProjectManager
+    class ProjectManager : IProjectManager
     {
         private readonly IProjectServices _projectServices;
         private readonly IApplicationUserServices _applicationUserServices;
         private readonly IRoleApplicationUserInProjectServices _roleApplicationUserInProjectServices;
         private readonly IRoleInProjectServices _roleInProjectServices;
+        private readonly IPlanServices _planServices;
+        private readonly IPlanInProjectServices _planInProjectServices;
+        private readonly IPositionInProjectServices _positionInProjectServices;
+        private readonly IPositionWorkOfMemberServices _positionWorkOfMemberServices;
+        private readonly ITaskInPlanServices _taskInPlanServices;
+        private readonly IMemberInTaskServices _memberInTaskServices;
+        private readonly ITaskServices _taskServices;
         
-        public ProjectManager(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices)
+        public ProjectManager(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
+            IPlanServices planServices, IPlanInProjectServices planInProjectServices, IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices,
+            ITaskInPlanServices taskInPlanServices, IMemberInTaskServices memberInTaskServices, ITaskServices taskServices)
         {
             _projectServices = projectServices;
             _applicationUserServices = applicationUserServices;
             _roleInProjectServices = roleInProjectServices;
-            _roleApplicationUserInProjectServices = applicationUserInProjectServices;
+            _roleApplicationUserInProjectServices = applicationUserInProjectServices; 
+            _planServices = planServices;
+            _planInProjectServices = planInProjectServices;
+            _positionInProjectServices = positionInProjectServices;
+            _positionWorkOfMemberServices = positionWorkOfMemberServices;
+            _taskServices = taskServices;
+            _taskInPlanServices = taskInPlanServices;
+            _memberInTaskServices = memberInTaskServices;
+            _taskInPlanServices = taskInPlanServices;
         }
         // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
         public async Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId)
@@ -267,17 +288,300 @@ namespace PM.DomainServices.Manager
             finalResult.Add("Message:","creating is success");
             return finalResult;
         }
-        public async Task<int> TemporaryDeleteProject(string userId, string projectId)
+        public async Task<Dictionary<string,string>> TemporaryDeleteProject(string userId, string projectId)
         {
-            return 1;
+            ///kiểm tra người dùng có trên hệ thống hay không
+            ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
+            ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
+            ///thực hiện lệnh kiểm tra lệnh có hoạt động hay không
+            ///thực hiện việc trả thông báo một cách trực quan
+            ///
+            //declare value return 
+            var finalResult = new Dictionary<string, string>();
+            //authenticate user
+            var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if (findUser != null)
+            {
+                finalResult.Add("Message:","Can't find User");
+                return finalResult;
+            }
+            // check role of user in project
+            var getRoleIdOfUserInProject = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectByUserIdAndProjectId(userId,projectId);
+            if (getRoleIdOfUserInProject == null)
+            {
+                finalResult.Add("Message:","Can't get role id of user in project");
+                return finalResult;
+            }
+            var getRoleName =await _roleInProjectServices.GetNameRoleByRoleId(getRoleIdOfUserInProject.RoleInProjectId);
+            if (getRoleName == null)
+            {
+                finalResult.Add("Message:","Can't get role name");
+                return finalResult;
+            }
+            if(getRoleName == "Owner")
+            {
+                var getProject = await _projectServices.GetProjectAsync(projectId);
+                if (getProject == null)
+                {
+                    finalResult.Add("Message:","Can't get project");
+                    return finalResult;
+                }
+                //todo update data in the database IsDeleted = true
+                getProject.IsDeleted = true;
+                var todo = await _projectServices.UpdateAsync(projectId,getProject);
+                if(todo == true)
+                {
+                    finalResult.Add("Message:","This status project is no access");
+                    return finalResult;
+                }
+                else
+                {
+                    finalResult.Add("Message:","Can't update databbase");
+                    return finalResult;
+                }
+
+            }
+            return finalResult;
         }
-        public async Task<int> PermanentDeleteProject(string userId, string projectId)
+        public async Task<Dictionary<string,string>> PermanentDeleteProject(string userId, string projectId)
         {
-            return 1;
+            ///kiểm tra người dùng có trên hệ thống hay không
+            ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
+            ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
+            ///thực hiện lệnh kiểm tra lệnh có hoạt động hay không
+            ///xóa viễn viễn xóa trực tiếp toàn bộ dữ liệu trong các bảng liên quan bao gồm: 
+            ///vai trò người dùng trong dự án, nhiệm vụ, kế hoạch, vị trí công việc của thành viên trong dự án, vị trí công việc trong dự án, người thực hiện nhiệm vụ trong dự án
+            ///thực hiện việc trả thông báo một cách trực quan
+            ///
+            //declare value return 
+            var finalResult = new Dictionary<string, string>();
+            //authenticate user
+            var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if (findUser != null)
+            {
+                finalResult.Add("Message:","Can't find User");
+                return finalResult;
+            }
+            // check role of user in project
+            var getRoleIdOfUserInProject = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectByUserIdAndProjectId(userId,projectId);
+            if (getRoleIdOfUserInProject == null)
+            {
+                finalResult.Add("Message:","Can't get role id of user in project");
+                return finalResult;
+            }
+            var getRoleName =await _roleInProjectServices.GetNameRoleByRoleId(getRoleIdOfUserInProject.RoleInProjectId);
+            if (getRoleName == null)
+            {
+                finalResult.Add("Message:","Can't get role name");
+                return finalResult;
+            }
+            if(getRoleName == "Owner")
+            {
+                var getProject = await _projectServices.GetProjectAsync(projectId);
+                if (getProject == null)
+                {
+                    finalResult.Add("Message:","Can't get project");
+                    return finalResult;
+                }
+                //todo all data have reference with project data
+                
+                var findAllMemberInProject = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectsByProjectId(projectId);
+                var findAllPlanInProject = await _planInProjectServices.GetPlanInProjectsByProjectId(projectId);
+                var findAllPositionInProject = await _positionInProjectServices.GetAllPositionInProjectByProjectId(projectId);
+                if (findAllMemberInProject == null || findAllPlanInProject == null || findAllPositionInProject == null)
+                {
+                    finalResult.Add("Message:","There are some issue when get data. This issue can occured while get data form member in project or plan in project or position in project");
+                    return finalResult;
+                }
+                //delete data application user in project and position in project
+                foreach(var member in findAllMemberInProject)
+                {
+                    foreach(var position in findAllPositionInProject)
+                    {
+                        // find and delele all position work of member in project
+                        var findPositionWorkOfMemberInProject = await _positionWorkOfMemberServices.GetPositionWorkOfMemberByRoleApplicationUserIdAndPositionInProjectId(member.Id,position.Id);
+                        if(findPositionWorkOfMemberInProject != null) 
+                        {
+                            //find and delete member in task of project
+                            var findMemberInTask = await _memberInTaskServices.GetAllMemberInTaskByPositionWorkOfMemberId(findPositionWorkOfMemberInProject.Id);
+                            if (findMemberInTask == null)
+                            {
+                                finalResult.Add("Message:","Can't get member in project ");
+                                return finalResult;
+                            }
+                            foreach(var memberInTask in findMemberInTask)
+                            {
+                                var todoDelete = await _memberInTaskServices.RemoveAsync(memberInTask.Id);
+                                if(todoDelete == false)
+                                {
+                                    finalResult.Add("Message:","Can't delete member in task " + memberInTask.Id + "");
+                                    return finalResult;
+                                }
+                                if(todoDelete == true) continue;
+                            }
+                            var deletePositionWorkOfMemberInProject = await _positionWorkOfMemberServices.RemoveAsync(findPositionWorkOfMemberInProject.Id);
+                            if(deletePositionWorkOfMemberInProject == true ) continue;
+                            else
+                            {
+                                finalResult.Add("Message:","Can't delete position work of member in project" + findPositionWorkOfMemberInProject.Id + "");
+                                return finalResult;
+                            }
+                            
+                        }
+                        //todo delete position work of memeber in project
+                        var deletePositionInProject = await _positionWorkOfMemberServices.RemoveAsync(position.Id);
+                        if(deletePositionInProject == true ) continue;
+                        else
+                        {
+                            finalResult.Add("Message:","Can't delete position in project"+position.Id+"");
+                            return finalResult;
+                        }
+                    }
+                    // todo delete application user in project
+                    var deleteMemberInProject = await _roleApplicationUserInProjectServices.RemoveAsync(member.Id);
+                    if(deleteMemberInProject == true) continue;
+                    else
+                    {
+                        finalResult.Add("Message:","Can't delete member in project");
+                        return finalResult;
+                    }
+                    
+                }
+                
+                //find and delete all plans in project
+                foreach(var item in findAllPlanInProject)
+                {
+                    var getPlan = await _planInProjectServices.GetByIdAsync(item.PlanId);
+                    if(getPlan == null)
+                    {
+                        finalResult.Add("Message:","Can't get plan in this project"+item.ProjectId+".");
+                        return finalResult;
+                    }
+                    else
+                    {
+                        // find task in plan of project
+                        var findtaskInPlan = await _taskInPlanServices.GetAllTaskInPlanByPlanId(getPlan.Id);
+                        if(findtaskInPlan != null)
+                        {
+                            //find task of this project
+                            foreach(var task in findtaskInPlan)
+                            {
+                                // todo delete task in plan of this project
+                                var deleteTaskInPlan = await _taskInPlanServices.RemoveAsync(task.Id);
+                                if (deleteTaskInPlan == false)
+                                {
+                                    finalResult.Add("Message:","Can't delete task in plan of this project");
+                                    return finalResult;
+                                }
+                                
+                                var findTask = await _taskServices.GetTaskById(task.TaskId);
+                                if(findTask == null)
+                                {
+                                    finalResult.Add("Message:","Can't get task in this project"+ projectId+".");
+                                    return finalResult;
+                                }
+                                else
+                                {
+                                    //todo delete task of this project
+                                    var deleteTask = await _taskServices.RemoveAsync(findTask.Id);
+                                    if(deleteTask == false)
+                                    {
+                                        finalResult.Add("Message:","Can't delete task in this project"+projectId+".");
+                                        return finalResult;
+                                    }
+                                    else continue;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            finalResult.Add("Message:","Can't get task in plan of this project"+ projectId+".");
+                            return finalResult;
+                        }
+
+                    }
+                    //todo delete plan of project
+                    var deletePlan = await _planInProjectServices.RemoveAsync(item.Id);
+                    if (deletePlan == false)
+                    {
+                        finalResult.Add("Message:","Can't delete plan in project");
+                        return finalResult;
+                    }
+                    else continue;
+                }
+                //todo delete project
+                var todo = await _projectServices.RemoveAsync(projectId);
+                if(todo == true)
+                {
+                    finalResult.Add("Message:","Project was deleted");
+                    return finalResult;
+                }
+                else
+                {
+                    finalResult.Add("Message:","Can't update databbase");
+                    return finalResult;
+                }
+
+            }
+            return finalResult;
         }
-        public async Task<int> EditInformantionProject(string userId, string projectId, ProjectDTO project)
+        public async Task<Dictionary<string,string>> EditInformantionProject(string userId, string projectId, ProjectDTO project)
         {
-            return 1;
+            ///kiểm tra người dùng có trên hệ thống hay không
+            ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
+            ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
+            ///thực hiện lệnh kiểm tra lệnh có hoạt động hay không
+            ///thực hiện việc trả thông báo một cách trực quan
+            ///
+            //declare value return 
+            var finalResult = new Dictionary<string, string>();
+            //authenticate user
+            var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if (findUser != null)
+            {
+                finalResult.Add("Message:","Can't find User");
+                return finalResult;
+            }
+            // check role of user in project
+            var getRoleIdOfUserInProject = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectByUserIdAndProjectId(userId,projectId);
+            if (getRoleIdOfUserInProject == null)
+            {
+                finalResult.Add("Message:","Can't get role id of user in project");
+                return finalResult;
+            }
+            var getRoleName =await _roleInProjectServices.GetNameRoleByRoleId(getRoleIdOfUserInProject.RoleInProjectId);
+            if (getRoleName == null)
+            {
+                finalResult.Add("Message:","Can't get role name");
+                return finalResult;
+            }
+            if(getRoleName == "Owner")
+            {
+                var getProject = await _projectServices.GetProjectAsync(projectId);
+                if (getProject == null)
+                {
+                    finalResult.Add("Message:","Can't get project");
+                    return finalResult;
+                }
+                // set up new value for project attribute
+                getProject.ProjectName = project.ProjectName;
+                getProject.ProjectDescription = project.ProjectDescription;
+                getProject.ProjectVersion = project.ProjectVersion;
+                getProject.Projectstatus = project.Projectstatus;
+                var todo = await _projectServices.UpdateAsync(projectId,getProject);
+                if(todo == true)
+                {
+                    finalResult.Add("Message:","Project was just update");
+                    return finalResult;
+                }
+                else
+                {
+                    finalResult.Add("Message:","Can't update databbase");
+                    return finalResult;
+                }
+
+            }
+            return finalResult;
         }
 
     }

@@ -14,5 +14,6 @@ namespace PM.Persistence.IServices
         public Task<bool> UpdateAsync(string Id, MemberInTaskDTO memberInTaskDTO);
         public Task<IEnumerable<MemberInTaskDTO>> GetAllAsync();
         public Task<MemberInTaskDTO> GetMemberInTaskASync(string id);
+        public Task<IEnumerable<MemberInTaskDTO>> GetAllMemberInTaskByPositionWorkOfMemberId(string id);
     }
 }

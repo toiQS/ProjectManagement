@@ -1,4 +1,5 @@
-﻿using PM.Domain.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using PM.Domain.DTOs;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -37,6 +38,18 @@ namespace PM.Persistence.Services
         public Task<PostitionInProjectDTO> GetPostitionInProjectById(string Id)
         {
             return _repository.GetValueAsync(Id);
+        }
+        public async Task<IEnumerable<PostitionInProjectDTO>> GetAllPositionInProjectByProjectId(string projectId)
+        {
+            try
+            {
+                return await _context.PostitionInProject.Where(x => x.ProjectId == projectId).ToArrayAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Enumerable.Empty<PostitionInProjectDTO>();
+            }
         }
     }
 }
