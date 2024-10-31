@@ -52,6 +52,7 @@ namespace PM.DomainServices.Manager
         // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
         public async Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId)
         {
+            ///kiểm tra tính hợp lệ của dữ liệu
             ///kiểm tra id người dùng có tồn tại trên hệ thống hay không,
             ///lấy nhanh sách dự án người dùng đã tham gia 
             ///trả về cuối cùng tên dự án, tên người sỡ hữu, trình trạng dự án
@@ -61,6 +62,15 @@ namespace PM.DomainServices.Manager
 
             // khai báo kiểu dữ liệu trả về
             var finalResult = new List<Dictionary<string, object>>();
+            //is check data input null
+            if(userId == null)
+            {
+                finalResult.Add(new Dictionary<string, object>()
+                {
+                    {"Message:","Data input is invalid"}
+                });
+                return finalResult;
+            }
             // check user is existed on system
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if(findUser == null)
@@ -147,6 +157,7 @@ namespace PM.DomainServices.Manager
         }
         public async Task<List<Dictionary<string,object>>> GetListAllListProjectByNameAndUserJoined(string userId, string projectName)
         {
+            ///kiểm tra tính đầy đủ của dữ liệu đầu vào
             ///kiểm tra người dùng có tồn tại trên hệ thống hay không
             ///lấy thông tin toàn bộ thông tin dự án mà người dùng đã tham gia
             ///kiểm tra những dự án nào có chứa từ khóa đang tìm kiếm
@@ -155,6 +166,15 @@ namespace PM.DomainServices.Manager
 
             //declare a value return 
             var finalResult = new List<Dictionary<string, object>>();
+            //is check data input null
+            if(userId == null || projectName == null)
+            {
+                finalResult.Add( new Dictionary<string, object>
+                {
+                    {"Message:","Data input is invalid"}
+                });
+                return finalResult;
+            }
             //check user is existed in system
              var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if(findUser == null)
@@ -235,14 +255,22 @@ namespace PM.DomainServices.Manager
         }
         public async Task<Dictionary<string,string>> AddProject(string userId, ProjectDTO project)
         {
+            ///kiểm tra tính đầy đủ của dữ liệu
             ///kiểm tra thông tin người dùng ai đang tạo, có tồn tại trên hệ thống hay chưa, nếu không trả về 0
             ///kiểm tra tên dự án có trùng lặp trong quyền sở hữu của người dùng hay không, nếu tồn đã tồn tại trả về 2
             ///kiểm tra thời gian bắt đầu dự án còn đang triển khai dự án nào khác mà người sỡ hữu có tham gia hay không, nếu có trả về 3
             ///tạo thành công trả kết quả về là 1, nếu tạo không thành công sẽ trả về 4
+            ///sau khi tạo thành công phải xác nhận quyền sở hữu của người dùng đối với dự án
             ///
             
             //declare a value return
             var finalResult = new Dictionary<string, string>();
+            //is check data input null
+            if(userId == null || project == null)
+            {
+                finalResult.Add("Message:","Data input is invalid");
+                return finalResult;
+            }
             //authenticate user
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if (findUser != null)
@@ -279,17 +307,39 @@ namespace PM.DomainServices.Manager
                     return finalResult;
                 }
             }
+            Random random = new Random();
+            var header = $"{random.Next(1,100)}-{random.Next(1,100)}-{random.Next(1,100)}";
+            var now = DateTime.Now;
+            var roleApplicationUserInProject = new RoleApplicationUserInProjectDTO()
+            {
+                Id = $"RAUIP-{header}-{now}",
+                ProjectId = project.Id,
+                RoleInProjectId = "RIP-1",
+                ApplicationUserId = userId,
+
+            } ;
+            // add role application user in project is owner
+            var addRoleApplicationUserInProject = await _roleApplicationUserInProjectServices.AddAsync(roleApplicationUserInProject);
+            if (addRoleApplicationUserInProject == false)
+            {
+                finalResult.Add("Message:","There are some issue when add role project for user");
+                return finalResult;
+            }
             var isCreate = await _projectServices.AddAsync(project);
             if (isCreate == false)
             {
                 finalResult.Add("Message:","there are some error when creating new project");
                 return finalResult;
             }
-            finalResult.Add("Message:","creating is success");
-            return finalResult;
+            else
+            {
+                finalResult.Add("Message:","creating is success");
+                return finalResult;
+            }
         }
         public async Task<Dictionary<string,string>> TemporaryDeleteProject(string userId, string projectId)
         {
+            ///kiểm tra tính đầy đủ của dữ liệu
             ///kiểm tra người dùng có trên hệ thống hay không
             ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
             ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
@@ -298,6 +348,12 @@ namespace PM.DomainServices.Manager
             ///
             //declare value return 
             var finalResult = new Dictionary<string, string>();
+            //is check data input null
+            if(userId == null || projectId == null)
+            {
+                finalResult.Add("Message:","Data input is invalid");
+                return finalResult;
+            }
             //authenticate user
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if (findUser != null)
@@ -345,6 +401,7 @@ namespace PM.DomainServices.Manager
         }
         public async Task<Dictionary<string,string>> PermanentDeleteProject(string userId, string projectId)
         {
+            ///kiểm tra tính hợp lệ của dữ liệu đầu vào
             ///kiểm tra người dùng có trên hệ thống hay không
             ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
             ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
@@ -355,6 +412,12 @@ namespace PM.DomainServices.Manager
             ///
             //declare value return 
             var finalResult = new Dictionary<string, string>();
+            //is check data input null
+            if(userId == null || projectId == null)
+            {
+                finalResult.Add("Message:","Data input is invalid");
+                return finalResult;
+            }
             //authenticate user
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if (findUser != null)
@@ -492,6 +555,12 @@ namespace PM.DomainServices.Manager
                                     else continue;
                                 }
                             }
+                            var deletePlan = await _planServices.RemoveAsync(getPlan.Id);
+                            if(deletePlan == false)
+                            {
+                                finalResult.Add("Message:","There are some issue when trying delete a plan of this project");
+                                return finalResult;
+                            }
                         }
                         else
                         {
@@ -501,8 +570,8 @@ namespace PM.DomainServices.Manager
 
                     }
                     //todo delete plan of project
-                    var deletePlan = await _planInProjectServices.RemoveAsync(item.Id);
-                    if (deletePlan == false)
+                    var deletePlanInProject = await _planInProjectServices.RemoveAsync(item.Id);
+                    if (deletePlanInProject == false)
                     {
                         finalResult.Add("Message:","Can't delete plan in project");
                         return finalResult;
@@ -527,6 +596,7 @@ namespace PM.DomainServices.Manager
         }
         public async Task<Dictionary<string,string>> EditInformantionProject(string userId, string projectId, ProjectDTO project)
         {
+            ///kiểm tra tính đầy đủ của dữ liệu đầu vào
             ///kiểm tra người dùng có trên hệ thống hay không
             ///kiểm tra người dùng hiện tại đang thực hiện lệnh phải chủ sở hữu phải không
             ///lấy thông tin cơ bản dự bán kiểm tra một lần nữa
@@ -535,6 +605,13 @@ namespace PM.DomainServices.Manager
             ///
             //declare value return 
             var finalResult = new Dictionary<string, string>();
+
+            //is check data input is invalid
+            if (project == null || string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(userId))
+            {
+                finalResult.Add("Message:","Data input is invalid");
+                return finalResult;
+            }
             //authenticate user
             var findUser = await _applicationUserServices.GetApplicationUserAsync(userId);
             if (findUser != null)
