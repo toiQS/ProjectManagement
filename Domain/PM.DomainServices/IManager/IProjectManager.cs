@@ -8,7 +8,6 @@ namespace PM.DomainServices.IManager
         public Task<Dictionary<string,string>> AddProject(string userId, ProjectDTO project);
         public Task<Dictionary<string,string>> TemporaryDeleteProject(string userId, string projectId);
         public Task<Dictionary<string,string>> PermanentDeleteProject(string userId, string projectId);
-        public Task<Dictionary<string,string>> EditInformantionProject(string userId, string projectId, ProjectDTO project);
-
+        public Task<Dictionary<string, string>> EditInformationProject(string userId, string projectId, ProjectDTO project);
     }
 }
