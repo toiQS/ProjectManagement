@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using PM.Domain.DTOs;
 using PM.Persistence.Context;
@@ -19,14 +20,16 @@ namespace PM.Persistence.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly IServiceProvider _serviceProvider;
+        public readonly IRepository<ApplicationUser> _repository;
         public ApplicationUserServices(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider)
+            SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider, IRepository<ApplicationUser> repository)
         {
             _context = context;
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
             _serviceProvider = serviceProvider;
+            _repository = repository;
         }
         public async Task AddRoleApplication()
         {
@@ -90,6 +93,30 @@ namespace PM.Persistence.Services
                 return new ApplicationUser();
             }
         }
+        public async Task<IdentityRole<string>> GetRoleAsync(string roleId)
+        {
+            try
+            {
+                return await _roleManager.FindByIdAsync(roleId);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new IdentityRole();
+            }
 
+        }
+        public async Task<IEnumerable<ApplicationUser>> GetAllUser()
+        {
+            try
+            {
+                return await _context.ApplicationUser.ToListAsync();
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return Enumerable.Empty<ApplicationUser>();
+            }
+        }
     }
 }
