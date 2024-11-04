@@ -46,7 +46,7 @@ namespace PM.WPF
         private void OnStartup(object sender, StartupEventArgs e)
         {
             _host.Start();
-            var loginWindow = new LoginWindow();
+            var loginWindow = new MainWindow();
             loginWindow?.Show();
         }
 
