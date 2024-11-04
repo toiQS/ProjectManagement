@@ -1,0 +1,39 @@
+﻿<Page x:Class="PM.WPF.Views.Pages.PageDemo"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:PM.WPF.Views.Pages"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="PageDemo">
+    <Grid Background="{DynamicResource BackgroundColor}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Header Section -->
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="0">
+            <TextBlock Text="Quản lý Dự án" FontSize="24" FontWeight="Bold" Foreground="{DynamicResource PrimaryTextColor}" />
+            <Button Content="Tạo dự án mới" Margin="10,0,0,0" Command="{Binding CreateNewProjectCommand}" />
+        </StackPanel>
+
+        <!-- Project List Section -->
+        <ListView Grid.Row="1" ItemsSource="{Binding Projects}" SelectedItem="{Binding SelectedProject}">
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <ui:Card Margin="10">
+                        <StackPanel>
+                            <TextBlock Text="{Binding Name}" FontSize="18" FontWeight="Bold" />
+                            <TextBlock Text="{Binding Description}" FontSize="14" Foreground="{DynamicResource SecondaryTextColor}" />
+                            <Button Content="Xem chi tiết" Command="{Binding DataContext.ViewDetailsCommand, RelativeSource={RelativeSource AncestorType=ListView}}" CommandParameter="{Binding}" />
+                        </StackPanel>
+                    </ui:Card>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+
+</Page>
