@@ -58,22 +58,33 @@
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2" Margin="0,5,0,0">
-            
-            <ui:NavigationView IsBackButtonVisible="Auto" Name="MainPage" BreadcrumbBar ="{Binding ElementName=BreadcrumbBar}" >
-                <ui:NavigationView.Header>
-                    <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20">
-                    </ui:BreadcrumbBar>
-                </ui:NavigationView.Header>
-                <ui:NavigationView.MenuItems>
-                    <ui:NavigationViewItem Content="Home" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type pages:HomePage}"/>
-                    <ui:NavigationViewItem Content="Recently" Icon="{ui:SymbolIcon Clock24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                    <ui:NavigationViewItem Content="Repository" Icon="{ui:SymbolIcon Book24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                    <ui:NavigationViewItem Content="Profile" Icon="{ui:SymbolIcon BookContacts24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                    <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                    <ui:NavigationViewItem Content="Exist" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                </ui:NavigationView.MenuItems>
-            </ui:NavigationView>
+            <!-- Layered Grid with NavigationView and Welcome Message -->
+            <Grid>
+                <!-- NavigationView for main menu navigation -->
+                <ui:NavigationView IsBackButtonVisible="Auto" Name="MainPage" BreadcrumbBar="{Binding ElementName=BreadcrumbBar}">
+                    <ui:NavigationView.Header>
+                        <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20"/>
+                    </ui:NavigationView.Header>
+                    <ui:NavigationView.MenuItems>
+                        <ui:NavigationViewItem Content="Home" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type pages:HomePage}"/>
+                        <ui:NavigationViewItem Content="Recently" Icon="{ui:SymbolIcon Clock24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Repository" Icon="{ui:SymbolIcon Book24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Profile" Icon="{ui:SymbolIcon BookContacts24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Exit" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                    </ui:NavigationView.MenuItems>
+                </ui:NavigationView>
+
+                <!-- Placeholder Welcome Message positioned on top of NavigationView -->
+                <TextBlock x:Name="WelcomeMessage"
+                   Foreground="Gray"
+                   FontSize="20"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Top"
+                   Visibility="Visible" Margin="397,154,0,0"><Run Text="                  Welcome!"/><LineBreak/><Run Text="Select an option to get started."/></TextBlock>
+            </Grid>
         </Grid>
+
     </Grid>
 
 </ui:FluentWindow>
