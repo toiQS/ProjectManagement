@@ -26,7 +26,7 @@ namespace PM.WPF
             .ConfigureServices((context, services) =>
             {
                 //throw new NotImplementedException("No service or window was registered.");
-                services.AddSingleton<LoginWindow>();
+
             }).Build();
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace PM.WPF
         private void OnStartup(object sender, StartupEventArgs e)
         {
             _host.Start();
-            var loginWindow = new MainWindow();
+            var loginWindow = new LoginWindow();
             loginWindow?.Show();
         }
 

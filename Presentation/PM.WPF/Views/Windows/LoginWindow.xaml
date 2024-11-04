@@ -54,9 +54,9 @@
                 </Grid>
             </Grid>
             <Grid Grid.Row="2" Margin="10,10,10,10">
-                <ui:Button Content="Cancel" Icon="Fluent24" HorizontalAlignment="Left" VerticalAlignment="Center" Name="CanelButton"/>
-                <ui:Button Content="Login" Icon="Fluent24" HorizontalAlignment="Center" VerticalAlignment="Center" Name="LoginButton"/>
-                <ui:Button Content="Register" Icon="Fluent24" HorizontalAlignment="Right" VerticalAlignment="Center" Name="RegisterButton"/>
+                <ui:Button Content="Cancel" Icon="Fluent24" HorizontalAlignment="Left" VerticalAlignment="Center" Name="CanelButton" Click="CanelButton_Click"/>
+                <ui:Button Content="Login" Icon="Fluent24" HorizontalAlignment="Center" VerticalAlignment="Center" Name="LoginButton" Click="LoginButton_Click"/>
+                <ui:Button Content="Register" Icon="Fluent24" HorizontalAlignment="Right" VerticalAlignment="Center" Name="RegisterButton" Click="RegisterButton_Click"/>
             </Grid>
         </Grid>
     </Grid>

@@ -116,9 +116,9 @@
             </Grid>
         </Grid>
         <Grid Grid.Row="2" Margin="10,10,10,10">
-            <ui:Button Content="Cancel" Icon="Fluent24" HorizontalAlignment="Left" VerticalAlignment="Center" Name="CancelButton"/>
-            <ui:Button Content="Login" Icon="Fluent24" HorizontalAlignment="Center" VerticalAlignment="Center" Name="LoginButton"/>
-            <ui:Button Content="Back" Icon="Fluent24" HorizontalAlignment="Right" VerticalAlignment="Center" Name="BackButton"/>
+            <ui:Button Content="Cancel" Icon="Fluent24" HorizontalAlignment="Left" VerticalAlignment="Center" Name="CancelButton" Click="CancelButton_Click"/>
+            <ui:Button Content="Register" Icon="Fluent24" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RegisterButton" Click="RegisterButton_Click"/>
+            <ui:Button Content="Back" Icon="Fluent24" HorizontalAlignment="Right" VerticalAlignment="Center" Name="BackButton" Click="BackButton_Click"/>
         </Grid>
     </Grid>
 </Window>
