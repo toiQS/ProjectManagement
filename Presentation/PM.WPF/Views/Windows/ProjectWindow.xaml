@@ -17,10 +17,10 @@
             <ui:TitleBar x:Name="TitleBar"  Title="{Binding ViewModel.ApplicationTitle}" Grid.Row="0" CloseWindowByDoubleClickOnIcon="True"/>
         </Grid>
         <Grid Grid.Row="1">
-            <ui:NavigationView PaneDisplayMode="Top">
+            <ui:NavigationView PaneDisplayMode="Top" Name="ProjectNavigationView" >
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Content="Dashboard" Icon="Home24" TargetPageType="{x:Type pages:DashboardPage}"/>
-                    <ui:NavigationViewItem Content="Info" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                    <ui:NavigationViewItem Content="Member Management" Icon="Home24" TargetPageType="{x:Type pages:MemberProjectPage}"/>
                     <ui:NavigationViewItem Content="Member" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
                     <ui:NavigationViewItem Content="Setting" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
                 </ui:NavigationView.MenuItems>

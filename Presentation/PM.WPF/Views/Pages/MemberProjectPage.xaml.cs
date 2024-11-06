@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PM.WPF.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,7 @@ namespace PM.WPF.Views.Pages
             InitializeComponent();
 
             ProjectNameText.Text = "Project Name";
+            DataContext = new ViewModel();
         }
     }
 }

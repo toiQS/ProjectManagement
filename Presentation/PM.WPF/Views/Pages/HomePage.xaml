@@ -15,13 +15,8 @@
         <helper:RelativePathConverter x:Key="RelativePathConverter" />
     </Page.Resources>
 
-    <Grid>
-        <ui:ListView
-            Grid.Column="0"
-            d:ItemsSource="{d:SampleData ItemCount=2}"
-            ItemsSource="{Binding BasicListViewItems, Mode=TwoWay}"
-            SelectedIndex="1"
-            SelectionMode="Single">
+    <Grid Margin="10">
+        <ui:ListView Grid.Column="0" d:ItemsSource="{d:SampleData ItemCount=10}" ItemsSource="{Binding BasicListViewItems, Mode=TwoWay}" SelectionMode="Single" Name="ProjectListView" SelectionChanged="ProjectListView_SelectionChanged">
 
             <ui:ListView.ItemTemplate>
                 <DataTemplate DataType="{x:Type models:Person}">

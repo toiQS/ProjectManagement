@@ -1,4 +1,6 @@
-﻿using PM.WPF.ViewModels;
+﻿using PM.WPF.Models;
+using PM.WPF.ViewModels;
+using PM.WPF.Views.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +23,27 @@ namespace PM.WPF.Views.Pages
     /// </summary>
     public partial class HomePage : Page
     {
+        
+
         public HomePage()
         {
             InitializeComponent();
-            DataContext = new ViewModel();
+            
+        }
 
+        private void ProjectListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            // Remove the condition temporarily to see if items are selectable
+            if (ProjectListView.SelectedItem is Person person)
+            {
+                App.Current.MainWindow.Hide();
+
+                var projectWindow = new ProjectWindow();
+                projectWindow.ShowDialog();
+
+                App.Current.MainWindow.Show();
+            }
         }
     }
+
 }

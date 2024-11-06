@@ -68,7 +68,7 @@ namespace PM.WPF.Views.Windows
         }
         private void MainPage_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MainPage.SelectedItem is NavigationViewItem selectedItem && selectedItem.Content.ToString() == "Home")
+            if (MainPage.SelectedItem is NavigationViewItem selectedItem)
             {
                 isHomePageActive = true;
                 WelcomeMessage.Visibility = Visibility.Collapsed;

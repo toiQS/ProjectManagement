@@ -73,6 +73,7 @@
                         <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
                         <ui:NavigationViewItem Content="Exit" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type pages:HeaderFrame}"/>
                     </ui:NavigationView.MenuItems>
+                    
                 </ui:NavigationView>
 
                 <!-- Placeholder Welcome Message positioned on top of NavigationView -->
@@ -84,7 +85,6 @@
                    Visibility="Visible" Margin="397,154,0,0"><Run Text="                  Welcome!"/><LineBreak/><Run Text="Select an option to get started."/></TextBlock>
             </Grid>
         </Grid>
-
     </Grid>
 
 </ui:FluentWindow>
