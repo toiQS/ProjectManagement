@@ -21,7 +21,9 @@
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Content="Dashboard" Icon="Home24" TargetPageType="{x:Type pages:DashboardPage}"/>
                     <ui:NavigationViewItem Content="Member Management" Icon="Home24" TargetPageType="{x:Type pages:MemberProjectPage}"/>
-                    <ui:NavigationViewItem Content="Member" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                    <ui:NavigationViewItem Content="Plan Management" Icon="Home24" TargetPageType="{x:Type pages:PlanManagementPage}"/>
+                    <ui:NavigationViewItem Content="Timeline" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                    <ui:NavigationViewItem Content="Calendar" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
                     <ui:NavigationViewItem Content="Setting" Icon="Home24" TargetPageType="{x:Type pages:HeaderFrame}"/>
                 </ui:NavigationView.MenuItems>
             </ui:NavigationView>
