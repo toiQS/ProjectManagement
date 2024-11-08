@@ -1,4 +1,5 @@
 ﻿using PM.WPF.Models;
+using PM.WPF.Models.projects;
 using PM.WPF.ViewModels;
 using PM.WPF.Views.Windows;
 using System;
@@ -28,18 +29,19 @@ namespace PM.WPF.Views.Pages
         public HomePage()
         {
             InitializeComponent();
-            
+            DataContext = new HomePageViewModel();
         }
 
         private void ProjectListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             // Remove the condition temporarily to see if items are selectable
-            if (ProjectListView.SelectedItem is Person person)
+            if (ProjectListView.SelectedItem is ProjectItem projectItem)
             {
+                var id = projectItem.Id;
                 App.Current.MainWindow.Hide();
 
                 var projectWindow = new ProjectWindow();
-                projectWindow.ShowDialog();
+                projectWindow.Show();
 
                 App.Current.MainWindow.Show();
             }
