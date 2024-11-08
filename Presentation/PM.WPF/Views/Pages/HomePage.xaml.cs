@@ -4,6 +4,7 @@ using PM.WPF.ViewModels;
 using PM.WPF.Views.Windows;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -30,6 +31,8 @@ namespace PM.WPF.Views.Pages
         {
             InitializeComponent();
             DataContext = new HomePageViewModel();
+
+
         }
 
         private void ProjectListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -39,10 +42,8 @@ namespace PM.WPF.Views.Pages
             {
                 var id = projectItem.Id;
                 App.Current.MainWindow.Hide();
-
                 var projectWindow = new ProjectWindow();
-                projectWindow.Show();
-
+                projectWindow.ShowDialog();
                 App.Current.MainWindow.Show();
             }
         }

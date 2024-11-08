@@ -1,4 +1,5 @@
 ﻿using PM.WPF.Models;
+using PM.WPF.Models.member;
 using PM.WPF.ViewModels;
 using PM.WPF.Views.Windows;
 using System;
@@ -28,17 +29,16 @@ namespace PM.WPF.Views.Pages
             InitializeComponent();
 
             ProjectNameText.Text = "Project Name";
-            DataContext = new ViewModel();
+            DataContext = new MemberProjectPageModelView();
         }
 
         private void MemberInProjectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (MemberInProjectList.SelectedItem is Person person and not null)
+            if (MemberInProjectList.SelectedItem is MemberItem member )
             {
                 App.Current.MainWindow.Hide();
                 UserWindow userWindow = new UserWindow();
                 userWindow.ShowDialog();
-                App.Current.MainWindow.Show();
                 
             }
         }

@@ -9,8 +9,8 @@
         xmlns:models="clr-namespace:PM.WPF.Models"
         xmlns:helper="clr-namespace:PM.WPF.Helpers"
         mc:Ignorable="d"
-        Title="MainWindow" Height="515" Width="890"
-        
+        Title="MainWindow" Height="515" Width="890"        
+        WindowStartupLocation="CenterScreen"
         >
 
     <Grid Background="#FF231E1E">

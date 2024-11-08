@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:PM.WPF.Views.Windows"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="UserWindow" Height="auto" Width="800">
+        Title="UserWindow" Height="auto" Width="800"
+        WindowStyle="None" 
+        WindowStartupLocation="CenterScreen">
     <Grid Background="#FF231E1E">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>

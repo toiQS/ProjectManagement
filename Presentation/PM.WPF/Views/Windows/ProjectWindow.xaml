@@ -7,7 +7,9 @@
         xmlns:pages ="clr-namespace:PM.WPF.Views.Pages"
         xmlns:local="clr-namespace:PM.WPF.Views.Windows"
         mc:Ignorable="d"
-        Title="ProjectWindow" Height="450" Width="800">
+        Title="ProjectWindow" Height="450" Width="800" 
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None">
     <Grid Background="#FF231E1E">
         <Grid.RowDefinitions>
             <RowDefinition Height="34*"/>
