@@ -1,10 +1,9 @@
 ﻿using PM.WPF.Models;
-using PM.WPF.Models.projects;
+using PM.WPF.Models.member;
 using PM.WPF.ViewModels;
 using PM.WPF.Views.Windows;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,32 +20,27 @@ using System.Windows.Shapes;
 namespace PM.WPF.Views.Pages
 {
     /// <summary>
-    /// Interaction logic for HomePage.xaml
+    /// Interaction logic for MemberProjectPage.xaml
     /// </summary>
-    public partial class HomePage : Page
+    public partial class MemberProjectPage : Page
     {
-        
-
-        public HomePage()
+        public MemberProjectPage()
         {
             InitializeComponent();
-            DataContext = new HomePageViewModel();
 
-
+            ProjectNameText.Text = "Project Name";
+            DataContext = new MemberProjectPageModelView();
         }
 
-        private void ProjectListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void MemberInProjectList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            // Remove the condition temporarily to see if items are selectable
-            if (ProjectListView.SelectedItem is ProjectItem projectItem)
+            if (MemberInProjectList.SelectedItem is MemberItem member )
             {
-                var id = projectItem.Id;
                 App.Current.MainWindow.Hide();
-                var projectWindow = new ProjectWindow();
-                projectWindow.ShowDialog();
-                App.Current.MainWindow.Show();
+                UserWindow userWindow = new UserWindow();
+                userWindow.ShowDialog();
+                
             }
         }
     }
-
 }

@@ -10,15 +10,14 @@ using System.Windows.Media.Imaging;
 
 namespace PM.WPF.Helpers
 {
-    public class RelativePathConverter : IValueConverter
+    public class RelativePathConverter 
     {
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(string path)
         {
             var getFullPath = Assembly.GetExecutingAssembly().Location;
             var getProjectSpecificPath = getFullPath.Split("\\bin")[0];
-            if (value is string path)
+            if(!string.IsNullOrEmpty(path))
             {
-                // Chỉnh sửa để sử dụng đường dẫn tuyệt đối trong pack URI cho WPF
                 var uri = new Uri($"{getProjectSpecificPath}{path}", UriKind.Absolute);
                 return new BitmapImage(uri);
             }
