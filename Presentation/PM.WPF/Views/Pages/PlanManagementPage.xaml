@@ -62,7 +62,7 @@
             </Grid>
 
             <Grid Grid.Column="1">
-                <ui:ListView Grid.Column="0" d:ItemsSource="{d:SampleData ItemCount=10}" ItemsSource="{Binding PlanItemsList, Mode=TwoWay}" SelectionMode="Single">
+                <ui:ListView Grid.Column="0" d:ItemsSource="{d:SampleData ItemCount=10}" ItemsSource="{Binding PlanItemsList, Mode=TwoWay}" SelectionMode="Single" Name="PlanItemListView" SelectionChanged="PlanItemListView_SelectionChanged">
 
                     <ui:ListView.ItemTemplate>
                         <DataTemplate DataType="{x:Type models:PlanItem}">

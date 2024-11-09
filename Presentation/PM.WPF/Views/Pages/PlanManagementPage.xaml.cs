@@ -1,6 +1,9 @@
-﻿using PM.WPF.ViewModels;
+﻿using PM.WPF.Models.plan;
+using PM.WPF.ViewModels;
+using PM.WPF.Views.Windows;
 using System;
 using System.Collections.Generic;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Wpf.Ui.Controls;
 
 namespace PM.WPF.Views.Pages
 {
@@ -31,6 +35,15 @@ namespace PM.WPF.Views.Pages
         public void AddContextConponent()
         {
             PlanNameText.Text = "Member";
+        }
+
+        private void PlanItemListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if(PlanItemListView.SelectedItem is PlanItem planItem)
+            {
+                TaskWindow taskWindow = new TaskWindow();
+                taskWindow.Show();
+            }
         }
     }
 }
