@@ -6,6 +6,7 @@
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         xmlns:local="clr-namespace:PM.WPF.Views.Windows"
         xmlns:pages="clr-namespace:PM.WPF.Views.Pages"
+        xmlns:mainWindow="clr-namespace:PM.WPF.Views.Pages.Pages_of_MainWindow"
         xmlns:models="clr-namespace:PM.WPF.Models"
         xmlns:helper="clr-namespace:PM.WPF.Helpers"
         mc:Ignorable="d"
@@ -66,10 +67,10 @@
                         <ui:BreadcrumbBar x:Name="BreadcrumbBar" Margin="42,32,42,20"/>
                     </ui:NavigationView.Header>
                     <ui:NavigationView.MenuItems>
-                        <ui:NavigationViewItem Content="Home" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type pages:HomePage}"/>
+                        <ui:NavigationViewItem Content="Home" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type mainWindow:HomePage}"/>
                         <ui:NavigationViewItem Content="Recently" Icon="{ui:SymbolIcon Clock24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
                         <ui:NavigationViewItem Content="Repository" Icon="{ui:SymbolIcon Book24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                        <ui:NavigationViewItem Content="Profile" Icon="{ui:SymbolIcon BookContacts24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Profile" Icon="{ui:SymbolIcon BookContacts24}" TargetPageType="{x:Type mainWindow:ProfilePage}"/>
                         <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
                         <ui:NavigationViewItem Content="Exit" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type pages:HeaderFrame}"/>
                     </ui:NavigationView.MenuItems>

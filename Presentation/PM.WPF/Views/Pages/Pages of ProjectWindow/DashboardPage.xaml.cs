@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace PM.WPF.Views.Pages
+namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow
 {
     /// <summary>
     /// Interaction logic for DashboardPage.xaml
