@@ -18,7 +18,7 @@ using System.Threading.Tasks;
 
 namespace PM.DomainServices.Manager
 {
-    class ProjectManager : IProjectManager
+    class ProjectManageServices : IProjectManageServices
     {
         private readonly IProjectServices _projectServices;
         private readonly IApplicationUserServices _applicationUserServices;
@@ -32,7 +32,7 @@ namespace PM.DomainServices.Manager
         private readonly IMemberInTaskServices _memberInTaskServices;
         private readonly ITaskServices _taskServices;
 
-        public ProjectManager(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
+        public ProjectManageServices(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
             IPlanServices planServices, IPlanInProjectServices planInProjectServices, IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices,
             ITaskInPlanServices taskInPlanServices, IMemberInTaskServices memberInTaskServices, ITaskServices taskServices)
         {
@@ -50,6 +50,7 @@ namespace PM.DomainServices.Manager
             _taskInPlanServices = taskInPlanServices;
         }
         // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
+
         public async Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId)
         {
             // Declare a list to store the final result with project details
@@ -97,6 +98,7 @@ namespace PM.DomainServices.Manager
                 string status = project.IsAccessed ? "Active" : "Inactive";
 
                 // Find the project owner
+                string ownerImage ="";
                 string ownerName = "";
                 var projectMembers = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectsByProjectId(userProject.ProjectId);
 
@@ -109,6 +111,7 @@ namespace PM.DomainServices.Manager
                         if (ownerUser != null)
                         {
                             ownerName = ownerUser.UserName;
+                            ownerImage = ownerUser.PathImage;
                             break;
                         }
                     }
@@ -119,7 +122,8 @@ namespace PM.DomainServices.Manager
                 {
                     { "Project Name", project.ProjectName },
                     { "Owner", ownerName },
-                    { "Status", status }
+                    { "Image", ownerImage },
+                    { "Message", "" }
                 });
             }
             return finalResult;
@@ -191,7 +195,8 @@ namespace PM.DomainServices.Manager
                 {
                     { "Project Name", project.ProjectName },
                     { "Owner", ownerName },
-                    { "Status", status }
+                    { "Status", status },
+                    { "Message", "" }
                 });
             }
 
@@ -199,13 +204,13 @@ namespace PM.DomainServices.Manager
             return finalResult;
         }
 
-        public async Task<Dictionary<string, string>> AddProject(string userId, ProjectDTO project)
+        public async Task<Dictionary<string, string>> AddProject(string userId, string projectName, string projectDescription, string projectVersion, string projectStatus)
         {
             // Declare a dictionary to store the final result
             var finalResult = new Dictionary<string, string>();
 
             // Check if input data is valid
-            if (string.IsNullOrEmpty(userId) || project == null)
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(projectDescription) || string.IsNullOrEmpty(projectVersion) || string.IsNullOrEmpty(projectStatus))
             {
                 finalResult.Add("Message", "Invalid input data");
                 return finalResult;
@@ -239,21 +244,29 @@ namespace PM.DomainServices.Manager
             foreach (var ownedProject in ownedProjects)
             {
                 var existingProject = await _projectServices.GetProjectAsync(ownedProject.ProjectId);
-                if (existingProject?.ProjectName == project.ProjectName)
+                if (existingProject?.ProjectName == projectName)
                 {
                     finalResult.Add("Message", "A project with this name already exists under your ownership");
                     return finalResult;
                 }
             }
+           
 
             // Generate a unique ID for the new project role
             var header = $"{new Random().Next(1, 100)}-{new Random().Next(1, 100)}-{new Random().Next(1, 100)}";
             var now = DateTime.Now;
+
+             //Initialize a project entity
+            var project = new ProjectDTO
+            {
+                 Id = $"1001-{header}-{now}",
+            };
+            //Initialize a role of application user in this project
             var projectRoleDTO = new RoleApplicationUserInProjectDTO
             {
-                Id = $"RAUIP-{header}-{now}",
+                Id = $"1003-{header}-{now}",
                 ProjectId = project.Id,
-                RoleInProjectId = "RIP-1",  // Assuming "RIP-1" corresponds to the "Owner" role
+                RoleInProjectId = "1002-1",  
                 ApplicationUserId = userId
             };
 
@@ -534,13 +547,13 @@ namespace PM.DomainServices.Manager
             }
             return finalResult;
         }
-        public async Task<Dictionary<string, string>> EditInformationProject(string userId, string projectId, ProjectDTO project)
+        public async Task<Dictionary<string, string>> EditInformationProject(string userId, string projectId, string projectName, string projectDescription, string projectVersion, string projectStatus)
         {
             // Initialize result dictionary to store response messages
             var finalResult = new Dictionary<string, string>();
 
             // Validate input data
-            if (project == null || string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(userId))
+            if ( string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(projectDescription) || string.IsNullOrEmpty(projectVersion) || string.IsNullOrEmpty(projectStatus))
             {
                 finalResult.Add("Message", "Invalid input data");
                 return finalResult;
@@ -569,6 +582,33 @@ namespace PM.DomainServices.Manager
                 return finalResult;
             }
 
+            // Retrieve projects the user owns
+            var ownedProjects = new List<RoleApplicationUserInProjectDTO>();
+            var userProjects = await _roleApplicationUserInProjectServices.GetProjectsUserJoined(userId);
+
+            if (userProjects != null)
+            {
+                foreach (var projectRole in userProjects)
+                {
+                    // Check if the user is the owner of any projects
+                    if (await _roleInProjectServices.GetNameRoleByRoleId(projectRole.RoleInProjectId) == "Owner")
+                    {
+                        ownedProjects.Add(projectRole);
+                    }
+                }
+            }
+
+            // Check if the user already owns projects with the same name
+            foreach (var ownedProject in ownedProjects)
+            {
+                var item = await _projectServices.GetProjectAsync(ownedProject.ProjectId);
+                if (item?.ProjectName == projectName)
+                {
+                    finalResult.Add("Message", "A project with this name already exists under your ownership");
+                    return finalResult;
+                }
+            }
+
             // Retrieve the project and validate its existence
             var existingProject = await _projectServices.GetProjectAsync(projectId);
             if (existingProject == null)
@@ -578,10 +618,10 @@ namespace PM.DomainServices.Manager
             }
 
             // Update project attributes with new values
-            existingProject.ProjectName = project.ProjectName;
-            existingProject.ProjectDescription = project.ProjectDescription;
-            existingProject.ProjectVersion = project.ProjectVersion;
-            existingProject.Projectstatus = project.Projectstatus;
+            existingProject.ProjectName = projectName;
+            existingProject.ProjectDescription = projectDescription;
+            existingProject.ProjectVersion = projectVersion;
+            existingProject.Projectstatus = projectStatus;
 
             // Attempt to update the project
             var updateSuccess = await _projectServices.UpdateAsync(projectId, existingProject);

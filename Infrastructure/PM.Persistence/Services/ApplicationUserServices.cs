@@ -19,7 +19,6 @@ namespace PM.Persistence.Services
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        private readonly IServiceProvider _serviceProvider;
         public readonly IRepository<ApplicationUser> _repository;
         public ApplicationUserServices(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider, IRepository<ApplicationUser> repository)
@@ -28,29 +27,37 @@ namespace PM.Persistence.Services
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
-            _serviceProvider = serviceProvider;
             _repository = repository;
         }
-        public async Task AddRoleApplication()
+        public async Task<bool> LoginServices(string email, string password)
         {
             try
             {
-
-
-                var scope = new[] { "Admin", "User" };
-                foreach (var item in scope)
+                var applicationUser = await _userManager.FindByEmailAsync(email);
+                if(applicationUser != null && (await _signInManager.CheckPasswordSignInAsync(applicationUser,password,false) == SignInResult.Success))
                 {
-                    if (!await _roleManager.RoleExistsAsync(item))
-                    {
-                        await _roleManager.CreateAsync(new IdentityRole(item));
-                    }
+                    return true;
                 }
+                return false;
             }
-            catch (Exception ex)
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
+        }
+        public async Task Logout()
+        {
+            try
+            {
+                await _signInManager.SignOutAsync();
+            }
+            catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
         }
+        
         public async Task<bool> RegisterApplicationUser(ApplicationUser user, string password)
         {
             try

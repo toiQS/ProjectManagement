@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.IServices
 {
-    public interface IMemberInTaskServices
+    public interface IMemberInTaskServices 
     {
         public Task<bool> AddAsync(MemberInTaskDTO memberInTaskDTO);
         public Task<bool> RemoveAsync(string id);

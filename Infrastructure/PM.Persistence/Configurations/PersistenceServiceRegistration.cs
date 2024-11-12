@@ -4,6 +4,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PM.Domain.DTOs;
 using PM.Persistence.Context;
+using PM.Persistence.IServices;
+using PM.Persistence.memberInTask;
+using PM.Persistence.Services;
 
 namespace PM.Persistence.Configurations
 {
@@ -20,7 +23,17 @@ namespace PM.Persistence.Configurations
 
         private static void AddServices(IServiceCollection services)
         {
-            
+            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IMemberInTaskServices, MemberInTaskServices>();
+            services.AddScoped<IPlanInProjectServices,PlanInProjectServices>();
+            services.AddScoped<IPlanServices, PlanServices>();
+            services.AddScoped<IPositionInProjectServices,PositionInProjectServices>();
+            services.AddScoped<IPositionWorkOfMemberServices,PositionWorkInProjectServices>();
+            services.AddScoped<IProjectServices,ProjectServices>();
+            services.AddScoped<IRoleApplicationUserInProjectServices,RoleApplicationUserInProjectServices>();
+            services.AddScoped<IRoleInProjectServices,RoleInProjectServices>();
+            services.AddScoped<ITaskInPlanServices, TaskInPlanServices>();
+            services.AddScoped<ITaskServices,TaskServices>();
         }
 
         private static void AddRepositories(IServiceCollection services)
@@ -62,5 +75,7 @@ namespace PM.Persistence.Configurations
                 options.Password.RequiredUniqueChars = 1;
             });
         }
+        
     }
+
 }
