@@ -72,8 +72,7 @@
             <!-- User information details section -->
             <Grid x:Name="UserInfoGrid"
                   Grid.Column="1"
-                  Margin="10"
-                  Width="550">
+                  Margin="10">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>

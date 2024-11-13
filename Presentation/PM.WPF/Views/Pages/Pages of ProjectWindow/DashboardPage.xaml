@@ -45,32 +45,52 @@
 
                 <!-- Description -->
                 <Grid Grid.Row="0" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Description" Foreground="#FFFDF8F8"/>
-                    <ui:TextBlock x:Name="DescriptionText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row ="0" FontTypography="Body" Text="Description" Foreground="#FFFDF8F8"/>
+                    <ui:TextBlock Grid.Row="1" x:Name="DescriptionText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
                 </Grid>
 
                 <!-- Owner -->
                 <Grid Grid.Row="1" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Owner" Foreground="#FFFDF8F8"/>
-                    <ui:TextBlock x:Name="OwnerText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Owner" Foreground="#FFFDF8F8"/>
+                    <ui:TextBlock Grid.Row="1" x:Name="OwnerText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
                 </Grid>
 
                 <!-- Quantity of Members -->
                 <Grid Grid.Row="2" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Quantity Member" Foreground="#FFFDF8F8"/>
-                    <ui:TextBlock x:Name="QuantityMemberText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Quantity Member" Foreground="#FFFDF8F8"/>
+                    <ui:TextBlock Grid.Row="1" x:Name="QuantityMemberText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
                 </Grid>
 
                 <!-- Status -->
                 <Grid Grid.Row="3" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Status" Foreground="#FFFDF8F8"/>
-                    <ui:TextBlock x:Name="StatusText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Status" Foreground="#FFFDF8F8"/>
+                    <ui:TextBlock Grid.Row="1" x:Name="StatusText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
                 </Grid>
 
                 <!-- Start Date -->
                 <Grid Grid.Row="4" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Start At" Foreground="#FFFDF8F8"/>
-                    <ui:TextBlock x:Name="StartAtText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Create At" Foreground="#FFFDF8F8"/>
+                    <ui:TextBlock Grid.Row="1" x:Name="StartAtText" FontTypography="Body" Foreground="#FFFDF8F8" Margin="10,0,0,0"/>
                 </Grid>
             </Grid>
 

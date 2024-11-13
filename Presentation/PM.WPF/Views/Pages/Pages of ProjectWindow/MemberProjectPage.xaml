@@ -46,14 +46,22 @@
 
                 <!-- Role Selection -->
                 <Grid Grid.Row="0" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Roles In Project" Foreground="#FFFDF8F8"/>
-                    <ComboBox x:Name="RoleInProjectList" Margin="10,5,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Roles In Project" Foreground="#FFFDF8F8"/>
+                    <ComboBox Grid.Row="1" x:Name="RoleInProjectList" Margin="10,5,0,0"/>
                 </Grid>
 
                 <!-- Position Selection -->
                 <Grid Grid.Row="1" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Position Work List" Foreground="#FFFDF8F8"/>
-                    <ComboBox x:Name="PositionWorkList" Margin="10,5,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Position Work List" Foreground="#FFFDF8F8"/>
+                    <ComboBox Grid.Row="1" x:Name="PositionWorkList" Margin="10,5,0,0"/>
                 </Grid>
 
                 <!-- Action Buttons -->

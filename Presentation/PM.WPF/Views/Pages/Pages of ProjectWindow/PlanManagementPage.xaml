@@ -1,4 +1,5 @@
-﻿<Page x:Class="PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanManagementPage"
+﻿
+    <Page x:Class="PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanManagementPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -45,8 +46,12 @@
 
                 <!-- Search Box -->
                 <Grid Grid.Row="0" Margin="10">
-                    <ui:TextBlock FontTypography="Body" Text="Find By Name Plan In Project" Foreground="#FFFDF8F8"/>
-                    <ui:AutoSuggestBox PlaceholderText="Search..." Margin="10,5,0,0"/>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <ui:TextBlock Grid.Row="0" FontTypography="Body" Text="Find By Name Plan In Project" Foreground="#FFFDF8F8" Margin="10"/>
+                    <ui:AutoSuggestBox Grid.Row="1" PlaceholderText="Search..." Margin="10"/>
                 </Grid>
 
                 <!-- Action Buttons -->

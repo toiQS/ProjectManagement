@@ -27,12 +27,12 @@
         <Grid Grid.Row="1">
             <ui:NavigationView PaneDisplayMode="Top" Name="ProjectNavigationView">
                 <ui:NavigationView.MenuItems>
-                    <ui:NavigationViewItem Content="Dashboard" Icon="{ui:SymbolIcon Home24}" Tag="DashboardPage"/>
-                    <ui:NavigationViewItem Content="Member Management" Icon="{ui:SymbolIcon People24}" Tag="MemberProjectPage"/>
-                    <ui:NavigationViewItem Content="Plan Management" Icon="{ui:SymbolIcon Calendar24}" Tag="PlanManagementPage"/>
-                    <ui:NavigationViewItem Content="View" Icon="{ui:SymbolIcon Eye24}" Tag="ViewPage"/>
-                    <ui:NavigationViewItem Content="Calendar" Icon="{ui:SymbolIcon CalendarLtr24}" Tag="CalendarPage"/>
-                    <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" Tag="SettingsPage"/>
+                    <ui:NavigationViewItem Content="Dashboard" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type projectWindow:DashboardPage}" />
+                    <ui:NavigationViewItem Content="Member Management" Icon="{ui:SymbolIcon People24}" TargetPageType="{x:Type projectWindow:MemberProjectPage}"/>
+                    <ui:NavigationViewItem Content="Plan Management" Icon="{ui:SymbolIcon Calendar24}" TargetPageType="{x:Type projectWindow:PlanManagementPage}"/>
+                    <ui:NavigationViewItem Content="View" Icon="{ui:SymbolIcon Eye24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
+                    <ui:NavigationViewItem Content="Calendar" Icon="{ui:SymbolIcon CalendarLtr24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
+                    <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
                 </ui:NavigationView.MenuItems>
 
                 <!-- Frame for Page Content -->
