@@ -120,7 +120,7 @@ namespace PM.DomainServices.Manager
                 // Add project details to final result
                 finalResult.Add(new Dictionary<string, object>
                 {
-                    { "Project Name", project.ProjectName },
+                    { "ProjectName", project.ProjectName },
                     { "Owner", ownerName },
                     { "Image", ownerImage },
                     { "Message", "" }

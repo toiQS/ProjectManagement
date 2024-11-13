@@ -14,9 +14,7 @@
             <RowDefinition Height="auto" MinHeight="100"/>
             <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
-        
-        
-        
+        <!--gird image and user name-->
         <Grid Grid.Row="0">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto" MinHeight="110"/>
@@ -30,52 +28,69 @@
             </Ellipse>
             <ui:TextBlock Grid.Row="1" FontTypography="Title" Text="Title" HorizontalAlignment="Center" VerticalAlignment="Center" Height="36" Width="56" Foreground="White"/>
         </Grid>
-        
-        
-        
-        
+
         <Grid Grid.Row="1">
-            <Grid Margin="160,10,160,10" >
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <!--gird button-->
+            <Grid Grid.Column="0" Margin="10" Width="200">
+                <Button Content="Edit Information Personal" HorizontalAlignment="Center"/>
+            </Grid>
+            
+            <!--grid info-->
+            <Grid Grid.Column="1" Margin="10" Width="550">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="auto" MinHeight="110"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
-                    <RowDefinition Height="auto" MinHeight="75"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
                 </Grid.RowDefinitions>
-                
-                
-                <Grid Grid.Row="0" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
+                <Grid Grid.Row="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
 
-                    </Grid.RowDefinitions>  
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="User Name" Foreground="White"/>
+                    <!--first name and last name-->
+                    <Grid Grid.Column="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="10" HorizontalAlignment="Left">
+                            <ui:TextBlock FontTypography="BodyStrong" Text="First Name" Foreground="White"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="10">
+                            <ui:TextBlock FontTypography="Body" Text="Body" Foreground="White"/>
+                            <TextBox Name="FirstNameTB" Foreground="White" Visibility="Hidden"/>
+                            
+                        </Grid>
                     </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" Text="Body"/>
+                    <Grid  Grid.Column="1" HorizontalAlignment="Left">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="auto"/>
+                            <RowDefinition Height="auto"/>
+
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0" Margin="10">
+                            <ui:TextBlock FontTypography="BodyStrong" Text="Last Name" Foreground="White"/>
+                        </Grid>
+                        <Grid Grid.Row="1" Margin="10">
+                            <ui:TextBlock FontTypography="Body" Text="Body" Foreground="White"/>
+                            <TextBox Name="LastNameTB" Foreground="White" Visibility="Hidden"/>
+                        </Grid>
                     </Grid>
                 </Grid>
-
-                <Grid Grid.Row="1" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
-
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="Description" Foreground="White"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" />
-                    </Grid>
-                </Grid>
-
-                <Grid Grid.Row="2" Margin="10">
+                
+                <!--email-->
+                <Grid Grid.Row="1">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="auto"/>
@@ -85,7 +100,23 @@
                         <ui:TextBlock FontTypography="BodyStrong" Text="Email" Foreground="White"/>
                     </Grid>
                     <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" Text="Body"/>
+                        <ui:TextBlock FontTypography="Body" Text="Body" Foreground="White"/>
+                        <TextBox Name="EmailTB" Foreground="White" Visibility="Hidden"/>
+                    </Grid>
+                </Grid>
+                <!--phone-->
+                <Grid Grid.Row="2">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" Margin="10">
+                        <ui:TextBlock FontTypography="BodyStrong" Text="Phone" Foreground="White"/>
+                    </Grid>
+                    <Grid Grid.Row="1" Margin="10">
+                        <ui:TextBlock FontTypography="Body" Text="Body" Foreground="White"/>
+                        <TextBox Name="PhoneTB" Foreground="White" Visibility="Hidden"/>
                     </Grid>
                 </Grid>
             </Grid>

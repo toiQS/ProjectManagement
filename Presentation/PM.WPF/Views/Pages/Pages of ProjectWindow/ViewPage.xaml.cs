@@ -24,5 +24,10 @@ namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow
         {
             InitializeComponent();
         }
+
+        private void GanttGrid_Selected(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

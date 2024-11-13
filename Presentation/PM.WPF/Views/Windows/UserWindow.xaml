@@ -21,7 +21,7 @@
         <Grid Grid.Row="1">
             <Ellipse Height="100" Stroke="Black" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="F:\Repo\Local\Project_Management\Presentation\PM.WPF\Assets\background-2.jpg"/>
+                    <ImageBrush ImageSource="F:\Coding\Local\Project_Management\Presentation\PM.WPF\Assets\background.jpg"/>
                 </Ellipse.Fill>
             </Ellipse>
         </Grid>
