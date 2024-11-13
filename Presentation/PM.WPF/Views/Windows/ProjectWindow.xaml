@@ -25,7 +25,7 @@
 
         <!-- Main Content with NavigationView and Frame -->
         <Grid Grid.Row="1">
-            <ui:NavigationView PaneDisplayMode="Top" Name="ProjectNavigationView" SelectionChanged="ProjectNavigationView_SelectionChanged">
+            <ui:NavigationView PaneDisplayMode="Top" Name="ProjectNavigationView">
                 <ui:NavigationView.MenuItems>
                     <ui:NavigationViewItem Content="Dashboard" Icon="{ui:SymbolIcon Home24}" Tag="DashboardPage"/>
                     <ui:NavigationViewItem Content="Member Management" Icon="{ui:SymbolIcon People24}" Tag="MemberProjectPage"/>
