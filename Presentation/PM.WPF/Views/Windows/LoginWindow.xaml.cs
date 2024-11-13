@@ -24,11 +24,6 @@ namespace PM.WPF.Views.Windows
             InitializeComponent();
         }
 
-        private void CanelButton_Click(object sender, RoutedEventArgs e)
-        {
-            App.Current.Shutdown();
-        }
-
         private void LoginButton_Click(object sender, RoutedEventArgs e)
         {
             ShowWindow<MainWindow>(() => new MainWindow());
@@ -59,6 +54,11 @@ namespace PM.WPF.Views.Windows
         private void ShowMainWindow()
         {
             Show(); // Shows the main window
+        }
+
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
+        {
+            App.Current.Shutdown();
         }
     }
 }

@@ -6,91 +6,58 @@
         xmlns:local="clr-namespace:PM.WPF.Views.Windows"
         xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
         mc:Ignorable="d"
-        Title="UserWindow" Height="auto" Width="800"
-        WindowStyle="None" 
+        Title="User Information"
+        Width="800" MinHeight="400" MinWidth="600"
+        WindowStyle="None"
         WindowStartupLocation="CenterScreen">
+
     <Grid Background="#FF231E1E">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <ui:TitleBar x:Name="TitleBar"  Title="{Binding ViewModel.ApplicationTitle}" Grid.Row="0" CloseWindowByDoubleClickOnIcon="True"/>
-        </Grid>
-        <Grid Grid.Row="1">
-            <Ellipse Height="100" Stroke="Black" Width="100" HorizontalAlignment="Center" VerticalAlignment="Center">
+
+        <!-- Title Bar -->
+        <ui:TitleBar x:Name="TitleBar" Title="{Binding ApplicationTitle, RelativeSource={RelativeSource AncestorType=Window}}" 
+                     CloseWindowByDoubleClickOnIcon="True" Foreground="White" />
+
+        <!-- Profile Picture -->
+        <Grid Grid.Row="1" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,20">
+            <Ellipse Height="100" Width="100" Stroke="Black">
                 <Ellipse.Fill>
-                    <ImageBrush ImageSource="F:\Coding\Local\Project_Management\Presentation\PM.WPF\Assets\background.jpg"/>
+                    <ImageBrush ImageSource="/Assets/background.jpg"/>
                 </Ellipse.Fill>
             </Ellipse>
         </Grid>
-        <Grid Grid.Row="2">
-            <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                    <RowDefinition Height="auto"/>
-                </Grid.RowDefinitions>
-                
-                <Grid Grid.Row="0" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
 
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="User Name" Foreground="White"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" Text="Body"/>
-                    </Grid>
-                </Grid>
-                
-                <Grid Grid.Row="1" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
+        <!-- User Information -->
+        <StackPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="20">
 
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="Description" Foreground="White"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" />
-                    </Grid>
-                </Grid>
-                
-                <Grid Grid.Row="2" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
+            <!-- User Name -->
+            <StackPanel>
+                <ui:TextBlock FontTypography="BodyStrong" Text="User Name" Foreground="White" />
+                <ui:TextBlock FontTypography="Body" Text="{Binding UserName}" Foreground="#AFAFAF" />
+            </StackPanel>
 
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="Email" Foreground="White"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" Text="Body"/>
-                    </Grid>
-                </Grid>
-                
-                <Grid Grid.Row="3" Margin="10">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="auto"/>
-                        <RowDefinition Height="auto"/>
+            <!-- Description -->
+            <StackPanel>
+                <ui:TextBlock FontTypography="BodyStrong" Text="Description" Foreground="White" />
+                <ui:TextBlock FontTypography="Body" Text="{Binding Description}" Foreground="#AFAFAF" />
+            </StackPanel>
 
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Margin="10">
-                        <ui:TextBlock FontTypography="BodyStrong" Text="Phone" Foreground="White"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Margin="10">
-                        <ui:TextBlock FontTypography="Body" Text="Body"/>
-                    </Grid>
-                </Grid>
-                
-            </Grid>
-        </Grid>
+            <!-- Email -->
+            <StackPanel>
+                <ui:TextBlock FontTypography="BodyStrong" Text="Email" Foreground="White" />
+                <ui:TextBlock FontTypography="Body" Text="{Binding Email}" Foreground="#AFAFAF" />
+            </StackPanel>
+
+            <!-- Phone -->
+            <StackPanel>
+                <ui:TextBlock FontTypography="BodyStrong" Text="Phone" Foreground="White" />
+                <ui:TextBlock FontTypography="Body" Text="{Binding Phone}" Foreground="#AFAFAF" />
+            </StackPanel>
+
+        </StackPanel>
     </Grid>
 </ui:FluentWindow>

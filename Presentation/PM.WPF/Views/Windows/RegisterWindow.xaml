@@ -10,115 +10,106 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         ResizeMode="NoResize">
-    <Grid Background="#FF231E1E">
+
+    <Grid Background="#FF231E1E" Height="500" VerticalAlignment="Top">
         <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="0">
-            <ui:TextBlock FontTypography="TitleLarge" Text="Register" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="#FFF9F9F9"/>
-        </Grid>
+
+        <!-- Title -->
+        <TextBlock Grid.Row="0" Text="Register" FontSize="24" FontWeight="Bold" Foreground="#FFF9F9F9" 
+                   HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,10,0,20"/>
+
+        <!-- Form Fields -->
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
-            <Grid Grid.Row="0">
+
+            <!-- First Name Field -->
+            <Grid Grid.Row="0" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="First Name" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="FirstNameTextBox"/>
-                </Grid>
+                <TextBlock Text="First Name" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Enter your first name..." Name="FirstNameTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="1">
+
+            <!-- Last Name Field -->
+            <Grid Grid.Row="1" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="Last Name" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="LastNameTextBox"/>
-                </Grid>
+                <TextBlock Text="Last Name" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Enter your last name..." Name="LastNameTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="3">
+
+            <!-- User Name Field -->
+            <Grid Grid.Row="2" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="User Name" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="UserNameTextBox"/>
-                </Grid>
+                <TextBlock Text="User Name" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Enter your username..." Name="UserNameTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="4">
+
+            <!-- Password Field -->
+            <Grid Grid.Row="3" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="Password" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="PasswordTextBox"/>
-                </Grid>
+                <TextBlock Text="Password" Foreground="White" VerticalAlignment="Center"/>
+                <PasswordBox Grid.Column="1" Name="PasswordTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="5">
+
+            <!-- Email Field -->
+            <Grid Grid.Row="4" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="Email" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="EmailTextBox"/>
-                </Grid>
+                <TextBlock Text="Email" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Enter your email..." Name="EmailTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="6">
+
+            <!-- Confirm Email Field -->
+            <Grid Grid.Row="5" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="Confirm Emal" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="ComfirmMailTextBox"/>
-                </Grid>
+                <TextBlock Text="Confirm Email" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Re-enter your email..." Name="ConfirmEmailTextBox" Margin="5,0"/>
             </Grid>
-            <Grid Grid.Row="7">
+
+            <!-- Phone Field -->
+            <Grid Grid.Row="6" Margin="0,10">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="121*"/>
-                    <ColumnDefinition Width="279*"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="*"/>
                 </Grid.ColumnDefinitions>
-                <Grid Grid.Column="0">
-                    <ui:TextBlock FontTypography="BodyStrong" Text="Phone" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                </Grid>
-                <Grid Grid.Column="1" Margin="10,10,10,10">
-                    <ui:TextBox PlaceholderText="Type something..." Name="PhoneTextBox"/>
-                </Grid>
+                <TextBlock Text="Phone" Foreground="White" VerticalAlignment="Center"/>
+                <TextBox Grid.Column="1" Text="Enter your phone number..." Name="PhoneTextBox" Margin="5,0"/>
             </Grid>
         </Grid>
-        <Grid Grid.Row="2" Margin="10,10,10,10">
-            <ui:Button Content="Cancel" Icon="Fluent24" HorizontalAlignment="Left" VerticalAlignment="Center" Name="CancelButton" Click="CancelButton_Click"/>
-            <ui:Button Content="Register" Icon="Fluent24" HorizontalAlignment="Center" VerticalAlignment="Center" Name="RegisterButton" Click="RegisterButton_Click"/>
-            <ui:Button Content="Back" Icon="Fluent24" HorizontalAlignment="Right" VerticalAlignment="Center" Name="BackButton" Click="BackButton_Click"/>
-        </Grid>
+
+        <!-- Action Buttons -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,20,0,0">
+            <Button Content="Cancel" Margin="20,0,20,0" Width="80" Name="CancelButton" Click="CancelButton_Click"/>
+            <Button Content="Register" Margin="20,0,20,0" Width="80" Name="RegisterButton" Click="RegisterButton_Click"/>
+            <Button Content="Back" Margin="20,0,20,0" Width="80" Name="BackButton" Click="BackButton_Click"/>
+        </StackPanel>
     </Grid>
 </Window>
