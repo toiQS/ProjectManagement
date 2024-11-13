@@ -66,7 +66,18 @@
                   Width="200">
                 <Button x:Name="EditInfoButton"
                         Content="Edit Information Personal"
-                        HorizontalAlignment="Center"/>
+                        HorizontalAlignment="Center"
+                        Margin="10"/>
+                <Button x:Name="CancelButton"
+                        Content="Cancel"
+                        HorizontalAlignment="Center"
+                        Visibility="Hidden"
+                        Margin="10"/>
+                <Button x:Name="SaveButton"
+                        Content="Save"
+                        HorizontalAlignment="Center"
+                        Visibility="Hidden"
+                        Margin="10"/>
             </Grid>
 
             <!-- User information details section -->

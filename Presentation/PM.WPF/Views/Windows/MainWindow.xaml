@@ -11,6 +11,7 @@
                  xmlns:helper="clr-namespace:PM.WPF.Helpers"
                  mc:Ignorable="d"
                  Title="MainWindow" Height="515" Width="890"
+                 WindowStyle="None"
                  WindowStartupLocation="CenterScreen">
 
     <Grid Background="#FF231E1E">
@@ -63,11 +64,12 @@
                     </ui:NavigationView.Header>
                     <ui:NavigationView.MenuItems>
                         <ui:NavigationViewItem Content="Home" Icon="{ui:SymbolIcon Home24}" TargetPageType="{x:Type mainWindow:HomePage}"/>
-                        <ui:NavigationViewItem Content="Recently" Icon="{ui:SymbolIcon Clock24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                        <ui:NavigationViewItem Content="Repository" Icon="{ui:SymbolIcon Book24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Recently" Icon="{ui:SymbolIcon Clock24}" TargetPageType="{x:Type mainWindow:RecentlyPage}"/>
+                        <ui:NavigationViewItem Content="Repository" Icon="{ui:SymbolIcon Book24}" TargetPageType="{x:Type mainWindow:RepositoryPage}"/>
                         <ui:NavigationViewItem Content="Profile" Icon="{ui:SymbolIcon BookContacts24}" TargetPageType="{x:Type mainWindow:ProfilePage}"/>
-                        <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type pages:HeaderFrame}"/>
-                        <ui:NavigationViewItem Content="Exit" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type pages:HeaderFrame}"/>
+                        <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type mainWindow:SettingPage}"/>
+                        <ui:NavigationViewItem Content="Thank you" Icon="{ui:SymbolIcon DocumentTableCube20}" TargetPageType="{x:Type mainWindow:ThankPage}"/>
+                        <ui:NavigationViewItem Content="Exit" Icon="{ui:SymbolIcon ArrowExit20}" TargetPageType="{x:Type mainWindow:LogOutPage}"/>
                     </ui:NavigationView.MenuItems>
                 </ui:NavigationView>
 
