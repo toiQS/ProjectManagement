@@ -11,62 +11,111 @@
       Title="RepositoryPage">
 
     <!-- Main layout grid for the page with margin -->
-    <Grid Margin="10">
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <!-- Row for project name -->
+            <RowDefinition Height="8*"/>
+            <!-- Row for member controls and list -->
+            <RowDefinition Height="37*"/>
+        </Grid.RowDefinitions>
 
-        <!-- ListView for displaying project items with project image and details -->
-        <ui:ListView x:Name="ProjectListView"
-                 Grid.Column="0"
-                 d:ItemsSource="{d:SampleData ItemCount=10}" 
-                 ItemsSource="{Binding ProjectItemList, Mode=TwoWay}" 
-                 SelectionMode="Single"
-                 SelectionChanged="ProjectListView_SelectionChanged">
+        <!-- Project Name Display -->
+        <Grid Grid.Row="0" Margin="10">
+            <ui:TextBlock x:Name="ProjectNameText" FontTypography="Title" Foreground="#FFFDF8F8" Text="Project Name"/>
+        </Grid>
 
-            <!-- ItemTemplate defining the appearance of each item in the ListView -->
-            <ui:ListView.ItemTemplate>
-                <DataTemplate DataType="{x:Type models:ProjectItem}">
+        <!-- Main Content -->
+        <Grid Grid.Row="1" Margin="10">
+            <Grid.ColumnDefinitions>
+                <!-- Left Column: Controls for member management -->
+                <ColumnDefinition Width="3*"/>
+                <!-- Right Column: Project list display -->
+                <ColumnDefinition Width="7*"/>
+            </Grid.ColumnDefinitions>
 
-                    <!-- Grid layout for each ListView item with rows and columns -->
-                    <Grid Margin="8,0">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="*" />
-                        </Grid.RowDefinitions>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
+            <!-- Project Management Controls -->
+            <Grid Grid.Column="0" Margin="10">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
 
-                        <!-- Ellipse element for displaying project image -->
-                        <Ellipse x:Name="ProjectImageEllipse"
-                             Grid.RowSpan="2"
-                             Width="32"
-                             Height="32"
-                             Margin="6"
-                             HorizontalAlignment="Center"
-                             VerticalAlignment="Center">
-                            <Ellipse.Fill>
-                                <ImageBrush ImageSource="{Binding ProjectImage}" />
-                            </Ellipse.Fill>
-                        </Ellipse>
+               
+                <!-- Action Buttons -->
+                <Grid Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                    <Button x:Name="AddButton" Content="Add New Project" Background="#FF3E3EFF" Margin="0,5,0,0" Click="AddButton_Click"/>
+                </Grid>
+                <Grid Grid.Row="4" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                    <Button x:Name="DeleteButton" Content="Delete Project" Background="#FF3E3EFF" Margin="0,5,0,0" Click="DeleteButton_Click"/>
+                </Grid>
+                <Grid Grid.Row="5" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10">
+                    <Button x:Name="UpdateButton" Content="Update Project" Background="#FF3E3EFF" Margin="0,5,0,0" Click="UpdateButton_Click"/>
+                </Grid>
+            </Grid>
 
-                        <!-- TextBlock for displaying project name -->
-                        <TextBlock x:Name="ProjectNameTextBlock"
-                               Grid.Row="0"
-                               Grid.Column="1"
-                               Margin="12,6,0,0"
-                               FontWeight="Bold"
-                               Text="{Binding ProjectName, Mode=OneWay}" />
+            <!-- Project List Display -->
+            <Grid Grid.Column="1" Margin="10">
+                <!-- ListView for displaying project items with project image and details -->
+                <ui:ListView x:Name="ProjectListView"
+                  Grid.Column="0"
+                  d:ItemsSource="{d:SampleData ItemCount=10}" 
+                  ItemsSource="{Binding ProjectItemList, Mode=TwoWay}" 
+                  SelectionMode="Single"
+                  SelectionChanged="ProjectListView_SelectionChanged">
 
-                        <!-- TextBlock for displaying project owner -->
-                        <TextBlock x:Name="ProjectOwnerTextBlock"
-                               Grid.Row="1"
-                               Grid.Column="1"
-                               Margin="12,0,0,6"
-                               Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
-                               Text="{Binding ProjectOwner, Mode=OneWay}" />
-                    </Grid>
-                </DataTemplate>
-            </ui:ListView.ItemTemplate>
-        </ui:ListView>
+                    <!-- ItemTemplate defining the appearance of each item in the ListView -->
+                    <ui:ListView.ItemTemplate>
+                        <DataTemplate DataType="{x:Type models:ProjectItem}">
+
+                            <!-- Grid layout for each ListView item with rows and columns -->
+                            <Grid Margin="8,0">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="*" />
+                                    <RowDefinition Height="*" />
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <!-- Ellipse element for displaying project image -->
+                                <Ellipse x:Name="ProjectImageEllipse"
+                      Grid.RowSpan="2"
+                      Width="32"
+                      Height="32"
+                      Margin="6"
+                      HorizontalAlignment="Center"
+                      VerticalAlignment="Center">
+                                    <Ellipse.Fill>
+                                        <ImageBrush ImageSource="{Binding ProjectImage}" />
+                                    </Ellipse.Fill>
+                                </Ellipse>
+
+                                <!-- TextBlock for displaying project name -->
+                                <TextBlock x:Name="ProjectNameTextBlock"
+                        Grid.Row="0"
+                        Grid.Column="1"
+                        Margin="12,6,0,0"
+                        FontWeight="Bold"
+                        Text="{Binding ProjectName, Mode=OneWay}" />
+
+                                <!-- TextBlock for displaying project owner -->
+                                <TextBlock x:Name="ProjectOwnerTextBlock"
+                        Grid.Row="1"
+                        Grid.Column="1"
+                        Margin="12,0,0,6"
+                        Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                        Text="{Binding ProjectOwner, Mode=OneWay}" />
+                            </Grid>
+                        </DataTemplate>
+                    </ui:ListView.ItemTemplate>
+                </ui:ListView>
+            </Grid>
+        </Grid>
     </Grid>
 </Page>

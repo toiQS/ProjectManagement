@@ -6,7 +6,7 @@ using System.Linq;
 using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
-#region design project entity
+
 namespace PM.Domain.DTOs
 {
     [Table(name:"Project")]
@@ -30,4 +30,3 @@ namespace PM.Domain.DTOs
         public bool IsAccessed { get; set; }
     }
 }
-#endregion
