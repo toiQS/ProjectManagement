@@ -33,4 +33,9 @@
     <Resource Include="Assets\wpfui-icon-1024.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Views\Pages\Pages of ProjectWindow\MemberPages\" />
+    <Folder Include="Views\Pages\Pages of ProjectWindow\TaskPages\" />
+  </ItemGroup>
+
 </Project>
