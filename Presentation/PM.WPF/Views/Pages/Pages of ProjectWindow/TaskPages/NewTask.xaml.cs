@@ -33,5 +33,10 @@ namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages
         {
 
         }
+
+        private void Memeber_AddingNewItem(object sender, AddingNewItemEventArgs e)
+        {
+
+        }
     }
 }
