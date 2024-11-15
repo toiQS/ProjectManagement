@@ -12,16 +12,21 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanPages
+namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.MemberPages
 {
     /// <summary>
-    /// Interaction logic for InfoDetailPlan.xaml
+    /// Interaction logic for AddMember.xaml
     /// </summary>
-    public partial class InfoDetailPlan : Window
+    public partial class AddMember : Window
     {
-        public InfoDetailPlan()
+        public AddMember()
         {
             InitializeComponent();
+        }
+
+        private void SaveClick(object sender, RoutedEventArgs e)
+        {
+
         }
 
         private void OnCloseClick(object sender, RoutedEventArgs e)

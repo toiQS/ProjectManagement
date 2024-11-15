@@ -12,21 +12,16 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanPages
+namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages
 {
     /// <summary>
-    /// Interaction logic for InfoDetailPlan.xaml
+    /// Interaction logic for InfoDetailTask.xaml
     /// </summary>
-    public partial class InfoDetailPlan : Window
+    public partial class InfoDetailTask : Window
     {
-        public InfoDetailPlan()
+        public InfoDetailTask()
         {
             InitializeComponent();
-        }
-
-        private void OnCloseClick(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }

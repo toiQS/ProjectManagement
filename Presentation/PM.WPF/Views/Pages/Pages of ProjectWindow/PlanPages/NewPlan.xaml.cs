@@ -23,5 +23,15 @@ namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanPages
         {
             InitializeComponent();
         }
+
+        private void OnCancelClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void btnSavePlan_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

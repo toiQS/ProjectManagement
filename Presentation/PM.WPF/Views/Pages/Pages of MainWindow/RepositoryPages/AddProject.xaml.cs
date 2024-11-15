@@ -27,24 +27,6 @@ namespace PM.WPF.Views.Pages.Pages_of_MainWindow.RepositoryPages
             InitializeComponent();
         }
 
-        private void ChooseImage_Click(object sender, RoutedEventArgs e)
-        {
-            // Tạo hộp thoại mở tệp
-            OpenFileDialog openFileDialog = new OpenFileDialog
-            {
-                Title = "Choose Project Image",
-                Filter = "Image Files|*.jpg;*.jpeg;*.png;*.bmp|All Files|*.*"
-            };
-
-            // Hiển thị hộp thoại và kiểm tra nếu người dùng đã chọn tệp
-            if (openFileDialog.ShowDialog() == true)
-            {
-                // Lấy đường dẫn của tệp được chọn
-                string selectedFilePath = openFileDialog.FileName;
-                ShowPath.Text = selectedFilePath;
-            }
-        }
-
         private void Ok_Click(object sender, RoutedEventArgs e)
         {
 

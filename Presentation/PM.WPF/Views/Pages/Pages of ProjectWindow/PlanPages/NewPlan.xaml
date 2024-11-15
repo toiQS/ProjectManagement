@@ -29,7 +29,7 @@
 
             <!-- Save Button -->
             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
-                <Button x:Name="btnSavePlan" Content="Save" Width="100" Margin="10" />
+                <Button x:Name="btnSavePlan" Content="Save" Width="100" Margin="10" Click="btnSavePlan_Click" />
                 <Button x:Name="btnCancelPlan" Content="Cancel" Width="100" Margin="10" Click="OnCancelClick"/>
             </StackPanel>
         </Grid>

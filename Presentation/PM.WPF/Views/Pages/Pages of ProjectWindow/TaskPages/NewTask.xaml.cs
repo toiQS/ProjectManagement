@@ -12,19 +12,24 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.PlanPages
+namespace PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages
 {
     /// <summary>
-    /// Interaction logic for InfoDetailPlan.xaml
+    /// Interaction logic for NewTask.xaml
     /// </summary>
-    public partial class InfoDetailPlan : Window
+    public partial class NewTask : Window
     {
-        public InfoDetailPlan()
+        public NewTask()
         {
             InitializeComponent();
         }
 
-        private void OnCloseClick(object sender, RoutedEventArgs e)
+        private void btnSaveUpdate_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void OnCancelClick(object sender, RoutedEventArgs e)
         {
 
         }

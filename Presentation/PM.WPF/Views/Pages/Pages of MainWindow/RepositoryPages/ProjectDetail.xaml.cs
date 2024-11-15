@@ -23,5 +23,10 @@ namespace PM.WPF.Views.Pages.Pages_of_MainWindow.RepositoryPages
         {
             InitializeComponent();
         }
+
+        private void OnCloseClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

@@ -1,0 +1,63 @@
+﻿<Window x:Class="PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages.InfoDetailTask"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        mc:Ignorable="d"
+        Title="InfoDetailTask" Height="350" Width="400">
+    <Grid Background="#FF231E1E">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <ui:TitleBar x:Name="TitleBar" Title="{Binding ViewModel.ApplicationTitle}" CloseWindowByDoubleClickOnIcon="True"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!-- Task Name -->
+            <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="Task Name" Foreground="White"/>
+                <TextBlock Text="{Binding TaskName}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+
+            <!-- Task Description -->
+            <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="Task Description" Foreground="White"/>
+                <TextBlock Text="{Binding TaskDescription}" FontSize="14" TextWrapping="Wrap" Foreground="White"/>
+            </StackPanel>
+
+            <!-- Task Status -->
+            <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="Task Status" Foreground="White"/>
+                <TextBlock Text="{Binding TaskStatus}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+
+            <!-- Creation, Start, and End Dates -->
+            <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="Creation Date" Foreground="White"/>
+                <TextBlock Text="{Binding CreateAt}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+            <StackPanel Grid.Row="4" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="Start Date" Foreground="White"/>
+                <TextBlock Text="{Binding StartAt}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+            <StackPanel Grid.Row="5" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Text="End Date" Foreground="White"/>
+                <TextBlock Text="{Binding EndAt}" FontSize="14" Foreground="White"/>
+            </StackPanel>
+        </Grid>
+    </Grid>
+</Window>
