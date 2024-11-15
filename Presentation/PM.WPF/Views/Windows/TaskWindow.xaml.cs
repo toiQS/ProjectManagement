@@ -1,4 +1,5 @@
 ﻿using PM.WPF.ViewModels;
+using PM.WPF.Views.Pages.Pages_of_ProjectWindow.TaskPages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +30,28 @@ namespace PM.WPF.Views.Windows
         public void AddContext()
         {
             DataContext = new TaskWindowViewModel();
+        }
+
+        private void SearchButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void AddButton_Click(object sender, RoutedEventArgs e)
+        {
+            NewTask newTask = new NewTask();
+            newTask.Show();
+        }
+
+        private void DeleteButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void UpdateButton_Click(object sender, RoutedEventArgs e)
+        {
+            UpdateTask updateTask = new UpdateTask();
+            updateTask.Show();
         }
     }
 }

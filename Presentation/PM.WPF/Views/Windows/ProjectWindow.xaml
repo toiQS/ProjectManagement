@@ -32,7 +32,7 @@
                     <ui:NavigationViewItem Content="Plan Management" Icon="{ui:SymbolIcon Calendar24}" TargetPageType="{x:Type projectWindow:PlanManagementPage}"/>
                     <ui:NavigationViewItem Content="View" Icon="{ui:SymbolIcon Eye24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
                     <ui:NavigationViewItem Content="Calendar" Icon="{ui:SymbolIcon CalendarLtr24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
-                    <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type projectWindow:DashboardPage}"/>
+                    <ui:NavigationViewItem Content="Setting" Icon="{ui:SymbolIcon Settings24}" TargetPageType="{x:Type projectWindow:SettingPage}"/>
                 </ui:NavigationView.MenuItems>
 
                 <!-- Frame for Page Content -->

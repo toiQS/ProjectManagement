@@ -1,4 +1,5 @@
-﻿using PM.WPF.ViewModels;
+﻿using PM.WPF.Models.task;
+using PM.WPF.ViewModels;
 using PM.WPF.Views.Pages.Pages_of_MainWindow.RepositoryPages;
 using System;
 using System.Collections.Generic;
@@ -41,12 +42,13 @@ namespace PM.WPF.Views.Pages.Pages_of_MainWindow
 
         private void DeleteButton_Click(object sender, RoutedEventArgs e)
         {
-
+            
         }
 
         private void UpdateButton_Click(object sender, RoutedEventArgs e)
         {
-
+            UpdateProject updateProject = new UpdateProject();
+            updateProject.Show();
         }
     }
 }
