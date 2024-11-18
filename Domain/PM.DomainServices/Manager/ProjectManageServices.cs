@@ -1,19 +1,6 @@
-﻿using Microsoft.AspNetCore.DataProtection.KeyManagement.Internal;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
-using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using Microsoft.IdentityModel.Tokens;
-using PM.Domain.DTOs;
+﻿using PM.Domain.DTOs;
 using PM.DomainServices.IManager;
 using PM.Persistence.IServices;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using System.Text;
-using System.Threading.Tasks;
 
 
 namespace PM.DomainServices.Manager
@@ -93,12 +80,9 @@ namespace PM.DomainServices.Manager
             {
                 var project = await _projectServices.GetProjectAsync(userProject.ProjectId);
                 if (project == null) continue; // Skip if project is not found
-
-                // Determine project status based on its access status
-                string status = project.IsAccessed ? "Active" : "Inactive";
-
+                
                 // Find the project owner
-                string ownerImage ="";
+                string ownerImage = "";
                 string ownerName = "";
                 var projectMembers = await _roleApplicationUserInProjectServices.GetRoleApplicationUserInProjectsByProjectId(userProject.ProjectId);
 
@@ -120,10 +104,77 @@ namespace PM.DomainServices.Manager
                 // Add project details to final result
                 finalResult.Add(new Dictionary<string, object>
                 {
+                    {"Id", project.Id },
                     { "ProjectName", project.ProjectName },
                     { "Owner", ownerName },
                     { "Image", ownerImage },
                     { "Message", "" }
+                });
+            }
+            return finalResult;
+        }
+
+        public async Task<List<Dictionary<string, object>>> GetListProjecUserIsOwner(string userId)
+        {
+            // Declare a list to store the final result with project details
+            var finalResult = new List<Dictionary<string, object>>();
+
+            // Validate input data
+            if (string.IsNullOrEmpty(userId))
+            {
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    { "Message", "Invalid user ID" }
+                });
+                return finalResult;
+            }
+
+            // Check if user exists in the system
+            var user = await _applicationUserServices.GetApplicationUserAsync(userId);
+            if (user == null)
+            {
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    { "Message", "User not found" }
+                });
+                return finalResult;
+            }
+
+            // Retrieve list of projects the user has joined
+            var userProjects = await _roleApplicationUserInProjectServices.GetProjectsUserJoined(userId);
+            if (userProjects == null || !userProjects.Any())
+            {
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    { "Message", "No projects found for the user" }
+                });
+                return finalResult;
+            }
+
+            // find project id which user is owner in role application user list
+            foreach(var item in userProjects)
+            {
+                if(await _roleInProjectServices.GetNameRoleByRoleId(item.RoleInProjectId)!="Owner")
+                {
+                    continue;
+                }
+                var project = await _projectServices.GetProjectAsync(item.ProjectId);
+                if (project.IsDeleted == true) continue;
+                if (project == null)
+                {
+                    finalResult.Add(new Dictionary<string, object>
+                    {
+                        {"Message","Having some issues when trying to get info project" }
+                    });
+                }
+
+                finalResult.Add(new Dictionary<string, object>
+                {
+                    {"Id",project.Id },
+                    {"Project Name", project.ProjectName },
+                    {"Owner", user.UserName},
+                    {"Image",user.PathImage},
+                    {"Message","" }
                 });
             }
             return finalResult;
@@ -250,23 +301,23 @@ namespace PM.DomainServices.Manager
                     return finalResult;
                 }
             }
-           
+
 
             // Generate a unique ID for the new project role
             var header = $"{new Random().Next(1, 100)}-{new Random().Next(1, 100)}-{new Random().Next(1, 100)}";
             var now = DateTime.Now;
 
-             //Initialize a project entity
+            //Initialize a project entity
             var project = new ProjectDTO
             {
-                 Id = $"1001-{header}-{now}",
+                Id = $"1001-{header}-{now}",
             };
             //Initialize a role of application user in this project
             var projectRoleDTO = new RoleApplicationUserInProjectDTO
             {
                 Id = $"1003-{header}-{now}",
                 ProjectId = project.Id,
-                RoleInProjectId = "1002-1",  
+                RoleInProjectId = "1002-1",
                 ApplicationUserId = userId
             };
 
@@ -553,7 +604,7 @@ namespace PM.DomainServices.Manager
             var finalResult = new Dictionary<string, string>();
 
             // Validate input data
-            if ( string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(projectDescription) || string.IsNullOrEmpty(projectVersion) || string.IsNullOrEmpty(projectStatus))
+            if (string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectName) || string.IsNullOrEmpty(projectDescription) || string.IsNullOrEmpty(projectVersion) || string.IsNullOrEmpty(projectStatus))
             {
                 finalResult.Add("Message", "Invalid input data");
                 return finalResult;

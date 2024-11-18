@@ -26,7 +26,7 @@ namespace PM.Persistence.Context
         public DbSet<TaskInPlanDTO> TaskInPlan { get; set; }
         #endregion
 
-        
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -46,7 +46,19 @@ namespace PM.Persistence.Context
              .HasForeignKey(p => p.RoleApplicationUserInProjectId)
              .OnDelete(DeleteBehavior.NoAction);
 
-
+            #region seeding data
+            // seeding application user
+            modelBuilder.Entity<ApplicationUser>().HasData(new ApplicationUser
+            {
+                FirstName = "nguyen",
+                LastName = "a",
+                FullName= "nguyen a",
+                Email = "nguyena@gmail.com",
+                Phone="0123456789",
+                Id = $"1011{DateTime.Now}10",
+                PathImage =""
+            });
+            #endregion
         }
 
     }
