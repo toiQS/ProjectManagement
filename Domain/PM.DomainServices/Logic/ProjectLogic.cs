@@ -1,11 +1,11 @@
 ﻿using PM.Domain.DTOs;
-using PM.DomainServices.IManager;
+using PM.DomainServices.ILogic;
 using PM.Persistence.IServices;
 
 
 namespace PM.DomainServices.Manager
 {
-    class ProjectManageServices : IProjectManageServices
+    class ProjectLogic : IProjectLogic
     {
         private readonly IProjectServices _projectServices;
         private readonly IApplicationUserServices _applicationUserServices;
@@ -19,7 +19,7 @@ namespace PM.DomainServices.Manager
         private readonly IMemberInTaskServices _memberInTaskServices;
         private readonly ITaskServices _taskServices;
 
-        public ProjectManageServices(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
+        public ProjectLogic(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
             IPlanServices planServices, IPlanInProjectServices planInProjectServices, IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices,
             ITaskInPlanServices taskInPlanServices, IMemberInTaskServices memberInTaskServices, ITaskServices taskServices)
         {

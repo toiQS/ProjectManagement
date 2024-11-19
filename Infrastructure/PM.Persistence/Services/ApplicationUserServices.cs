@@ -58,11 +58,17 @@ namespace PM.Persistence.Services
             }
         }
         
-        public async Task<bool> RegisterApplicationUser(ApplicationUser user, string password)
+        public async Task<bool> RegisterApplicationUser(string userName, string email, string password)
         {
             try
             {
-                await _userManager.CreateAsync(user);
+                var user = new ApplicationUser
+                {
+                    UserName = userName,
+                    Email = email,
+
+                };
+                await _userManager.CreateAsync(user,password);
                 await _userManager.AddToRoleAsync(user, "User");
                 return true;
             }
@@ -72,10 +78,15 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
-        public async Task<bool> RegisterApplicationAdmin(ApplicationUser admin, string password)
+        public async Task<bool> RegisterApplicationAdmin(string userName, string email, string password)
         {
             try
             {
+                var admin = new ApplicationUser()
+                {
+                    UserName =userName,
+                    Email =email,
+                };
                 await _userManager.CreateAsync(admin);
                 await _userManager.AddToRoleAsync(admin, "Admin");
                 return true;

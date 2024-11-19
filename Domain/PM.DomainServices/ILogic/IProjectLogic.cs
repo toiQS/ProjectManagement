@@ -1,7 +1,6 @@
-using PM.Domain.DTOs;
-namespace PM.DomainServices.IManager
+namespace PM.DomainServices.ILogic
 {
-    public interface IProjectManageServices
+    public interface IProjectLogic
     {
         public Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId);
         public Task<List<Dictionary<string,object>>> GetListAllListProjectByNameAndUserJoined(string userId, string projectName);
