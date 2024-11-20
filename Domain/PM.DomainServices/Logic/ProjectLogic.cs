@@ -19,6 +19,7 @@ namespace PM.DomainServices.Manager
         private readonly IMemberInTaskServices _memberInTaskServices;
         private readonly ITaskServices _taskServices;
 
+        #region constructor 
         public ProjectLogic(IProjectServices projectServices, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices applicationUserInProjectServices, IRoleInProjectServices roleInProjectServices,
             IPlanServices planServices, IPlanInProjectServices planInProjectServices, IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices,
             ITaskInPlanServices taskInPlanServices, IMemberInTaskServices memberInTaskServices, ITaskServices taskServices)
@@ -36,8 +37,9 @@ namespace PM.DomainServices.Manager
             _memberInTaskServices = memberInTaskServices;
             _taskInPlanServices = taskInPlanServices;
         }
+        #endregion
         // public async Task<IEnumerable<ProjectDTO>> GetListProjecUserJoined(string userId)
-
+        #region get list project user has joined
         public async Task<List<Dictionary<string, object>>> GetListProjecUserJoined(string userId)
         {
             // Declare a list to store the final result with project details
@@ -113,7 +115,9 @@ namespace PM.DomainServices.Manager
             }
             return finalResult;
         }
+        #endregion
 
+        #region get list project that user is owner
         public async Task<List<Dictionary<string, object>>> GetListProjecUserIsOwner(string userId)
         {
             // Declare a list to store the final result with project details
@@ -179,7 +183,9 @@ namespace PM.DomainServices.Manager
             }
             return finalResult;
         }
+        #endregion
 
+        #region get list project by project name and 
         public async Task<List<Dictionary<string, object>>> GetListAllListProjectByNameAndUserJoined(string userId, string projectName)
         {
             // Initialize the result list
@@ -254,7 +260,9 @@ namespace PM.DomainServices.Manager
             // Return the final list of project details
             return finalResult;
         }
+        #endregion
 
+        #region add new project and add role of user in this project
         public async Task<Dictionary<string, string>> AddProject(string userId, string projectName, string projectDescription, string projectVersion, string projectStatus)
         {
             // Declare a dictionary to store the final result
@@ -341,7 +349,9 @@ namespace PM.DomainServices.Manager
             finalResult.Add("Message", "Project created successfully");
             return finalResult;
         }
+        #endregion
 
+        #region update column is deleted of project
         public async Task<Dictionary<string, string>> TemporaryDeleteProject(string userId, string projectId)
         {
             // Initialize a dictionary to store the result message
@@ -402,7 +412,9 @@ namespace PM.DomainServices.Manager
 
             return finalResult;
         }
+        #endregion
 
+        #region delele forever project 
         public async Task<Dictionary<string, string>> PermanentDeleteProject(string userId, string projectId)
         {
             ///kiểm tra tính hợp lệ của dữ liệu đầu vào
@@ -598,6 +610,9 @@ namespace PM.DomainServices.Manager
             }
             return finalResult;
         }
+        #endregion
+
+        #region update info project
         public async Task<Dictionary<string, string>> EditInformationProject(string userId, string projectId, string projectName, string projectDescription, string projectVersion, string projectStatus)
         {
             // Initialize result dictionary to store response messages
@@ -687,5 +702,7 @@ namespace PM.DomainServices.Manager
 
             return finalResult;
         }
+        #endregion
+
     }
 }

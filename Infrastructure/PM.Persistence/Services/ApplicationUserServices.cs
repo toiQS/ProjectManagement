@@ -20,6 +20,7 @@ namespace PM.Persistence.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         public readonly IRepository<ApplicationUser> _repository;
+        #region constructor
         public ApplicationUserServices(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
             SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider, IRepository<ApplicationUser> repository)
         {
@@ -29,6 +30,8 @@ namespace PM.Persistence.Services
             _signInManager = signInManager;
             _repository = repository;
         }
+        #endregion
+        #region login
         public async Task<bool> LoginServices(string email, string password)
         {
             try
@@ -46,6 +49,8 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
+        #endregion
+        #region logout
         public async Task Logout()
         {
             try
@@ -57,7 +62,8 @@ namespace PM.Persistence.Services
                 Console.WriteLine(ex.Message);
             }
         }
-        
+        #endregion
+        #region register user
         public async Task<bool> RegisterApplicationUser(string userName, string email, string password)
         {
             try
@@ -78,6 +84,8 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
+        #endregion
+        #region register admin
         public async Task<bool> RegisterApplicationAdmin(string userName, string email, string password)
         {
             try
@@ -97,6 +105,8 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
+        #endregion
+        #region get user by user id
         public async Task<ApplicationUser> GetApplicationUserAsync(string id)
         {
             try
@@ -111,6 +121,8 @@ namespace PM.Persistence.Services
                 return new ApplicationUser();
             }
         }
+        #endregion
+        #region get role by role id 
         public async Task<IdentityRole<string>> GetRoleAsync(string roleId)
         {
             try
@@ -124,6 +136,8 @@ namespace PM.Persistence.Services
             }
 
         }
+        #endregion
+        #region get all user
         public async Task<IEnumerable<ApplicationUser>> GetAllUser()
         {
             try
@@ -136,5 +150,6 @@ namespace PM.Persistence.Services
                 return Enumerable.Empty<ApplicationUser>();
             }
         }
+        #endregion
     }
 }

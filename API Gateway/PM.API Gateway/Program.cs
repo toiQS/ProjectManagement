@@ -1,19 +1,8 @@
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
-using PM.Infrastructure.Configurations;
-using PM.Persistence.Configurations;
-using PM.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectString"));
-});
 
-builder.Services.AddPersistenceServiceRegistration(builder.Configuration);
-builder.Services.AddThirdPartyServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -33,54 +22,7 @@ using (var scope = app.Services.CreateScope())
     }
 
 }
-using (var scope = app.Services.CreateScope())
-{
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    var email = "admin@admin.com";
-    var name = "Admin";
-    var password = "Admin@1234";
-    try
-    {
-        var identityUser = new ApplicationUser
-        {
-            Id = "user-default",
-            UserName = name,
-            Email = email,
-            EmailConfirmed = false,
-        };
-        await userManager.CreateAsync(identityUser, password);
-        await userManager.AddToRoleAsync(identityUser, "Admin");
-    }
-    catch(Exception ex)
-    {
-        Console.WriteLine(ex.ToString());
-        Console.WriteLine(ex.StackTrace.ReplaceLineEndings());
-    }
-}
-using (var scope = app.Services.CreateScope())
-{
-    var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-    var email = "user1@user1.com";
-    var name = "user";
-    var password = "User@1234";
-    try
-    {
-        var identityUser = new ApplicationUser
-        {
-            Id = "user-1",
-            UserName = name,
-            Email = email,
-            EmailConfirmed = false,
-        };
-        await userManager.CreateAsync(identityUser, password);
-        await userManager.AddToRoleAsync(identityUser, "User");
-    }
-    catch (Exception ex)
-    {
-        Console.WriteLine(ex.ToString());
-        Console.WriteLine(ex.StackTrace.ReplaceLineEndings());
-    }
-}
+
 
 
 app.Run();
