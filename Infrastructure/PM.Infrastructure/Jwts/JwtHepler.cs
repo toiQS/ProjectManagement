@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace PM.Infrastructure.Jwts
 {
-    public class JwtHelper
+    public class JwtHelper : IJwtHelper
     {
         private readonly IConfiguration _configuration;
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PM.Infrastructure.Loggers
 {
-    public class LoggerHelper<T>
+    public class LoggerHelper<T>: ILoggerHelper<T>
     {
         private readonly ILogger<T> _logger;
 
