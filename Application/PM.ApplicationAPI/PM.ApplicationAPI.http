@@ -1,0 +1,6 @@
+@PM.ApplicationAPI_HostAddress = http://localhost:5090
+
+GET {{PM.ApplicationAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

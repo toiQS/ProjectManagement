@@ -12,10 +12,8 @@ namespace PM.Persistence.IServices
     {
         public Task<bool> RegisterApplicationUser(string userName, string email, string password);
         public Task<bool> RegisterApplicationAdmin(string userName, string email, string password);
-        public Task<ApplicationUser> GetApplicationUserAsync(string id);
-        public Task<string> GetRoleApplicatonUserByUserIdAsync(string userId);
-        public Task<IEnumerable<ApplicationUser>> GetAllUser();
         public Task<ApplicationUser> LoginServices(string email, string password);
+        public Task<string> GetRoleApplicatonUserByUserIdAsync(string userId);
         public Task Logout();
 
     }

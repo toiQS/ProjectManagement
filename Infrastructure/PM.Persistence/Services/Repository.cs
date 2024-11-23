@@ -25,7 +25,7 @@ namespace PM.Persistence.Services
                 return new List<T>();
             }
         }
-        public async Task<T> GetValueAsync(string Id)
+        public async Task<T> GetValueByPrimaryKeyAsync(string Id)
         {
             try
             {
