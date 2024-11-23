@@ -2,6 +2,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using PM.Infrastructure.Jwts;
+using PM.Infrastructure.Loggers;
 using System.Text;
 
 namespace PM.Infrastructure.Configurations
@@ -14,7 +16,8 @@ namespace PM.Infrastructure.Configurations
         }
         public static void AddJwtServices(this IServiceCollection services, IConfiguration configuration)
         {
-            
+            services.AddScoped<IJwtHelper, JwtHelper>();
+            services.AddScoped(typeof(ILoggerHelper<>), typeof(LoggerHelper<>));
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;

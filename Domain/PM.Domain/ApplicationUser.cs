@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PM.Domain
 {
     [Table(name: "Application User")]
-    public class ApplicationUser : IdentityUser<string>
+    public class ApplicationUser : IdentityUser
     {
         [Column(name: "First Name")]
         public string FirstName { get; set; } = string.Empty;
