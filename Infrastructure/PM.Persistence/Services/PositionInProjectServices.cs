@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -13,13 +13,13 @@ namespace PM.Persistence.Services
     public class PositionInProjectServices : IPositionInProjectServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<PostitionInProjectDTO> _repository;
-        public PositionInProjectServices(ApplicationDbContext context, IRepository<PostitionInProjectDTO> repository)
+        private readonly IRepository<PostitionInProject> _repository;
+        public PositionInProjectServices(ApplicationDbContext context, IRepository<PostitionInProject> repository)
         {
             _context = context;
             _repository = repository;
         }
-        public async Task<bool> AddAsync(PostitionInProjectDTO postitionInProjectDTO)
+        public async Task<bool> AddAsync(PostitionInProject postitionInProjectDTO)
         {
             return await _repository.AddAsync(postitionInProjectDTO);
         }
@@ -27,19 +27,19 @@ namespace PM.Persistence.Services
         {
             return _repository.DeleteAsync(Id);
         }
-        public async Task<bool> UpdateAsync(string Id, PostitionInProjectDTO postitionInProjectDTO)
+        public async Task<bool> UpdateAsync(string Id, PostitionInProject postitionInProjectDTO)
         {
             return await _repository.UpdateAsync(Id, postitionInProjectDTO);
         }
-        public Task<IEnumerable<PostitionInProjectDTO>> GetAllAsync()
+        public Task<IEnumerable<PostitionInProject>> GetAllAsync()
         {
             return _repository.GetAllAsync();
         }
-        public Task<PostitionInProjectDTO> GetPostitionInProjectById(string Id)
+        public Task<PostitionInProject> GetPostitionInProjectById(string Id)
         {
             return _repository.GetValueAsync(Id);
         }
-        public async Task<IEnumerable<PostitionInProjectDTO>> GetAllPositionInProjectByProjectId(string projectId)
+        public async Task<IEnumerable<PostitionInProject>> GetAllPositionInProjectByProjectId(string projectId)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace PM.Persistence.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Enumerable.Empty<PostitionInProjectDTO>();
+                return Enumerable.Empty<PostitionInProject>();
             }
         }
     }

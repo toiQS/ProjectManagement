@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -13,13 +13,13 @@ namespace PM.Persistence.memberInTask
     public class MemberInTaskServices : IMemberInTaskServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<MemberInTaskDTO> _repository;
-        public MemberInTaskServices(ApplicationDbContext context, IRepository<MemberInTaskDTO> repository)
+        private readonly IRepository<MemberInTask> _repository;
+        public MemberInTaskServices(ApplicationDbContext context, IRepository<MemberInTask> repository)
         {
             _context = context;
             _repository = repository;
         }
-        public async Task<bool> AddAsync(MemberInTaskDTO memberInTaskDTO)
+        public async Task<bool> AddAsync(MemberInTask memberInTaskDTO)
         {
             return await _repository.AddAsync(memberInTaskDTO);
         }
@@ -27,19 +27,19 @@ namespace PM.Persistence.memberInTask
         {
             return await _repository.DeleteAsync(id);
         }
-        public async Task<bool> UpdateAsync(string Id, MemberInTaskDTO memberInTaskDTO)
+        public async Task<bool> UpdateAsync(string Id, MemberInTask memberInTaskDTO)
         {
             return await _repository.UpdateAsync(Id, memberInTaskDTO);    
         }
-        public async Task<IEnumerable<MemberInTaskDTO>> GetAllAsync()
+        public async Task<IEnumerable<MemberInTask>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
-        public async Task<MemberInTaskDTO> GetMemberInTaskASync(string id)
+        public async Task<MemberInTask> GetMemberInTaskASync(string id)
         {
             return await _repository.GetValueAsync(id);
         }
-        public async Task<IEnumerable<MemberInTaskDTO>> GetAllMemberInTaskByPositionWorkOfMemberId(string id)
+        public async Task<IEnumerable<MemberInTask>> GetAllMemberInTaskByPositionWorkOfMemberId(string id)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace PM.Persistence.memberInTask
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Enumerable.Empty<MemberInTaskDTO>();
+                return Enumerable.Empty<MemberInTask>();
             }
         }
     }

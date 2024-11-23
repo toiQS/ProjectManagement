@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -13,17 +13,17 @@ namespace PM.Persistence.Services
     public class TaskInPlanServices : ITaskInPlanServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<TaskInPlanDTO> _repository;
-        public TaskInPlanServices(ApplicationDbContext context, IRepository<TaskInPlanDTO> repository)
+        private readonly IRepository<TaskInPlan> _repository;
+        public TaskInPlanServices(ApplicationDbContext context, IRepository<TaskInPlan> repository)
         {
             _context = context;
             _repository = repository;
         }
-        public async Task<bool> AddAsync(TaskInPlanDTO task)
+        public async Task<bool> AddAsync(TaskInPlan task)
         {
             return await _repository.AddAsync(task);
         }
-        public async Task<bool> UpdateAsync(string id, TaskInPlanDTO taskInPlanDTO)
+        public async Task<bool> UpdateAsync(string id, TaskInPlan taskInPlanDTO)
         {
             return await _repository.UpdateAsync(id, taskInPlanDTO);
         }
@@ -31,15 +31,15 @@ namespace PM.Persistence.Services
         {
             return await _repository.DeleteAsync(Id);
         }
-        public async Task<IEnumerable<TaskInPlanDTO>> GetAllTasks()
+        public async Task<IEnumerable<TaskInPlan>> GetAllTasks()
         {
             return await _repository.GetAllAsync();
         }
-        public async Task<TaskInPlanDTO> GetTaskInPlanById(string Id)
+        public async Task<TaskInPlan> GetTaskInPlanById(string Id)
         {
             return await _repository.GetValueAsync(Id);
         }
-        public async Task<IEnumerable<TaskInPlanDTO>> GetAllTaskInPlanByPlanId(string planId)
+        public async Task<IEnumerable<TaskInPlan>> GetAllTaskInPlanByPlanId(string planId)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace PM.Persistence.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return Enumerable.Empty<TaskInPlanDTO>();
+                return Enumerable.Empty<TaskInPlan>();
             }
         }
     }

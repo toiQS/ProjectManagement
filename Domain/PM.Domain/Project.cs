@@ -7,16 +7,16 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Project")]
-    public class ProjectDTO 
+    [Table(name: "Project")]
+    public class Project
     {
         [Key]
-        public string Id { get; set; }  
+        public string Id { get; set; }
         [Column(name: "Project Name")]
         public string ProjectName { get; set; } = string.Empty;
-        [Column(name:"Project Description")]
+        [Column(name: "Project Description")]
         public string ProjectDescription { get; set; } = string.Empty;
         [Column(name: "Project Version")]
         public string ProjectVersion { get; set; } = string.Empty;
@@ -24,9 +24,9 @@ namespace PM.Domain.DTOs
         public string Projectstatus { get; set; } = string.Empty;
         [Column(name: "Create At")]
         public string CreateAt { get; set; }
-        [Column(name:"Is Deleted")]
+        [Column(name: "Is Deleted")]
         public bool IsDeleted { get; set; }
-        [Column(name:"Is Accessed")]
+        [Column(name: "Is Accessed")]
         public bool IsAccessed { get; set; }
     }
 }

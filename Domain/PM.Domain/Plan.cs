@@ -6,24 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Task")]
-    public class TaskDTO 
+    [Table(name: "Plan")]
+    public class Plan
     {
         [Key]
         public string Id { get; set; }
-        [Column(name: "Task Name")]
-        public string TaskName { get; set; } = string.Empty;
-        [Column(name: "Task Description")]
-        public string TaskDescription { get; set; } = string.Empty;
-        [Column(name: "Task Status")]
-        public string TaskStatus { get; set; } = string.Empty;
+        [Column(name: "Plan Name")]
+        public string PlanName { get; set; } = string.Empty;
         [Column(name: "Create At")]
         public DateTime CreateAt { get; set; }
         [Column(name: "Start At")]
         public DateTime StartAt { get; set; }
-        [Column(name:"End At")]
+        [Column(name: "End At")]
         public DateTime EndAt { get; set; }
     }
 }

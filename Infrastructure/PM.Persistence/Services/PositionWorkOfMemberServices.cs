@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -13,13 +13,13 @@ namespace PM.Persistence.Services
     public class PositionWorkInProjectServices : IPositionWorkOfMemberServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<PositionWorkOfMemberDTO> _repository;
-        public PositionWorkInProjectServices(ApplicationDbContext context, IRepository<PositionWorkOfMemberDTO> repository)
+        private readonly IRepository<PositionWorkOfMember> _repository;
+        public PositionWorkInProjectServices(ApplicationDbContext context, IRepository<PositionWorkOfMember> repository)
         {
             _repository = repository;
             _context = context;
         }
-        public async Task<bool> AddAsync(PositionWorkOfMemberDTO positionWorkOfMemberDTO)
+        public async Task<bool> AddAsync(PositionWorkOfMember positionWorkOfMemberDTO)
         {
             return await _repository.AddAsync(positionWorkOfMemberDTO);
         }
@@ -27,19 +27,19 @@ namespace PM.Persistence.Services
         {
             return await _repository.DeleteAsync(id);
         }
-        public async Task<bool> UpdateAsync(string id, PositionWorkOfMemberDTO positionWorkOfMemberDTO)
+        public async Task<bool> UpdateAsync(string id, PositionWorkOfMember positionWorkOfMemberDTO)
         {
             return await _repository.UpdateAsync(id, positionWorkOfMemberDTO);
         }
-        public async Task<IEnumerable<PositionWorkOfMemberDTO>> GetAllAsync()
+        public async Task<IEnumerable<PositionWorkOfMember>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
-        public async Task<PositionWorkOfMemberDTO> GetPositionWorkOfMemberById(string id)
+        public async Task<PositionWorkOfMember> GetPositionWorkOfMemberById(string id)
         {
             return await _repository.GetValueAsync(id);
         }
-        public async Task<PositionWorkOfMemberDTO> GetPositionWorkOfMemberByRoleApplicationUserIdAndPositionInProjectId(string userId, string positionWorkOfMemberId)
+        public async Task<PositionWorkOfMember> GetPositionWorkOfMemberByRoleApplicationUserIdAndPositionInProjectId(string userId, string positionWorkOfMemberId)
         {
             try
             {
@@ -48,7 +48,7 @@ namespace PM.Persistence.Services
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new PositionWorkOfMemberDTO();
+                return new PositionWorkOfMember();
             }
         }        
     }

@@ -6,20 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Member In Task")]
-    public class MemberInTaskDTO
+    [Table(name: "Member In Task")]
+    public class MemberInTask
     {
         [Key]
         public string Id { get; set; }
         [ForeignKey(nameof(PositionWorkOfMember))]
-        [Column(name:"Member Id")]
+        [Column(name: "Member Id")]
         public string PositionWorkOfMemberId { get; set; } = string.Empty;
-        public virtual PositionWorkOfMemberDTO PositionWorkOfMember { get; set; }
+        public virtual PositionWorkOfMember PositionWorkOfMember { get; set; }
         [ForeignKey(nameof(TaskDTO))]
-        [Column(name:"Task Id")]
-        public string TaskId { get; set; } = string.Empty;  
+        [Column(name: "Task Id")]
+        public string TaskId { get; set; } = string.Empty;
         public virtual TaskDTO TaskDTO { get; set; }
     }
 }

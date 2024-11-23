@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Hosting;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -13,13 +13,13 @@ namespace PM.Persistence.Services
     public class RoleInProjectServices : IRoleInProjectServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<RoleInProjectDTO> _repository;
-        public RoleInProjectServices(ApplicationDbContext context, IRepository<RoleInProjectDTO> repository)
+        private readonly IRepository<RoleInProject> _repository;
+        public RoleInProjectServices(ApplicationDbContext context, IRepository<RoleInProject> repository)
         {
             _context = context;
             _repository = repository;
         }
-        public async Task<bool> AddAsync(RoleInProjectDTO roleInProject)
+        public async Task<bool> AddAsync(RoleInProject roleInProject)
         {
             return await _repository.AddAsync(roleInProject);
         }
@@ -27,7 +27,7 @@ namespace PM.Persistence.Services
         {
             return await _repository.DeleteAsync(Id);
         }
-        public async Task<bool> UpdateAsync(string id, RoleInProjectDTO roleInProjectDTO)
+        public async Task<bool> UpdateAsync(string id, RoleInProject roleInProjectDTO)
         {
             return await _repository.UpdateAsync(id, roleInProjectDTO);
         }
@@ -45,11 +45,11 @@ namespace PM.Persistence.Services
                 return string.Empty;
             }
         }
-        public async Task<IEnumerable<RoleInProjectDTO>> GetAllAsync()
+        public async Task<IEnumerable<RoleInProject>> GetAllAsync()
         {
             return await _repository.GetAllAsync();
         }
-        public async Task<RoleInProjectDTO> GetRoleInProjectByRoleId(string Id)
+        public async Task<RoleInProject> GetRoleInProjectByRoleId(string Id)
         {
             return await _repository.GetValueAsync(Id);
         }

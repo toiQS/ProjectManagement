@@ -262,7 +262,7 @@ namespace PM.Persistence.Migrations
                         });
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.MemberInTaskDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.MemberInTask", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -286,7 +286,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Member In Task");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PlanDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.Plan", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -313,7 +313,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Plan");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PlanInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PlanInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -337,7 +337,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Plan In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMemberDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMember", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -361,7 +361,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Position Work Of Member");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -388,7 +388,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Position In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.ProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.Project", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -431,7 +431,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -462,7 +462,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Role Application User In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.RoleInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -519,7 +519,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Task");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlanDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlan", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -594,9 +594,9 @@ namespace PM.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.MemberInTaskDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.MemberInTask", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PositionWorkOfMemberDTO", "PositionWorkOfMember")
+                    b.HasOne("PM.Domain.DTOs.PositionWorkOfMember", "PositionWorkOfMember")
                         .WithMany()
                         .HasForeignKey("PositionWorkOfMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -613,15 +613,15 @@ namespace PM.Persistence.Migrations
                     b.Navigation("TaskDTO");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PlanInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PlanInProject", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PlanDTO", "Plan")
+                    b.HasOne("PM.Domain.DTOs.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.ProjectDTO", "Project")
+                    b.HasOne("PM.Domain.DTOs.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -632,15 +632,15 @@ namespace PM.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMemberDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMember", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PostitionInProjectDTO", "PostitionInProject")
+                    b.HasOne("PM.Domain.DTOs.PostitionInProject", "PostitionInProject")
                         .WithMany()
                         .HasForeignKey("PostitionInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.RoleApplicationUserInProjectDTO", "RoleApplicationUserInProject")
+                    b.HasOne("PM.Domain.DTOs.RoleApplicationUserInProject", "RoleApplicationUserInProject")
                         .WithMany()
                         .HasForeignKey("RoleApplicationUserInProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -651,9 +651,9 @@ namespace PM.Persistence.Migrations
                     b.Navigation("RoleApplicationUserInProject");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProject", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.ProjectDTO", "Project")
+                    b.HasOne("PM.Domain.DTOs.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -662,7 +662,7 @@ namespace PM.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProjectDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProject", b =>
                 {
                     b.HasOne("PM.Domain.DTOs.ApplicationUser", "ApplicationUser")
                         .WithMany()
@@ -670,13 +670,13 @@ namespace PM.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.ProjectDTO", "ProjectDTO")
+                    b.HasOne("PM.Domain.DTOs.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.RoleInProjectDTO", "RoleInProject")
+                    b.HasOne("PM.Domain.DTOs.RoleInProject", "RoleInProject")
                         .WithMany()
                         .HasForeignKey("RoleInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -684,14 +684,14 @@ namespace PM.Persistence.Migrations
 
                     b.Navigation("ApplicationUser");
 
-                    b.Navigation("ProjectDTO");
+                    b.Navigation("Project");
 
                     b.Navigation("RoleInProject");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlanDTO", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlan", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PlanDTO", "Plan")
+                    b.HasOne("PM.Domain.DTOs.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)

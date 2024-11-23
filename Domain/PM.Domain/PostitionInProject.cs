@@ -6,20 +6,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Position In Project")]
-    public class PostitionInProjectDTO 
+    [Table(name: "Position In Project")]
+    public class PostitionInProject
     {
         [Key]
-        public string Id {  get; set; }
+        public string Id { get; set; }
         [Column(name: "Position Name")]
         public string PositionName { get; set; } = string.Empty;
         [Column(name: "Position Description")]
         public string PositionDescription { get; set; } = string.Empty;
         [ForeignKey(nameof(Project))]
-        [Column(name:"Project Id")]
+        [Column(name: "Project Id")]
         public string ProjectId { get; set; } = string.Empty;
-        public virtual ProjectDTO Project { get; set; }
+        public virtual Project Project { get; set; }
     }
 }

@@ -14,6 +14,7 @@
 - 1011 application user
 - 
 
+
 ```
 Project_Management
 ├─ .git
@@ -49,7 +50,8 @@ Project_Management
 │  │  │  ├─ bf49632a389226b9c06e13c0321043151946a2
 │  │  │  └─ 8f0331f9d7e273a6f40757872e9d495d5cec13
 │  │  ├─ 16
-│  │  │  └─ 33576247e81619cfdf809a12928f8c3874fa4e
+│  │  │  ├─ 33576247e81619cfdf809a12928f8c3874fa4e
+│  │  │  └─ 4eaab2ee92f49c6ccee2da6dba8fd3aa3c3fb2
 │  │  ├─ f2
 │  │  │  └─ 6f93c0954e1d33e24b6f76bc3d6ca948c8de15
 │  │  ├─ ee
@@ -61,7 +63,8 @@ Project_Management
 │  │  ├─ e6
 │  │  │  └─ 9de29bb2d1d6434b8b29ae775ad8c2e48c5391
 │  │  ├─ ca
-│  │  │  └─ e592efbc55fe14263e3c83621eba756554abd5
+│  │  │  ├─ e592efbc55fe14263e3c83621eba756554abd5
+│  │  │  └─ 12aee94b4d4e71210a587f3f4ff12594f2b27f
 │  │  ├─ b7
 │  │  │  └─ 01daefa71c1c22b75c3050ae4ccc68c65574f3
 │  │  ├─ 47
@@ -71,13 +74,15 @@ Project_Management
 │  │  ├─ b8
 │  │  │  └─ 19f9f6eb33481788cac22f235892dace6feff9
 │  │  ├─ 31
-│  │  │  └─ ed6100a98fe1fdde87d54804f44bd747404177
+│  │  │  ├─ ed6100a98fe1fdde87d54804f44bd747404177
+│  │  │  └─ 8e745c2537c713edb885ee286cbbd25b8ae8e3
 │  │  ├─ 84
 │  │  │  └─ 232646150316e8e4eaec7595ddd3afce920470
 │  │  ├─ 24
 │  │  │  └─ 199955f2cee6c2e56dbd23365adf205234864f
 │  │  ├─ da
-│  │  │  └─ 749e8636afc6354052cda77020a34c2ce40731
+│  │  │  ├─ 749e8636afc6354052cda77020a34c2ce40731
+│  │  │  └─ 20f7e2911b1e7a2b2dd27f3081cd437705d604
 │  │  ├─ 40
 │  │  │  └─ 1541af2b8c005369fd7821ab20a2a8964b6b3c
 │  │  ├─ 25
@@ -86,8 +91,79 @@ Project_Management
 │  │  │  └─ 9defdb02e3949925574c93f98bca08784e0bf7
 │  │  ├─ bb
 │  │  │  └─ e0689bd567b0535b386dcc93860d85d83bbb14
-│  │  └─ d8
-│  │     └─ 1e47d46f624ca082a0af918743093e96adf63f
+│  │  ├─ d8
+│  │  │  └─ 1e47d46f624ca082a0af918743093e96adf63f
+│  │  ├─ 3d
+│  │  │  └─ 8c293ad3926ded833deb0212282f93eac21bb1
+│  │  ├─ 19
+│  │  │  ├─ 981ff8d1a5b327e39917a34161aaf65eba9068
+│  │  │  └─ a5c27232d9e57bb7b6ea37b42cfcc76c4b533d
+│  │  ├─ b9
+│  │  │  └─ b83e0c6bbc14299afd74eb5b228b4c7304a9a3
+│  │  ├─ 42
+│  │  │  └─ 83e4bf19200ab04779c8f224429195897e69d3
+│  │  ├─ 07
+│  │  │  └─ a689b55cfffb1e532c71d5766460524adc71f0
+│  │  ├─ 4a
+│  │  │  └─ 6a751adaaf431335629fe5e7c88c7d52a6596e
+│  │  ├─ 0b
+│  │  │  └─ 390df4131dcf736d0b444f6ece9b6e31ce8109
+│  │  ├─ 9c
+│  │  │  ├─ 331a3a171f24e33541635f1fb3968ef66b3907
+│  │  │  └─ 8d7364f04fe1889176811a1d727e9732cb6f00
+│  │  ├─ 3c
+│  │  │  └─ 9cd950c295e04f3a3474b8bde183c608ec6c7e
+│  │  ├─ 71
+│  │  │  ├─ e9ce1387a3411029978e25940542ec8dae9465
+│  │  │  └─ 98055a9e2ff03c1065cba74c6fdd74b385cfad
+│  │  ├─ 8b
+│  │  │  └─ 3c7d0d2fca36c1b32e94e59c817063872955ed
+│  │  ├─ 55
+│  │  │  └─ f69ee47d6cb2d30379285618a124a5a93abdf8
+│  │  ├─ f0
+│  │  │  └─ 6ef106da4034a6a04da14cc36d857c1171b9ea
+│  │  ├─ 6f
+│  │  │  └─ 3d085b0227ef88ab9e52f272110a1f09f56d1a
+│  │  ├─ 59
+│  │  │  └─ 6f13a1f4b8e98f11a2eca750f93fcaa61a1737
+│  │  ├─ d3
+│  │  │  └─ db6b7012d72ef88ac19fde01b8c07e87ab5913
+│  │  ├─ af
+│  │  │  └─ d50321d92b9fdaad5f4fe9afe99710f5832d57
+│  │  ├─ 2c
+│  │  │  └─ bf3e6d24b8a7f54eb2391ff23018e351550ce6
+│  │  ├─ d0
+│  │  │  └─ 6a681638f0b6b81321ac77ef59ae8761aa5cf3
+│  │  ├─ 9e
+│  │  │  └─ 03c484376686725edaf03937bc08cc86c00e23
+│  │  ├─ 5a
+│  │  │  └─ 19bdf55cf713b280b87d78aa269f88f6bbb408
+│  │  ├─ f7
+│  │  │  └─ fa2d22ae18ab3a563c72c218ed56c415a73609
+│  │  ├─ 99
+│  │  │  └─ c74b302ac9d2e66918323e6e5c32ee09ebe7e4
+│  │  ├─ c2
+│  │  │  └─ 005f5f752d76e628448c3475714d7f5cb61b2b
+│  │  ├─ 85
+│  │  │  └─ 6121ff7d71732f6fdc94852ab5a91e9ef12f7f
+│  │  ├─ 09
+│  │  │  └─ d0811386e71e478b770becc497255bfe4b3a3f
+│  │  ├─ 90
+│  │  │  └─ 800879192cddde1974349e95168bb1b73077f6
+│  │  ├─ a3
+│  │  │  └─ eca5a1012306f63c6c9266727e77269979eec2
+│  │  ├─ ff
+│  │  │  └─ ca133a8a4571b63dfad44507914b84adbc6dd0
+│  │  ├─ bc
+│  │  │  └─ 8b8c296ed726a22358ede1c7fee1f1da9f50db
+│  │  ├─ 2a
+│  │  │  └─ 9e82f52454f1a852155b2f54e7bcc8648810c8
+│  │  ├─ 01
+│  │  │  └─ bc189cc16e4eaacf5f3e8d07f8ab7628bf63ee
+│  │  ├─ 48
+│  │  │  └─ ff3c6c17c359bdb56b96f444a8b8ad816875e4
+│  │  └─ 1c
+│  │     └─ 062f9d31a940d86220ea66f8b4f91e840c337e
 │  ├─ refs
 │  │  ├─ heads
 │  │  │  └─ master
@@ -101,7 +177,8 @@ Project_Management
 │  ├─ FETCH_HEAD
 │  ├─ config
 │  ├─ COMMIT_EDITMSG
-│  └─ index
+│  ├─ index
+│  └─ ORIG_HEAD
 ├─ .gitattributes
 ├─ .gitignore
 ├─ API Gateway
@@ -118,17 +195,17 @@ Project_Management
 │  │  ├─ appsettings.Development.json
 │  │  └─ appsettings.json
 │  └─ PM.Application
-│     ├─ PM.ApplicationServices.csproj
 │     ├─ Properties
 │     │  └─ launchSettings.json
 │     ├─ Protos
 │     │  └─ greet.proto
 │     ├─ Services
-│     │  └─ GreeterService.cs
+│     │  ├─ GreeterService.cs
+│     │  └─ AuthFlowServices.cs
 │     ├─ appsettings.Development.json
 │     ├─ appsettings.json
 │     ├─ Program.cs
-│     └─ UserFlow
+│     └─ PM.ApplicationServices.csproj
 ├─ Domain
 │  ├─ PM.Domain
 │  │  ├─ Class1.cs
@@ -172,9 +249,11 @@ Project_Management
 │  │  ├─ Configurations
 │  │  │  └─ Configuration.cs
 │  │  ├─ Jwts
-│  │  │  └─ JwtHepler.cs
+│  │  │  ├─ JwtHepler.cs
+│  │  │  └─ IJwtHepler.cs
 │  │  ├─ Loggers
-│  │  │  └─ LoggerHelper.cs
+│  │  │  ├─ LoggerHelper.cs
+│  │  │  └─ ILoggerHelper.cs
 │  │  └─ PM.Infrastructure.csproj
 │  └─ PM.Persistence
 │     ├─ Configurations
@@ -334,10 +413,10 @@ Project_Management
 │     ├─ app.manifest
 │     └─ wpfui-icon.ico
 ├─ Project_Management.sln
-├─ README.md
 ├─ .github
 │  └─ workflows
-└─ .config
-   └─ dotnet-tools.json
+├─ .config
+│  └─ dotnet-tools.json
+└─ README.md
 
 ```

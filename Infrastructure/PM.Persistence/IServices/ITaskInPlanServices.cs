@@ -1,4 +1,4 @@
-﻿using PM.Domain.DTOs;
+﻿using PM.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,11 +9,11 @@ namespace PM.Persistence.IServices
 {
     public interface ITaskInPlanServices
     {
-        public Task<bool> AddAsync(TaskInPlanDTO taskInPlanDTO);
+        public Task<bool> AddAsync(TaskInPlan taskInPlanDTO);
         public Task<bool> RemoveAsync(string Id);
-        public Task<bool> UpdateAsync(string id, TaskInPlanDTO taskInPlanDTO);
-        public Task<TaskInPlanDTO> GetTaskInPlanById(string Id);
-        public Task<IEnumerable<TaskInPlanDTO>> GetAllTasks();
-        public Task<IEnumerable<TaskInPlanDTO>> GetAllTaskInPlanByPlanId(string planId);
+        public Task<bool> UpdateAsync(string id, TaskInPlan taskInPlanDTO);
+        public Task<TaskInPlan> GetTaskInPlanById(string Id);
+        public Task<IEnumerable<TaskInPlan>> GetAllTasks();
+        public Task<IEnumerable<TaskInPlan>> GetAllTaskInPlanByPlanId(string planId);
     }
 }

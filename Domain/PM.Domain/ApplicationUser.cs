@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
     [Table(name: "Application User")]
     public class ApplicationUser : IdentityUser<string>

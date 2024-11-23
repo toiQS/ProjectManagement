@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 
@@ -8,13 +8,13 @@ namespace PM.Persistence.Services
     public class ProjectServices : IProjectServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<ProjectDTO> _repository;
-        public ProjectServices(ApplicationDbContext context, IRepository<ProjectDTO> repository)
+        private readonly IRepository<Project> _repository;
+        public ProjectServices(ApplicationDbContext context, IRepository<Project> repository)
         {
             _context = context;
             _repository = repository;
         }
-        public async Task<bool> AddAsync(ProjectDTO projectDTO)
+        public async Task<bool> AddAsync(Project projectDTO)
         {
             return await _repository.AddAsync(projectDTO);
         }
@@ -22,7 +22,7 @@ namespace PM.Persistence.Services
         {
             return await _repository.DeleteAsync(Id);
         }
-        public async Task<bool> UpdateAsync(string Id, ProjectDTO projectDTO)
+        public async Task<bool> UpdateAsync(string Id, Project projectDTO)
         {
             return await _repository.UpdateAsync(Id, projectDTO);
         }
@@ -30,7 +30,7 @@ namespace PM.Persistence.Services
         {
             try
             {
-                var isCheck = await _context.ProjectDTO.AnyAsync(x => x.ProjectName == Name);
+                var isCheck = await _context.Project.AnyAsync(x => x.ProjectName == Name);
                 return isCheck;
             }
             catch (Exception ex)
@@ -39,21 +39,21 @@ namespace PM.Persistence.Services
                 return true;
             }
         }
-        public async Task<ProjectDTO> GetProjectAsync(string projectId)
+        public async Task<Project> GetProjectAsync(string projectId)
         {
             return await _repository.GetValueAsync(projectId);
         }
-        public async Task<IEnumerable<ProjectDTO>> GetProjectsByProjectName(string ProjectName)
+        public async Task<IEnumerable<Project>> GetProjectsByProjectName(string ProjectName)
         {
             try
             {
-                var getData = await _context.ProjectDTO.Where(x=> x.ProjectName.ToLower().Contains(ProjectName.ToLower())).ToListAsync();
+                var getData = await _context.Project.Where(x=> x.ProjectName.ToLower().Contains(ProjectName.ToLower())).ToListAsync();
                 return getData;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"{ex.Message}");
-                return Enumerable.Empty<ProjectDTO>();
+                return Enumerable.Empty<Project>();
             }
         }
 

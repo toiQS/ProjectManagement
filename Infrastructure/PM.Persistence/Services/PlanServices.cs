@@ -1,4 +1,4 @@
-﻿using PM.Domain.DTOs;
+﻿using PM.Domain;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -12,13 +12,13 @@ namespace PM.Persistence.Services
     public class PlanServices : IPlanServices
     {
         private readonly ApplicationDbContext _context;
-        private readonly IRepository<PlanDTO> _planRepository;
-        public PlanServices(ApplicationDbContext context, IRepository<PlanDTO> planRepository)
+        private readonly IRepository<Plan> _planRepository;
+        public PlanServices(ApplicationDbContext context, IRepository<Plan> planRepository)
         {
             _context = context;
             _planRepository = planRepository;
         }
-        public async Task<bool> AddAsync(PlanDTO planDTO)
+        public async Task<bool> AddAsync(Plan planDTO)
         {
             return await _planRepository.AddAsync(planDTO);
         }
@@ -26,15 +26,15 @@ namespace PM.Persistence.Services
         {
             return await _planRepository.DeleteAsync(Id);
         }
-        public async Task<bool> Update(string Id, PlanDTO planDTO)
+        public async Task<bool> Update(string Id, Plan planDTO)
         {
             return await _planRepository.UpdateAsync(Id, planDTO);
         }
-        public async Task<IEnumerable<PlanDTO>> GetAllAsync()
+        public async Task<IEnumerable<Plan>> GetAllAsync()
         {
             return await _planRepository.GetAllAsync();
         }
-        public async Task<PlanDTO> GetById(string Id)
+        public async Task<Plan> GetById(string Id)
         {
             return await _planRepository.GetValueAsync(Id);
         }

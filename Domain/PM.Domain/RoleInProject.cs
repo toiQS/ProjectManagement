@@ -7,16 +7,16 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Role In Project")]
-    public class RoleInProjectDTO 
+    [Table(name: "Role In Project")]
+    public class RoleInProject
     {
         [Key]
         public string Id { get; set; }
         [Column(name: "Role Name")]
         public string RoleName { get; set; } = string.Empty;
-        [Column(name:"Role Description")]
+        [Column(name: "Role Description")]
         public string RoleDescription { get; set; } = string.Empty;
     }
 }

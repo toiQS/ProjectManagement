@@ -6,19 +6,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PM.Domain.DTOs
+namespace PM.Domain
 {
-    [Table(name:"Task In Plan")]
-    public class TaskInPlanDTO 
+    [Table(name: "Task In Plan")]
+    public class TaskInPlan
     {
         [Key]
-        public string Id {  get; set; }
+        public string Id { get; set; }
         [ForeignKey(nameof(Plan))]
         [Column(name: "Plan Id")]
         public string PlanId { get; set; } = string.Empty;
-        public virtual PlanDTO Plan { get; set; }
+        public virtual Plan Plan { get; set; }
         [ForeignKey(nameof(TaskDTO))]
-        [Column(name:"Task Id")]
+        [Column(name: "Task Id")]
         public string TaskId { get; set; } = string.Empty;
         public virtual TaskDTO TaskDTO { get; set; }
     }

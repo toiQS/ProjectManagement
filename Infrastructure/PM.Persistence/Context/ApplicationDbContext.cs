@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using PM.Domain.DTOs;
+using PM.Domain;
 
 namespace PM.Persistence.Context
 {
@@ -14,16 +14,16 @@ namespace PM.Persistence.Context
         }
         #region register entities
         public DbSet<ApplicationUser> ApplicationUser {  get; set; }
-        public DbSet<MemberInTaskDTO> MemberInTask { get; set; }
-        public DbSet<PlanDTO> PlanDTO { get; set; }
-        public DbSet<PlanInProjectDTO> PlanInProject { get; set; }
-        public DbSet<PositionWorkOfMemberDTO> PositionWorkOfMember { get; set; }
-        public DbSet<PostitionInProjectDTO> PostitionInProject { get; set; }
-        public DbSet<ProjectDTO> ProjectDTO { get; set; }
-        public DbSet<RoleApplicationUserInProjectDTO> RoleApplicationUserInProject { get; set; }
-        public DbSet<RoleInProjectDTO> RoleInProject { get; set; }
+        public DbSet<MemberInTask> MemberInTask { get; set; }
+        public DbSet<Plan> Plan { get; set; }
+        public DbSet<PlanInProject> PlanInProject { get; set; }
+        public DbSet<PositionWorkOfMember> PositionWorkOfMember { get; set; }
+        public DbSet<PostitionInProject> PostitionInProject { get; set; }
+        public DbSet<Project> Project { get; set; }
+        public DbSet<RoleApplicationUserInProject> RoleApplicationUserInProject { get; set; }
+        public DbSet<RoleInProject> RoleInProject { get; set; }
         public DbSet<TaskDTO> TaskDTO { get; set; }
-        public DbSet<TaskInPlanDTO> TaskInPlan { get; set; }
+        public DbSet<TaskInPlan> TaskInPlan { get; set; }
         #endregion
 
 
@@ -40,7 +40,7 @@ namespace PM.Persistence.Context
                 }
             }
 
-            modelBuilder.Entity<PositionWorkOfMemberDTO>()
+            modelBuilder.Entity<PositionWorkOfMember>()
              .HasOne(p => p.RoleApplicationUserInProject)
              .WithMany()
              .HasForeignKey(p => p.RoleApplicationUserInProjectId)
