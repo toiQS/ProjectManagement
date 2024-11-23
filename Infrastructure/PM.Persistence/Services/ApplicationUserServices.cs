@@ -20,11 +20,13 @@ namespace PM.Persistence.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
         public readonly IRepository<ApplicationUser> _repository;
+        public readonly IUserRoleStore<ApplicationUser> _userRoleStore;
         #region constructor
         public ApplicationUserServices(ApplicationDbContext context, UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,
-            SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider, IRepository<ApplicationUser> repository)
+            SignInManager<ApplicationUser> signInManager, IServiceProvider serviceProvider, IRepository<ApplicationUser> repository, IUserRoleStore<ApplicationUser> userRoleStore)
         {
             _context = context;
+            _userRoleStore = userRoleStore; 
             _userManager = userManager;
             _roleManager = roleManager;
             _signInManager = signInManager;
@@ -32,21 +34,21 @@ namespace PM.Persistence.Services
         }
         #endregion
         #region login
-        public async Task<bool> LoginServices(string email, string password)
+        public async Task<ApplicationUser> LoginServices(string email, string password)
         {
             try
             {
                 var applicationUser = await _userManager.FindByEmailAsync(email);
                 if(applicationUser != null && (await _signInManager.CheckPasswordSignInAsync(applicationUser,password,false) == SignInResult.Success))
                 {
-                    return true;
+                    return applicationUser;
                 }
-                return false;
+                return null;
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return false;
+                return null;
             }
         }
         #endregion
@@ -122,17 +124,20 @@ namespace PM.Persistence.Services
             }
         }
         #endregion
-        #region get role by role id 
-        public async Task<IdentityRole<string>> GetRoleAsync(string roleId)
+        #region get role of application user by user id
+        public async Task<string> GetRoleApplicatonUserByUserIdAsync(string userId)
         {
             try
             {
-                return await _roleManager.FindByIdAsync(roleId);
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null) return null;
+                var role = await _userManager.GetRolesAsync(user);
+                return role.FirstOrDefault();
             }
             catch(Exception ex)
             {
                 Console.WriteLine(ex.Message);
-                return new IdentityRole();
+                return "";
             }
 
         }
@@ -151,5 +156,6 @@ namespace PM.Persistence.Services
             }
         }
         #endregion
+        
     }
 }
