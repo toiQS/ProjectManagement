@@ -1,9 +1,11 @@
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Logic;
 using PM.Infrastructure.Configurations;
 using PM.Persistence.Configurations;
+using PM.Persistence.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +15,10 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+{
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectString"));
+});
 
 
 builder.Services.AddPersistenceServiceRegistration(builder.Configuration);
