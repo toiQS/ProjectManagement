@@ -155,5 +155,18 @@ namespace PM.Persistence.Services
             }
         }
         #endregion
+        #region get user by user id
+        public Task<ApplicationUser> GetUser(string userId)
+        {
+            try
+            {
+                return _userManager.FindByIdAsync(userId);
+            }
+            catch(Exception ex)
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }

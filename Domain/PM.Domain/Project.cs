@@ -23,7 +23,7 @@ namespace PM.Domain
         [Column(name: "Project Status")]
         public string Projectstatus { get; set; } = string.Empty;
         [Column(name: "Create At")]
-        public string CreateAt { get; set; }
+        public DateTime CreateAt { get; set; }
         [Column(name: "Is Deleted")]
         public bool IsDeleted { get; set; }
         [Column(name: "Is Accessed")]

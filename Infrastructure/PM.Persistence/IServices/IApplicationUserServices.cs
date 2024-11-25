@@ -15,6 +15,6 @@ namespace PM.Persistence.IServices
         public Task<ApplicationUser> LoginServices(string email, string password);
         public Task<string> GetRoleApplicatonUserByUserIdAsync(string userId);
         public Task Logout();
-
+        public Task<ApplicationUser> GetUser(string userId);
     }
 }
