@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
+using Microsoft.AspNetCore.Identity.UI.V4.Pages.Account.Manage.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Microsoft.IdentityModel.Tokens;
 using PM.Domain;
 using PM.DomainServices.ILogic;
@@ -8,6 +10,7 @@ using PM.Persistence.IServices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Threading.Tasks;
 
 namespace PM.DomainServices.Logic
@@ -18,6 +21,7 @@ namespace PM.DomainServices.Logic
         private readonly IProjectServices _projectServices;
         private readonly IRoleInProjectServices _roleInProjectServices;
         private readonly IPositionInProjectServices _positionInProjectServices;
+        private readonly IPositionWorkOfMemberServices _positionWorkOfMemberServices;
         private readonly IPlanInProjectServices _planInProjectServices;
         private readonly ITaskInPlanServices _taskInPlanServices;
         private readonly ITaskServices _taskServices;
@@ -36,7 +40,8 @@ namespace PM.DomainServices.Logic
             IPlanServices planServices,
             IMemberInTaskServices memberInTaskServices,
             IRoleApplicationUserInProjectServices roleApplicationUserInProjectServices,
-            IApplicationUserServices applicationUserServices)
+            IApplicationUserServices applicationUserServices,
+            IPositionWorkOfMemberServices positionWorkOfMemberServices)
         {
             _applicationUserServices = applicationUserServices;
             _projectServices = projectServices;
@@ -48,6 +53,7 @@ namespace PM.DomainServices.Logic
             _planServices = planServices;
             _memberInTaskServices = memberInTaskServices;
             _roleApplicationUserInProjectServices = roleApplicationUserInProjectServices;
+            _positionWorkOfMemberServices = positionWorkOfMemberServices;
         }
 
         #region Get Projects User Has Joined
@@ -280,19 +286,218 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
-        #region delete project
+        #region Project Management
+        /// <summary>
+        /// Deletes a project and all its associated components, ensuring only the owner can perform this action.
+        /// </summary>
+        /// <param name="userId">ID of the user requesting deletion.</param>
+        /// <param name="projectId">ID of the project to be deleted.</param>
+        /// <returns>Service result indicating success or failure.</returns>
         public async Task<ServicesResult<bool>> DeleteProject(string userId, string projectId)
         {
-            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("Invalid input parameters.");
+
+            // Verify the "Owner" role exists
             var roles = await _roleInProjectServices.GetAllAsync();
             var ownerRole = roles.FirstOrDefault(x => x.RoleName == "Owner");
-            if (ownerRole == null) return ServicesResult<bool>.Failure("Owner role not found.");
+            if (ownerRole == null)
+                return ServicesResult<bool>.Failure("Owner role not found.");
+
+            // Verify the user is the owner of the project
             var roleUserInProjects = await _roleApplicationUserInProjectServices.GetAllAsync();
-            var userProject = roleUserInProjects.Where(x => x.ProjectId == projectId && x.ApplicationUserId == userId && x.RoleInProjectId == ownerRole.Id).FirstOrDefault();
-            if (userProject == null) return ServicesResult<bool>.Failure("");
-            // delete all component of project
+            var isUserOwner = roleUserInProjects.Any(x =>
+                x.ProjectId == projectId &&
+                x.ApplicationUserId == userId &&
+                x.RoleInProjectId == ownerRole.Id);
+
+            if (!isUserOwner)
+                return ServicesResult<bool>.Failure("User is not authorized to delete this project.");
+
+            // Fetch associated components
+            var membersInProject = roleUserInProjects.Where(x => x.ProjectId == projectId).ToList();
+            var positionsInProject = (await _positionInProjectServices.GetAllAsync())
+                .Where(x => x.ProjectId == projectId).ToList();
+            var plansInProject = (await _planInProjectServices.GetAllAsync())
+                .Where(x => x.ProjectId == projectId).ToList();
+
+            // Begin deletion of all project components
+            await DeleteProjectComponents(membersInProject, positionsInProject, plansInProject);
+
+            // Delete the project itself
+            return await DeleteProjectMethod(projectId);
+        }
+        #endregion
+
+        #region Helper Methods
+        /// <summary>
+        /// Deletes all components associated with a project.
+        /// </summary>
+        private async Task DeleteProjectComponents(
+            List<RoleApplicationUserInProject> membersInProject,
+            List<PositionInProject> positionsInProject,
+            List<PlanInProject> plansInProject)
+        {
+            // Delete members and their tasks
+            foreach (var member in membersInProject)
+            {
+                foreach (var position in positionsInProject)
+                {
+                    var positionWorks = (await _positionWorkOfMemberServices.GetAllAsync())
+                        .Where(x => x.PostitionInProjectId == position.Id && x.RoleApplicationUserInProjectId == member.Id);
+
+                    foreach (var work in positionWorks)
+                    {
+                        var tasks = (await _memberInTaskServices.GetAllAsync())
+                            .Where(x => x.PositionWorkOfMemberId == work.Id);
+
+                        foreach (var task in tasks)
+                        {
+                            await DeleteMemberInTaskMethod(task.Id);
+                        }
+
+                        await DeletePositionWorkOfMemberMethod(work.Id);
+                    }
+
+                    await DeletePositionInProjectMethod(position.Id);
+                }
+
+                await DeleteRoleUserInProjectMethod(member.Id);
+            }
+
+            // Delete plans and associated tasks
+            foreach (var plan in plansInProject)
+            {
+                var tasksInPlan = (await _taskInPlanServices.GetAllAsync())
+                    .Where(x => x.PlanId == plan.Id);
+
+                foreach (var task in tasksInPlan)
+                {
+                    await DeleteTaskInPlanMethod(task.Id);
+                    await DeleteTaskMethod(task.TaskId);
+                }
+
+                await DeletePlanInProjectMethod(plan.Id);
+                await DeletePlanMethod(plan.ProjectId);
+            }
+        }
+        #endregion
+
+        #region Individual Deletion Methods
+        /// <summary>
+        /// Deletes the specified project.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeleteProjectMethod(string projectId)
+        {
+            if (string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("Invalid project ID.");
+
+            return await _projectServices.DeleteAsync(projectId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete project.");
         }
 
+        /// <summary>
+        /// Deletes a role-user association in a project.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeleteRoleUserInProjectMethod(string roleUserId)
+        {
+            if (string.IsNullOrEmpty(roleUserId))
+                return ServicesResult<bool>.Failure("Invalid role-user ID.");
+
+            return await _roleApplicationUserInProjectServices.DeleteAsync(roleUserId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete role-user association.");
+        }
+
+        /// <summary>
+        /// Deletes a position in the project.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeletePositionInProjectMethod(string positionId)
+        {
+            if (string.IsNullOrEmpty(positionId))
+                return ServicesResult<bool>.Failure("Invalid position ID.");
+
+            return await _positionInProjectServices.DeleteAsync(positionId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete position.");
+        }
+
+        /// <summary>
+        /// Deletes a work position assigned to a member.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeletePositionWorkOfMemberMethod(string positionWorkOfMemberId)
+        {
+            if (string.IsNullOrEmpty(positionWorkOfMemberId))
+                return ServicesResult<bool>.Failure("Invalid position work ID.");
+
+            return await _positionWorkOfMemberServices.DeleteAsync(positionWorkOfMemberId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete position work.");
+        }
+        private async Task<ServicesResult<bool>> DeletePlanMethod(string planId)
+        {
+            if (string.IsNullOrEmpty(planId))
+                return ServicesResult<bool>.Failure("Invalid plan ID.");
+
+            return await _planServices.DeleteAsync(planId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete plan.");
+        }
+
+        /// <summary>
+        /// Deletes a task assigned to a member.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeleteMemberInTaskMethod(string memberInTaskId)
+        {
+            if (string.IsNullOrEmpty(memberInTaskId))
+                return ServicesResult<bool>.Failure("Invalid task ID.");
+
+            return await _memberInTaskServices.DeleteAsync(memberInTaskId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete member's task.");
+        }
+
+        /// <summary>
+        /// Deletes a plan in the project.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeletePlanInProjectMethod(string planInProjectId)
+        {
+            if (string.IsNullOrEmpty(planInProjectId))
+                return ServicesResult<bool>.Failure("Invalid plan ID.");
+
+            return await _planInProjectServices.DeleteAsync(planInProjectId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete plan.");
+        }
+
+        /// <summary>
+        /// Deletes a task in a plan.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeleteTaskInPlanMethod(string taskInPlanId)
+        {
+            if (string.IsNullOrEmpty(taskInPlanId))
+                return ServicesResult<bool>.Failure("Invalid task ID.");
+
+            return await _taskInPlanServices.DeleteAsync(taskInPlanId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete task in plan.");
+        }
+
+        /// <summary>
+        /// Deletes a task.
+        /// </summary>
+        private async Task<ServicesResult<bool>> DeleteTaskMethod(string taskId)
+        {
+            if (string.IsNullOrEmpty(taskId))
+                return ServicesResult<bool>.Failure("Invalid task ID.");
+
+            return await _taskServices.DeleteAsync(taskId)
+                ? ServicesResult<bool>.Success(true)
+                : ServicesResult<bool>.Failure("Failed to delete task.");
+        }
         #endregion
+
     }
 }

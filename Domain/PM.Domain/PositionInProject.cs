@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace PM.Domain
 {
     [Table(name: "Position In Project")]
-    public class PostitionInProject
+    public class PositionInProject
     {
         [Key]
         public string Id { get; set; }

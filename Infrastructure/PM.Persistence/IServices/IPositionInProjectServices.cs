@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.IServices
 {
-    public interface IPositionInProjectServices : IRepository<PostitionInProject>
+    public interface IPositionInProjectServices : IRepository<PositionInProject>
     {
     }
 }

@@ -16,7 +16,7 @@ namespace PM.Domain
         [ForeignKey(nameof(PositionWorkOfMember))]
         [Column(name: "Position In Project Id")]
         public string PostitionInProjectId { get; set; } = string.Empty;
-        public virtual PostitionInProject PostitionInProject { get; set; }
+        public virtual PositionInProject PostitionInProject { get; set; }
         [Column(name: "Role Application User In Project Id")]
 
         [ForeignKey(nameof(RoleApplicationUserInProject))]

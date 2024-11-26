@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
-    public class PositionInProjectServices(ApplicationDbContext _context) : Repository<PostitionInProject>(_context), IPositionInProjectServices
+    public class PositionInProjectServices(ApplicationDbContext _context) : Repository<PositionInProject>(_context), IPositionInProjectServices
     {
     }
 }
