@@ -246,9 +246,9 @@ namespace PM.Persistence.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "101111/23/2024 10:09:57 PM10",
+                            Id = "101111/26/2024 10:55:36 PM10",
                             AccessFailedCount = 0,
-                            ConcurrencyStamp = "68e6ee22-779d-43ed-9143-3d2740eab8e1",
+                            ConcurrencyStamp = "68ea4340-d963-4f4f-92f3-e99dd12fc35c",
                             Email = "nguyena@gmail.com",
                             EmailConfirmed = false,
                             FirstName = "nguyen",
@@ -258,7 +258,7 @@ namespace PM.Persistence.Migrations
                             PathImage = "",
                             Phone = "0123456789",
                             PhoneNumberConfirmed = false,
-                            SecurityStamp = "89a1abf1-c7b6-4268-bf8e-92f25f7f9d53",
+                            SecurityStamp = "9e3191c7-60f1-4ede-b6bc-2d751590c0f4",
                             TwoFactorEnabled = false
                         });
                 });
@@ -338,31 +338,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Plan In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.PositionWorkOfMember", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PostitionInProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Position In Project Id");
-
-                    b.Property<string>("RoleApplicationUserInProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Role Application User In Project Id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostitionInProjectId");
-
-                    b.HasIndex("RoleApplicationUserInProjectId");
-
-                    b.ToTable("Position Work Of Member");
-                });
-
-            modelBuilder.Entity("PM.Domain.PostitionInProject", b =>
+            modelBuilder.Entity("PM.Domain.PositionInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -389,14 +365,41 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Position In Project");
                 });
 
+            modelBuilder.Entity("PM.Domain.PositionWorkOfMember", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PositionInProjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("PostitionInProjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Position In Project Id");
+
+                    b.Property<string>("RoleApplicationUserInProjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Role Application User In Project Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PositionInProjectId");
+
+                    b.HasIndex("RoleApplicationUserInProjectId");
+
+                    b.ToTable("Position Work Of Member");
+                });
+
             modelBuilder.Entity("PM.Domain.Project", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreateAt")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("Create At");
 
                     b.Property<bool>("IsAccessed")
@@ -633,11 +636,22 @@ namespace PM.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
+            modelBuilder.Entity("PM.Domain.PositionInProject", b =>
+                {
+                    b.HasOne("PM.Domain.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
             modelBuilder.Entity("PM.Domain.PositionWorkOfMember", b =>
                 {
-                    b.HasOne("PM.Domain.PostitionInProject", "PostitionInProject")
+                    b.HasOne("PM.Domain.PositionInProject", "PositionInProject")
                         .WithMany()
-                        .HasForeignKey("PostitionInProjectId")
+                        .HasForeignKey("PositionInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -647,20 +661,9 @@ namespace PM.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("PostitionInProject");
+                    b.Navigation("PositionInProject");
 
                     b.Navigation("RoleApplicationUserInProject");
-                });
-
-            modelBuilder.Entity("PM.Domain.PostitionInProject", b =>
-                {
-                    b.HasOne("PM.Domain.Project", "Project")
-                        .WithMany()
-                        .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Project");
                 });
 
             modelBuilder.Entity("PM.Domain.RoleApplicationUserInProject", b =>

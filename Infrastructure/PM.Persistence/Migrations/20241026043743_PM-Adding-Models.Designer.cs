@@ -346,7 +346,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Position Work Of Member");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProject", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PositionInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -619,7 +619,7 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMember", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PostitionInProject", "PostitionInProject")
+                    b.HasOne("PM.Domain.DTOs.PositionInProject", "PositionInProject")
                         .WithMany()
                         .HasForeignKey("PostitionInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -631,12 +631,12 @@ namespace PM.Persistence.Migrations
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("PostitionInProject");
+                    b.Navigation("PositionInProject");
 
                     b.Navigation("RoleApplicationUserInProject");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PostitionInProject", b =>
+            modelBuilder.Entity("PM.Domain.DTOs.PositionInProject", b =>
                 {
                     b.HasOne("PM.Domain.DTOs.Project", "Project")
                         .WithMany()

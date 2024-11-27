@@ -18,7 +18,7 @@ namespace PM.Persistence.Context
         public DbSet<Plan> Plan { get; set; }
         public DbSet<PlanInProject> PlanInProject { get; set; }
         public DbSet<PositionWorkOfMember> PositionWorkOfMember { get; set; }
-        public DbSet<PositionInProject> PostitionInProject { get; set; }
+        public DbSet<PositionInProject> PositionInProject { get; set; }
         public DbSet<Project> Project { get; set; }
         public DbSet<RoleApplicationUserInProject> RoleApplicationUserInProject { get; set; }
         public DbSet<RoleInProject> RoleInProject { get; set; }
