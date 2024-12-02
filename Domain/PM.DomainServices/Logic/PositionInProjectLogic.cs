@@ -1,11 +1,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
-using System.Data.SqlTypes;
 using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Shared;
 using PM.Persistence.IServices;
-using PM.Persistence.Services;
 
 namespace PM.DomainServices.Logic
 {
@@ -16,19 +13,25 @@ namespace PM.DomainServices.Logic
         private readonly IRoleApplicationUserInProjectServices _roleUserInProjectServices;
         private readonly IRoleInProjectServices _roleInProjectServices;
         private readonly IProjectServices _projectServices;
+        private readonly IPositionWorkOfMemberServices _positionWorkOfMemberServices;
+        private readonly IMemberInTaskServices _memberInTaskServices;
 
         public PositionInProjectLogic(
-            IPositionInProjectServices positionInProjectServices, 
-            IApplicationUserServices applicationUserServices, 
-            IRoleApplicationUserInProjectServices roleApplicationUserInProjectServices, 
-            IRoleInProjectServices roleInProjectServices, 
-            IProjectServices projectServices)
+            IPositionInProjectServices positionInProjectServices,
+            IApplicationUserServices applicationUserServices,
+            IRoleApplicationUserInProjectServices roleApplicationUserInProjectServices,
+            IRoleInProjectServices roleInProjectServices,
+            IProjectServices projectServices,
+            IPositionWorkOfMemberServices positionWorkOfMemberServices,
+            IMemberInTaskServices memberInTaskServices)
         {
-            _projectServices = projectServices;
             _positionInProjectServices = positionInProjectServices;
             _user = applicationUserServices;
-            _roleInProjectServices = roleInProjectServices;
             _roleUserInProjectServices = roleApplicationUserInProjectServices;
+            _roleInProjectServices = roleInProjectServices;
+            _projectServices = projectServices;
+            _positionWorkOfMemberServices = positionWorkOfMemberServices;
+            _memberInTaskServices = memberInTaskServices;
         }
 
         #region Add Position
@@ -37,15 +40,12 @@ namespace PM.DomainServices.Logic
         /// </summary>
         public async Task<ServicesResult<bool>> Add(string userId, string name, string description, string projectId)
         {
-            // Validate input parameters
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId) || string.IsNullOrEmpty(name))
                 return ServicesResult<bool>.Failure("Invalid input parameters.");
 
-            // Check if user exists
             var findUser = await _user.GetUser(userId);
             if (findUser == null) return ServicesResult<bool>.Failure("User not found.");
 
-            // Check user's role in the project
             var getRoleUserInProject = (await _roleUserInProjectServices.GetAllAsync())
                                         .FirstOrDefault(x => x.ApplicationUserId == userId);
             if (getRoleUserInProject == null) return ServicesResult<bool>.Failure("User has no role in project.");
@@ -54,14 +54,12 @@ namespace PM.DomainServices.Logic
                                       .FirstOrDefault(x => x.Id == getRoleUserInProject.RoleInProjectId);
             if (isRoleNameInProject == null) return ServicesResult<bool>.Failure("Role not found.");
 
-            // Validate position and project ownership
             if ((await _positionInProjectServices.GetAllAsync()).Any(x => x.PositionName.ToLower() == name.ToLower()))
                 return ServicesResult<bool>.Failure("Position name already exists.");
 
             if ((await _projectServices.GetAllAsync()).All(x => x.Id != projectId) || isRoleNameInProject.RoleName != "Owner")
                 return ServicesResult<bool>.Failure("Invalid project or insufficient permissions.");
 
-            // Create a new position
             var randomSuffix = new Random().Next(100000, 999999);
             var positionInProject = new PositionInProject
             {
@@ -71,7 +69,6 @@ namespace PM.DomainServices.Logic
                 PositionDescription = description
             };
 
-            // Save the position
             if (await _positionInProjectServices.AddAsync(positionInProject))
                 return ServicesResult<bool>.Success(true);
 
@@ -85,15 +82,12 @@ namespace PM.DomainServices.Logic
         /// </summary>
         public async Task<ServicesResult<bool>> Update(string userId, string positionInProjectId, string name, string description)
         {
-            // Validate input parameters
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(positionInProjectId) || string.IsNullOrEmpty(name) || string.IsNullOrEmpty(description))
                 return ServicesResult<bool>.Failure("Invalid input parameters.");
 
-            // Check if user exists
             var findUser = await _user.GetUser(userId);
             if (findUser == null) return ServicesResult<bool>.Failure("User not found.");
 
-            // Validate user's role and position
             var getRoleUserInProject = (await _roleUserInProjectServices.GetAllAsync())
                                         .FirstOrDefault(x => x.ApplicationUserId == userId);
             if (getRoleUserInProject == null) return ServicesResult<bool>.Failure("User has no role in project.");
@@ -107,7 +101,6 @@ namespace PM.DomainServices.Logic
             if (getPosition == null || isRoleNameInProject.RoleName != "Owner")
                 return ServicesResult<bool>.Failure("Position not found or insufficient permissions.");
 
-            // Update position details
             getPosition.PositionName = name;
             getPosition.PositionDescription = description;
 
@@ -124,15 +117,12 @@ namespace PM.DomainServices.Logic
         /// </summary>
         public async Task<ServicesResult<bool>> Delete(string userId, string positionInProjectId)
         {
-            // Validate input parameters
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(positionInProjectId))
                 return ServicesResult<bool>.Failure("Invalid input parameters.");
 
-            // Check if user exists
             var findUser = await _user.GetUser(userId);
             if (findUser == null) return ServicesResult<bool>.Failure("User not found.");
 
-            // Validate user's role and position
             var getRoleUserInProject = (await _roleUserInProjectServices.GetAllAsync())
                                         .FirstOrDefault(x => x.ApplicationUserId == userId);
             if (getRoleUserInProject == null) return ServicesResult<bool>.Failure("User has no role in project.");
@@ -146,8 +136,30 @@ namespace PM.DomainServices.Logic
             if (getPosition == null || isRoleNameInProject.RoleName != "Owner")
                 return ServicesResult<bool>.Failure("Position not found or insufficient permissions.");
 
-            // Delete position
-            if (await _positionInProjectServices.DeleteAsync(getPosition.Id))
+            return await DeletePositionWithDependencies(positionInProjectId);
+        }
+        #endregion
+
+        #region Helper Methods for Delete
+        private async Task<ServicesResult<bool>> DeletePositionWithDependencies(string positionId)
+        {
+            var positionWorks = (await _positionWorkOfMemberServices.GetAllAsync()).Where(x => x.PostitionInProjectId == positionId);
+
+            foreach (var positionWork in positionWorks)
+            {
+                var memberTasks = (await _memberInTaskServices.GetAllAsync()).Where(x => x.PositionWorkOfMemberId == positionWork.Id);
+
+                foreach (var memberTask in memberTasks)
+                {
+                    if (!await _memberInTaskServices.DeleteAsync(memberTask.Id))
+                        return ServicesResult<bool>.Failure("Failed to delete associated member tasks.");
+                }
+
+                if (!await _positionWorkOfMemberServices.DeleteAsync(positionWork.Id))
+                    return ServicesResult<bool>.Failure("Failed to delete associated position work.");
+            }
+
+            if (await _positionInProjectServices.DeleteAsync(positionId))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to delete position.");
