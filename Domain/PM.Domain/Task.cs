@@ -25,5 +25,13 @@ namespace PM.Domain
         public DateTime StartAt { get; set; }
         [Column(name: "End At")]
         public DateTime EndAt { get; set; }
+        public TaskStatuses Status {get; set;}
     }
+    public enum TaskStatuses
+    {
+        Node,
+        Waiting, 
+        Processing, 
+        Completed
+    };
 }

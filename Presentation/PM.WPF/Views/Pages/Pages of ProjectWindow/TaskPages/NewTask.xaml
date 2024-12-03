@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         WindowStyle="None"
         mc:Ignorable="d"
-        Title="NewTask" Height="650" Width="500">
+        Title="NewTask" Height="775" Width="500">
     <Grid Background="#FF231E1E">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -23,13 +23,14 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
 
             <!-- Plan Name -->
             <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
                 <TextBlock FontSize="16" FontWeight="Bold" Foreground="White" Text="Plan Name" />
-                <TextBox x:Name="txtPlanName" Width="300" Margin="0,5,0,0" Text="{Binding PlanName}" />
+                <TextBox x:Name="txtPlanName" Margin="0,5,0,0" Text="{Binding PlanName}" />
             </StackPanel>
 
             <!-- Start At -->
@@ -43,7 +44,14 @@
                 <TextBlock FontSize="16" FontWeight="Bold" Foreground="White" Text="End At" />
                 <DatePicker x:Name="dpEndAt" SelectedDate="{Binding EndAt}" />
             </StackPanel>
-            <Grid Grid.Row="3">
+            <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,10">
+                <TextBlock FontSize="16" FontWeight="Bold" Foreground="White" Text="Task Description" />
+                <TextBox x:Name="txtTaskDescription" Margin="0,5,0,0" MinHeight="100" MinWidth="350"
+                 Text="{Binding TaskDescription}" 
+                 TextWrapping="Wrap" AcceptsReturn="True" VerticalScrollBarVisibility="Auto"/>
+            </StackPanel>
+            
+            <Grid Grid.Row="4">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="auto"/>
                     <RowDefinition Height="auto"/>
@@ -62,8 +70,9 @@
                 </Grid>
                 <ui:ListView Name="ListMemberChoosed" MinHeight="200" MinWidth="400" Grid.Row="2" Background="AliceBlue" Margin="10"/>
             </Grid>
+            
             <!-- Save and Cancel Buttons -->
-            <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+            <StackPanel Grid.Row="5" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                 <Button x:Name="btnSaveUpdate" Content="Save" Width="100" Margin="10" Click="btnSaveUpdate_Click"/>
                 <Button x:Name="btnCancelUpdate" Content="Cancel" Width="100" Margin="10" Click="OnCancelClick"/>
             </StackPanel>
