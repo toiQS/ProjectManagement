@@ -1,4 +1,4 @@
-namespace PM.DomainServices.Shared
+namespace Shared
 {
     public class ServicesResult<T>
     {

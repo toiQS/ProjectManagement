@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace PM.Domain
 {
@@ -18,20 +13,15 @@ namespace PM.Domain
         [Column(name: "Task Description")]
         public string TaskDescription { get; set; } = string.Empty;
         [Column(name: "Task Status")]
-        public string TaskStatus { get; set; } = string.Empty;
+        //public string TaskStatus { get; set; } = string.Empty;
+        public int Status { get; set; }
+
         [Column(name: "Create At")]
         public DateTime CreateAt { get; set; }
         [Column(name: "Start At")]
         public DateTime StartAt { get; set; }
         [Column(name: "End At")]
         public DateTime EndAt { get; set; }
-        public TaskStatuses Status {get; set;}
     }
-    public enum TaskStatuses
-    {
-        Node,
-        Waiting, 
-        Processing, 
-        Completed
-    };
+   
 }
