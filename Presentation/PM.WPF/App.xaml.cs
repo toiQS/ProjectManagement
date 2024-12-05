@@ -1,12 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using PM.WPF.Views.Windows;
 using System.IO;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Threading;
-using Wpf.Ui;
 
 namespace PM.WPF
 {
@@ -46,8 +43,8 @@ namespace PM.WPF
         private void OnStartup(object sender, StartupEventArgs e)
         {
             _host.Start();
-            var loginWindow = new MainWindow();
-            loginWindow?.Show();
+            //var loginWindow = new MainWindow();
+            //loginWindow?.Show();
         }
 
         /// <summary>

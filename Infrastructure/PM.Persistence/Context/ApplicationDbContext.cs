@@ -6,14 +6,14 @@ using PM.Domain;
 namespace PM.Persistence.Context
 {
     #region register entities and seeding data
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole,string>
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityRole, string>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-           
+
         }
         #region register entities
-        public DbSet<ApplicationUser> ApplicationUser {  get; set; }
+        public DbSet<ApplicationUser> ApplicationUser { get; set; }
         public DbSet<MemberInTask> MemberInTask { get; set; }
         public DbSet<Plan> Plan { get; set; }
         public DbSet<PlanInProject> PlanInProject { get; set; }
@@ -24,6 +24,7 @@ namespace PM.Persistence.Context
         public DbSet<RoleInProject> RoleInProject { get; set; }
         public DbSet<TaskDTO> TaskDTO { get; set; }
         public DbSet<TaskInPlan> TaskInPlan { get; set; }
+        public DbSet<Status> Status { get; set; }
         #endregion
 
 
@@ -40,25 +41,41 @@ namespace PM.Persistence.Context
                 }
             }
 
-            modelBuilder.Entity<PositionWorkOfMember>()
-             .HasOne(p => p.RoleApplicationUserInProject)
-             .WithMany()
-             .HasForeignKey(p => p.RoleApplicationUserInProjectId)
-             .OnDelete(DeleteBehavior.NoAction);
+            modelBuilder.Entity<PlanInProject>()
+                .HasOne(pip => pip.Plan)
+                .WithMany()
+                .HasForeignKey(pip => pip.PlanId)
+                .OnDelete(DeleteBehavior.NoAction); // Chặn cascade delete
 
-            #region seeding data
-            // seeding application user
-            modelBuilder.Entity<ApplicationUser>().HasData(new ApplicationUser
-            {
-                FirstName = "nguyen",
-                LastName = "a",
-                FullName= "nguyen a",
-                Email = "nguyena@gmail.com",
-                Phone="0123456789",
-                Id = $"1011{DateTime.Now}10",
-                PathImage =""
-            });
-            #endregion
+            modelBuilder.Entity<PlanInProject>()
+                .HasOne(pip => pip.Project)
+                .WithMany()
+                .HasForeignKey(pip => pip.ProjectId)
+                .OnDelete(DeleteBehavior.NoAction); // Chặn cascade delete
+            modelBuilder.Entity<TaskInPlan>()
+    .HasOne(tip => tip.TaskDTO)
+    .WithMany()
+    .HasForeignKey(tip => tip.TaskId)
+    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
+
+            modelBuilder.Entity<TaskInPlan>()
+                .HasOne(tip => tip.Plan)
+                .WithMany()
+                .HasForeignKey(tip => tip.PlanId)
+                .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
+
+            modelBuilder.Entity<PositionWorkOfMember>()
+    .HasOne(p => p.RoleApplicationUserInProject)
+    .WithMany()
+    .HasForeignKey(p => p.RoleApplicationUserInProjectId)
+    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
+
+            modelBuilder.Entity<MemberInTask>()
+    .HasOne(mit => mit.TaskDTO)
+    .WithMany()
+    .HasForeignKey(mit => mit.TaskId)
+    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
+
         }
 
     }

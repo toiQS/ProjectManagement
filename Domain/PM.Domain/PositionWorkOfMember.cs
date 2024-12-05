@@ -13,7 +13,7 @@ namespace PM.Domain
     {
         [Key]
         public string Id { get; set; }
-        [ForeignKey(nameof(PositionWorkOfMember))]
+        [ForeignKey(nameof(PositionInProject))]
         [Column(name: "Position In Project Id")]
         public string PostitionInProjectId { get; set; } = string.Empty;
         public virtual PositionInProject PositionInProject { get; set; }

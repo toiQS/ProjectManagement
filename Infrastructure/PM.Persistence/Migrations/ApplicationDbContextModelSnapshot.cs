@@ -17,7 +17,7 @@ namespace PM.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -242,25 +242,6 @@ namespace PM.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "101111/26/2024 10:55:36 PM10",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "68ea4340-d963-4f4f-92f3-e99dd12fc35c",
-                            Email = "nguyena@gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "nguyen",
-                            FullName = "nguyen a",
-                            LastName = "a",
-                            LockoutEnabled = false,
-                            PathImage = "",
-                            Phone = "0123456789",
-                            PhoneNumberConfirmed = false,
-                            SecurityStamp = "9e3191c7-60f1-4ede-b6bc-2d751590c0f4",
-                            TwoFactorEnabled = false
-                        });
                 });
 
             modelBuilder.Entity("PM.Domain.MemberInTask", b =>
@@ -300,6 +281,10 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("End At");
 
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
+
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -309,7 +294,13 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Start At");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("Status Plan");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Plan");
                 });
@@ -370,13 +361,9 @@ namespace PM.Persistence.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("PositionInProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("PostitionInProjectId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
                         .HasColumnName("Position In Project Id");
 
                     b.Property<string>("RoleApplicationUserInProjectId")
@@ -386,7 +373,7 @@ namespace PM.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PositionInProjectId");
+                    b.HasIndex("PostitionInProjectId");
 
                     b.HasIndex("RoleApplicationUserInProjectId");
 
@@ -402,6 +389,10 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Create At");
 
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("End At");
+
                     b.Property<bool>("IsAccessed")
                         .HasColumnType("bit")
                         .HasColumnName("Is Accessed");
@@ -409,6 +400,10 @@ namespace PM.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("Is Deleted");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
 
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
@@ -420,17 +415,17 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Project Name");
 
-                    b.Property<string>("ProjectVersion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Project Version");
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Start At");
 
-                    b.Property<string>("Projectstatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
                         .HasColumnName("Project Status");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Project");
                 });
@@ -486,6 +481,23 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Role In Project");
                 });
 
+            modelBuilder.Entity("PM.Domain.Status", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Status");
+                });
+
             modelBuilder.Entity("PM.Domain.TaskDTO", b =>
                 {
                     b.Property<string>("Id")
@@ -499,9 +511,17 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("End At");
 
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
+
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("Start At");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("Task Status");
 
                     b.Property<string>("TaskDescription")
                         .IsRequired()
@@ -513,12 +533,9 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Task Name");
 
-                    b.Property<string>("TaskStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Task Status");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Task");
                 });
@@ -609,7 +626,7 @@ namespace PM.Persistence.Migrations
                     b.HasOne("PM.Domain.TaskDTO", "TaskDTO")
                         .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PositionWorkOfMember");
@@ -617,18 +634,29 @@ namespace PM.Persistence.Migrations
                     b.Navigation("TaskDTO");
                 });
 
+            modelBuilder.Entity("PM.Domain.Plan", b =>
+                {
+                    b.HasOne("PM.Domain.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("PM.Domain.PlanInProject", b =>
                 {
                     b.HasOne("PM.Domain.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PM.Domain.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Plan");
@@ -651,7 +679,7 @@ namespace PM.Persistence.Migrations
                 {
                     b.HasOne("PM.Domain.PositionInProject", "PositionInProject")
                         .WithMany()
-                        .HasForeignKey("PositionInProjectId")
+                        .HasForeignKey("PostitionInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -664,6 +692,17 @@ namespace PM.Persistence.Migrations
                     b.Navigation("PositionInProject");
 
                     b.Navigation("RoleApplicationUserInProject");
+                });
+
+            modelBuilder.Entity("PM.Domain.Project", b =>
+                {
+                    b.HasOne("PM.Domain.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("PM.Domain.RoleApplicationUserInProject", b =>
@@ -693,18 +732,29 @@ namespace PM.Persistence.Migrations
                     b.Navigation("RoleInProject");
                 });
 
+            modelBuilder.Entity("PM.Domain.TaskDTO", b =>
+                {
+                    b.HasOne("PM.Domain.Status", "Status")
+                        .WithMany()
+                        .HasForeignKey("StatusId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Status");
+                });
+
             modelBuilder.Entity("PM.Domain.TaskInPlan", b =>
                 {
                     b.HasOne("PM.Domain.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.HasOne("PM.Domain.TaskDTO", "TaskDTO")
                         .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Plan");

@@ -21,5 +21,13 @@ namespace PM.Domain
         public DateTime StartAt { get; set; }
         [Column(name: "End At")]
         public DateTime EndAt { get; set; }
+
+        [Column(name: "Status Plan")]
+        [ForeignKey(nameof(Status))]
+        public int StatusId { get; set; }
+        public Status Status { get; set; }
+
+        [Column(name: " Is Done")]
+        public bool IsDone { get; set; }
     }
 }

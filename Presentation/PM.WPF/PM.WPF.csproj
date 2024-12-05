@@ -15,9 +15,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Syncfusion.SfChart.WPF" Version="27.2.2" />
-    <PackageReference Include="Syncfusion.SfGrid.WPF" Version="27.2.2" />
-    <PackageReference Include="syncfusion.ui.wpf.net" Version="27.2.2" />
+    <PackageReference Include="Syncfusion.SfChart.WPF" Version="27.2.5" />
+    <PackageReference Include="Syncfusion.SfGrid.WPF" Version="27.2.5" />
+    <PackageReference Include="syncfusion.ui.wpf.net" Version="27.2.5" />
     <PackageReference Include="WPF-UI" Version="3.0.5" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.3.2" />

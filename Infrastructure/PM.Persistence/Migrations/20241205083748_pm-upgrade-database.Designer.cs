@@ -12,8 +12,8 @@ using PM.Persistence.Context;
 namespace PM.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241118171259_demo")]
-    partial class demo
+    [Migration("20241205083748_pm-upgrade-database")]
+    partial class pmupgradedatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace PM.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -158,7 +158,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.ApplicationUser", b =>
+            modelBuilder.Entity("PM.Domain.ApplicationUser", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -245,27 +245,9 @@ namespace PM.Persistence.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = "101111/19/2024 12:12:57 AM10",
-                            AccessFailedCount = 0,
-                            ConcurrencyStamp = "71b22880-ce60-43bd-83d5-d62416632535",
-                            Email = "nguyena@gmail.com",
-                            EmailConfirmed = false,
-                            FirstName = "nguyen",
-                            FullName = "nguyen a",
-                            LastName = "a",
-                            LockoutEnabled = false,
-                            PathImage = "",
-                            Phone = "0123456789",
-                            PhoneNumberConfirmed = false,
-                            TwoFactorEnabled = false
-                        });
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.MemberInTask", b =>
+            modelBuilder.Entity("PM.Domain.MemberInTask", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -289,7 +271,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Member In Task");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.Plan", b =>
+            modelBuilder.Entity("PM.Domain.Plan", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -302,6 +284,10 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("End At");
 
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
+
                     b.Property<string>("PlanName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)")
@@ -311,12 +297,18 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("Start At");
 
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("Status Plan");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Plan");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PlanInProject", b =>
+            modelBuilder.Entity("PM.Domain.PlanInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -340,31 +332,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Plan In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMember", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("PostitionInProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Position In Project Id");
-
-                    b.Property<string>("RoleApplicationUserInProjectId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)")
-                        .HasColumnName("Role Application User In Project Id");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("PostitionInProjectId");
-
-                    b.HasIndex("RoleApplicationUserInProjectId");
-
-                    b.ToTable("Position Work Of Member");
-                });
-
-            modelBuilder.Entity("PM.Domain.DTOs.PositionInProject", b =>
+            modelBuilder.Entity("PM.Domain.PositionInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -391,15 +359,42 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Position In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.Project", b =>
+            modelBuilder.Entity("PM.Domain.PositionWorkOfMember", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("CreateAt")
+                    b.Property<string>("PostitionInProjectId")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Position In Project Id");
+
+                    b.Property<string>("RoleApplicationUserInProjectId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)")
+                        .HasColumnName("Role Application User In Project Id");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PostitionInProjectId");
+
+                    b.HasIndex("RoleApplicationUserInProjectId");
+
+                    b.ToTable("Position Work Of Member");
+                });
+
+            modelBuilder.Entity("PM.Domain.Project", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2")
                         .HasColumnName("Create At");
+
+                    b.Property<DateTime>("EndAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("End At");
 
                     b.Property<bool>("IsAccessed")
                         .HasColumnType("bit")
@@ -408,6 +403,10 @@ namespace PM.Persistence.Migrations
                     b.Property<bool>("IsDeleted")
                         .HasColumnType("bit")
                         .HasColumnName("Is Deleted");
+
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
 
                     b.Property<string>("ProjectDescription")
                         .IsRequired()
@@ -419,22 +418,22 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Project Name");
 
-                    b.Property<string>("ProjectVersion")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Project Version");
+                    b.Property<DateTime>("StartAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("Start At");
 
-                    b.Property<string>("Projectstatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
                         .HasColumnName("Project Status");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("StatusId");
+
                     b.ToTable("Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProject", b =>
+            modelBuilder.Entity("PM.Domain.RoleApplicationUserInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -465,7 +464,7 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Role Application User In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleInProject", b =>
+            modelBuilder.Entity("PM.Domain.RoleInProject", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -485,7 +484,24 @@ namespace PM.Persistence.Migrations
                     b.ToTable("Role In Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.TaskDTO", b =>
+            modelBuilder.Entity("PM.Domain.Status", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Value")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Status");
+                });
+
+            modelBuilder.Entity("PM.Domain.TaskDTO", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -498,9 +514,17 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("datetime2")
                         .HasColumnName("End At");
 
+                    b.Property<bool>("IsDone")
+                        .HasColumnType("bit")
+                        .HasColumnName(" Is Done");
+
                     b.Property<DateTime>("StartAt")
                         .HasColumnType("datetime2")
                         .HasColumnName("Start At");
+
+                    b.Property<int>("StatusId")
+                        .HasColumnType("int")
+                        .HasColumnName("Task Status");
 
                     b.Property<string>("TaskDescription")
                         .IsRequired()
@@ -512,17 +536,14 @@ namespace PM.Persistence.Migrations
                         .HasColumnType("nvarchar(max)")
                         .HasColumnName("Task Name");
 
-                    b.Property<string>("TaskStatus")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Task Status");
-
                     b.HasKey("Id");
+
+                    b.HasIndex("StatusId");
 
                     b.ToTable("Task");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlan", b =>
+            modelBuilder.Entity("PM.Domain.TaskInPlan", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -548,7 +569,7 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<string>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -557,7 +578,7 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.ApplicationUser", null)
+                    b.HasOne("PM.Domain.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -566,7 +587,7 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.ApplicationUser", null)
+                    b.HasOne("PM.Domain.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -575,13 +596,13 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<string>", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.ApplicationUser", null)
+                    b.HasOne("PM.Domain.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -590,25 +611,25 @@ namespace PM.Persistence.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.ApplicationUser", null)
+                    b.HasOne("PM.Domain.ApplicationUser", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.MemberInTask", b =>
+            modelBuilder.Entity("PM.Domain.MemberInTask", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PositionWorkOfMember", "PositionWorkOfMember")
+                    b.HasOne("PM.Domain.PositionWorkOfMember", "PositionWorkOfMember")
                         .WithMany()
                         .HasForeignKey("PositionWorkOfMemberId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.TaskDTO", "TaskDTO")
+                    b.HasOne("PM.Domain.TaskDTO", "TaskDTO")
                         .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("PositionWorkOfMember");
@@ -616,18 +637,29 @@ namespace PM.Persistence.Migrations
                     b.Navigation("TaskDTO");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PlanInProject", b =>
+            modelBuilder.Entity("PM.Domain.Plan", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.Plan", "Plan")
+                    b.HasOne("PM.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("PlanId")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.Project", "Project")
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("PM.Domain.PlanInProject", b =>
+                {
+                    b.HasOne("PM.Domain.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PM.Domain.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Plan");
@@ -635,15 +667,26 @@ namespace PM.Persistence.Migrations
                     b.Navigation("Project");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PositionWorkOfMember", b =>
+            modelBuilder.Entity("PM.Domain.PositionInProject", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.PositionInProject", "PositionInProject")
+                    b.HasOne("PM.Domain.Project", "Project")
+                        .WithMany()
+                        .HasForeignKey("ProjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Project");
+                });
+
+            modelBuilder.Entity("PM.Domain.PositionWorkOfMember", b =>
+                {
+                    b.HasOne("PM.Domain.PositionInProject", "PositionInProject")
                         .WithMany()
                         .HasForeignKey("PostitionInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.RoleApplicationUserInProject", "RoleApplicationUserInProject")
+                    b.HasOne("PM.Domain.RoleApplicationUserInProject", "RoleApplicationUserInProject")
                         .WithMany()
                         .HasForeignKey("RoleApplicationUserInProjectId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -654,32 +697,32 @@ namespace PM.Persistence.Migrations
                     b.Navigation("RoleApplicationUserInProject");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.PositionInProject", b =>
+            modelBuilder.Entity("PM.Domain.Project", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.Project", "Project")
+                    b.HasOne("PM.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("ProjectId")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Project");
+                    b.Navigation("Status");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.RoleApplicationUserInProject", b =>
+            modelBuilder.Entity("PM.Domain.RoleApplicationUserInProject", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.ApplicationUser", "ApplicationUser")
+                    b.HasOne("PM.Domain.ApplicationUser", "ApplicationUser")
                         .WithMany()
                         .HasForeignKey("ApplicationUserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.Project", "Project")
+                    b.HasOne("PM.Domain.Project", "Project")
                         .WithMany()
                         .HasForeignKey("ProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.RoleInProject", "RoleInProject")
+                    b.HasOne("PM.Domain.RoleInProject", "RoleInProject")
                         .WithMany()
                         .HasForeignKey("RoleInProjectId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -692,18 +735,29 @@ namespace PM.Persistence.Migrations
                     b.Navigation("RoleInProject");
                 });
 
-            modelBuilder.Entity("PM.Domain.DTOs.TaskInPlan", b =>
+            modelBuilder.Entity("PM.Domain.TaskDTO", b =>
                 {
-                    b.HasOne("PM.Domain.DTOs.Plan", "Plan")
+                    b.HasOne("PM.Domain.Status", "Status")
                         .WithMany()
-                        .HasForeignKey("PlanId")
+                        .HasForeignKey("StatusId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("PM.Domain.DTOs.TaskDTO", "TaskDTO")
+                    b.Navigation("Status");
+                });
+
+            modelBuilder.Entity("PM.Domain.TaskInPlan", b =>
+                {
+                    b.HasOne("PM.Domain.Plan", "Plan")
+                        .WithMany()
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("PM.Domain.TaskDTO", "TaskDTO")
                         .WithMany()
                         .HasForeignKey("TaskId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
                     b.Navigation("Plan");

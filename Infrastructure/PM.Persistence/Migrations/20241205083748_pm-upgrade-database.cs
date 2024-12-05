@@ -6,44 +6,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace PM.Persistence.Migrations
 {
     /// <inheritdoc />
-    public partial class PMAddingModels : Migration
+    public partial class pmupgradedatabase : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Plan",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlanName = table.Column<string>(name: "Plan Name", type: "nvarchar(max)", nullable: false),
-                    CreateAt = table.Column<DateTime>(name: "Create At", type: "datetime2", nullable: false),
-                    StartAt = table.Column<DateTime>(name: "Start At", type: "datetime2", nullable: false),
-                    EndAt = table.Column<DateTime>(name: "End At", type: "datetime2", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Plan", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Project",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProjectName = table.Column<string>(name: "Project Name", type: "nvarchar(max)", nullable: false),
-                    ProjectDescription = table.Column<string>(name: "Project Description", type: "nvarchar(max)", nullable: false),
-                    ProjectVersion = table.Column<string>(name: "Project Version", type: "nvarchar(max)", nullable: false),
-                    ProjectStatus = table.Column<string>(name: "Project Status", type: "nvarchar(max)", nullable: false),
-                    CreateAt = table.Column<string>(name: "Create At", type: "nvarchar(max)", nullable: false),
-                    IsDeleted = table.Column<bool>(name: "Is Deleted", type: "bit", nullable: false),
-                    IsAccessed = table.Column<bool>(name: "Is Accessed", type: "bit", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Project", x => x.Id);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Role In Project",
                 columns: table => new
@@ -72,20 +39,16 @@ namespace PM.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Task",
+                name: "Status",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    TaskName = table.Column<string>(name: "Task Name", type: "nvarchar(max)", nullable: false),
-                    TaskDescription = table.Column<string>(name: "Task Description", type: "nvarchar(max)", nullable: false),
-                    TaskStatus = table.Column<string>(name: "Task Status", type: "nvarchar(max)", nullable: false),
-                    CreateAt = table.Column<DateTime>(name: "Create At", type: "datetime2", nullable: false),
-                    StartAt = table.Column<DateTime>(name: "Start At", type: "datetime2", nullable: false),
-                    EndAt = table.Column<DateTime>(name: "End At", type: "datetime2", nullable: false)
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Value = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Task", x => x.Id);
+                    table.PrimaryKey("PK_Status", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -119,51 +82,6 @@ namespace PM.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Plan In Project",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false),
-                    PlanId = table.Column<string>(name: "Plan Id", type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Plan In Project", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Plan In Project_Plan_Plan Id",
-                        column: x => x.PlanId,
-                        principalTable: "Plan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Plan In Project_Project_Project Id",
-                        column: x => x.ProjectId,
-                        principalTable: "Project",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Position In Project",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PositionName = table.Column<string>(name: "Position Name", type: "nvarchar(max)", nullable: false),
-                    PositionDescription = table.Column<string>(name: "Position Description", type: "nvarchar(max)", nullable: false),
-                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Position In Project", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Position In Project_Project_Project Id",
-                        column: x => x.ProjectId,
-                        principalTable: "Project",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "RoleClaims",
                 columns: table => new
                 {
@@ -185,58 +103,74 @@ namespace PM.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Task In Plan",
+                name: "Plan",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    PlanId = table.Column<string>(name: "Plan Id", type: "nvarchar(450)", nullable: false),
-                    TaskId = table.Column<string>(name: "Task Id", type: "nvarchar(450)", nullable: false)
+                    PlanName = table.Column<string>(name: "Plan Name", type: "nvarchar(max)", nullable: false),
+                    CreateAt = table.Column<DateTime>(name: "Create At", type: "datetime2", nullable: false),
+                    StartAt = table.Column<DateTime>(name: "Start At", type: "datetime2", nullable: false),
+                    EndAt = table.Column<DateTime>(name: "End At", type: "datetime2", nullable: false),
+                    StatusPlan = table.Column<int>(name: "Status Plan", type: "int", nullable: false),
+                    IsDone = table.Column<bool>(name: " Is Done", type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Task In Plan", x => x.Id);
+                    table.PrimaryKey("PK_Plan", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Task In Plan_Plan_Plan Id",
-                        column: x => x.PlanId,
-                        principalTable: "Plan",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Task In Plan_Task_Task Id",
-                        column: x => x.TaskId,
-                        principalTable: "Task",
+                        name: "FK_Plan_Status_Status Plan",
+                        column: x => x.StatusPlan,
+                        principalTable: "Status",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Role Application User In Project",
+                name: "Project",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false),
-                    RoleInProjectId = table.Column<string>(name: "Role In Project Id", type: "nvarchar(450)", nullable: false),
-                    ApplicationUserId = table.Column<string>(name: "Application User Id", type: "nvarchar(450)", nullable: false)
+                    ProjectName = table.Column<string>(name: "Project Name", type: "nvarchar(max)", nullable: false),
+                    ProjectDescription = table.Column<string>(name: "Project Description", type: "nvarchar(max)", nullable: false),
+                    ProjectStatus = table.Column<int>(name: "Project Status", type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(name: "Create At", type: "datetime2", nullable: false),
+                    StartAt = table.Column<DateTime>(name: "Start At", type: "datetime2", nullable: false),
+                    EndAt = table.Column<DateTime>(name: "End At", type: "datetime2", nullable: false),
+                    IsDeleted = table.Column<bool>(name: "Is Deleted", type: "bit", nullable: false),
+                    IsAccessed = table.Column<bool>(name: "Is Accessed", type: "bit", nullable: false),
+                    IsDone = table.Column<bool>(name: " Is Done", type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Role Application User In Project", x => x.Id);
+                    table.PrimaryKey("PK_Project", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Role Application User In Project_Project_Project Id",
-                        column: x => x.ProjectId,
-                        principalTable: "Project",
+                        name: "FK_Project_Status_Project Status",
+                        column: x => x.ProjectStatus,
+                        principalTable: "Status",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Task",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    TaskName = table.Column<string>(name: "Task Name", type: "nvarchar(max)", nullable: false),
+                    TaskDescription = table.Column<string>(name: "Task Description", type: "nvarchar(max)", nullable: false),
+                    TaskStatus = table.Column<int>(name: "Task Status", type: "int", nullable: false),
+                    CreateAt = table.Column<DateTime>(name: "Create At", type: "datetime2", nullable: false),
+                    StartAt = table.Column<DateTime>(name: "Start At", type: "datetime2", nullable: false),
+                    EndAt = table.Column<DateTime>(name: "End At", type: "datetime2", nullable: false),
+                    IsDone = table.Column<bool>(name: " Is Done", type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Task", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Role Application User In Project_Role In Project_Role In Project Id",
-                        column: x => x.RoleInProjectId,
-                        principalTable: "Role In Project",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_Role Application User In Project_Users_Application User Id",
-                        column: x => x.ApplicationUserId,
-                        principalTable: "Users",
+                        name: "FK_Task_Status_Task Status",
+                        column: x => x.TaskStatus,
+                        principalTable: "Status",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -327,6 +261,104 @@ namespace PM.Persistence.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Plan In Project",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false),
+                    PlanId = table.Column<string>(name: "Plan Id", type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Plan In Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Plan In Project_Plan_Plan Id",
+                        column: x => x.PlanId,
+                        principalTable: "Plan",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Plan In Project_Project_Project Id",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Position In Project",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PositionName = table.Column<string>(name: "Position Name", type: "nvarchar(max)", nullable: false),
+                    PositionDescription = table.Column<string>(name: "Position Description", type: "nvarchar(max)", nullable: false),
+                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Position In Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Position In Project_Project_Project Id",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Role Application User In Project",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    ProjectId = table.Column<string>(name: "Project Id", type: "nvarchar(450)", nullable: false),
+                    RoleInProjectId = table.Column<string>(name: "Role In Project Id", type: "nvarchar(450)", nullable: false),
+                    ApplicationUserId = table.Column<string>(name: "Application User Id", type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Role Application User In Project", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Role Application User In Project_Project_Project Id",
+                        column: x => x.ProjectId,
+                        principalTable: "Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Role Application User In Project_Role In Project_Role In Project Id",
+                        column: x => x.RoleInProjectId,
+                        principalTable: "Role In Project",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Role Application User In Project_Users_Application User Id",
+                        column: x => x.ApplicationUserId,
+                        principalTable: "Users",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Task In Plan",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    PlanId = table.Column<string>(name: "Plan Id", type: "nvarchar(450)", nullable: false),
+                    TaskId = table.Column<string>(name: "Task Id", type: "nvarchar(450)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Task In Plan", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Task In Plan_Plan_Plan Id",
+                        column: x => x.PlanId,
+                        principalTable: "Plan",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Task In Plan_Task_Task Id",
+                        column: x => x.TaskId,
+                        principalTable: "Task",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Position Work Of Member",
                 columns: table => new
                 {
@@ -371,8 +403,7 @@ namespace PM.Persistence.Migrations
                         name: "FK_Member In Task_Task_Task Id",
                         column: x => x.TaskId,
                         principalTable: "Task",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -384,6 +415,11 @@ namespace PM.Persistence.Migrations
                 name: "IX_Member In Task_Task Id",
                 table: "Member In Task",
                 column: "Task Id");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Plan_Status Plan",
+                table: "Plan",
+                column: "Status Plan");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Plan In Project_Plan Id",
@@ -411,6 +447,11 @@ namespace PM.Persistence.Migrations
                 column: "Role Application User In Project Id");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Project_Project Status",
+                table: "Project",
+                column: "Project Status");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Role Application User In Project_Application User Id",
                 table: "Role Application User In Project",
                 column: "Application User Id");
@@ -436,6 +477,11 @@ namespace PM.Persistence.Migrations
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Task_Task Status",
+                table: "Task",
+                column: "Task Status");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Task In Plan_Plan Id",
@@ -528,6 +574,9 @@ namespace PM.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "Users");
+
+            migrationBuilder.DropTable(
+                name: "Status");
         }
     }
 }
