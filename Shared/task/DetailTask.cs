@@ -16,7 +16,7 @@ namespace Shared.task
         public DateTime CreateAt { get; set; }
         public string Status { get; set; } = string.Empty;
 
-        public bool IsDelete { get; set; }
+        public bool IsDone { get; set; }
         public List<IndexMember> IndexMembers { get; set; } = new List<IndexMember>();
     }
 }

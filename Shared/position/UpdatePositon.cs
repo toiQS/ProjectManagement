@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Shared.position
 {
-    public class UpdateTask
+    public class UpdatePositon
     {
         public string PositionName { get; set; } = string.Empty;
         public string PrositionDescription { get; set; } = string.Empty;
