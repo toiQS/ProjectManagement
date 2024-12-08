@@ -1,18 +1,60 @@
-﻿using Microsoft.VisualBasic;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace PM.Persistence.IServices
+﻿namespace PM.Persistence.IServices
 {
+    /// <summary>
+    /// Generic repository interface for CRUD operations.
+    /// </summary>
+    /// <typeparam name="T">The entity type to be managed by the repository.</typeparam>
     public interface IRepository<T> where T : class
     {
-        public Task<IEnumerable<T>> GetAllAsync();
-        public Task<T> GetValueByPrimaryKeyAsync(string id);
-        public Task<bool> AddAsync(T entity);
-        public Task<bool> UpdateAsync(string id, T entity);
-        public Task<bool> DeleteAsync(string id);
+        #region Read Operations
+
+        /// <summary>
+        /// Retrieves all entities from the repository.
+        /// </summary>
+        /// <returns>An enumerable collection of all entities.</returns>
+        Task<IEnumerable<T>> GetAllAsync();
+
+        /// <summary>
+        /// Retrieves a single entity by its primary key.
+        /// </summary>
+        /// <param name="id">The primary key of the entity.</param>
+        /// <returns>The entity that matches the primary key, or null if not found.</returns>
+        Task<T> GetValueByPrimaryKeyAsync(string id);
+
+        #endregion
+
+        #region Create Operation
+
+        /// <summary>
+        /// Adds a new entity to the repository.
+        /// </summary>
+        /// <param name="entity">The entity to be added.</param>
+        /// <returns>True if the operation was successful, otherwise false.</returns>
+        Task<bool> AddAsync(T entity);
+
+        #endregion
+
+        #region Update Operation
+
+        /// <summary>
+        /// Updates an existing entity in the repository.
+        /// </summary>
+        /// <param name="id">The primary key of the entity to be updated.</param>
+        /// <param name="entity">The updated entity object.</param>
+        /// <returns>True if the operation was successful, otherwise false.</returns>
+        Task<bool> UpdateAsync(string id, T entity);
+
+        #endregion
+
+        #region Delete Operation
+
+        /// <summary>
+        /// Deletes an entity from the repository.
+        /// </summary>
+        /// <param name="id">The primary key of the entity to be deleted.</param>
+        /// <returns>True if the operation was successful, otherwise false.</returns>
+        Task<bool> DeleteAsync(string id);
+
+        #endregion
     }
 }

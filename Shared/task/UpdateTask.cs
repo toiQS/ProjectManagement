@@ -11,7 +11,7 @@ namespace Shared.task
     {
         public string TaskName { get; set; } = string.Empty;
         public string TaskDescription { get; set; } = string.Empty ;
-        public bool IsDone { get; set; }    
+        //public bool IsDone { get; set; }    
         public List<IndexMember> Members { get; set; }  = new List<IndexMember>();
     }
 }

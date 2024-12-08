@@ -21,18 +21,19 @@ namespace PM.Persistence.Configurations
 
         private static void AddServices(IServiceCollection services)
         {
-            //services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
-            //services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
-            //services.AddScoped<IMemberInTaskServices, MemberInTaskServices>();
-            //services.AddScoped<IPlanInProjectServices, PlanInProjectServices>();
-            //services.AddScoped<IPlanServices, PlanServices>();
-            //services.AddScoped<IPositionInProjectServices, PositionInProjectServices>();
-            //services.AddScoped<IPositionWorkOfMemberServices, PositionWorkOfMemberServices>();
-            //services.AddScoped<IProjectServices, ProjectServices>();
-            //services.AddScoped<IRoleApplicationUserInProjectServices, RoleApplicationUserInProjectServices>();
-            //services.AddScoped<IRoleInProjectServices, RoleInProjectServices>();
-            //services.AddScoped<ITaskInPlanServices, TaskInPlanServices>();
-            //services.AddScoped<ITaskServices, TaskServices>();
+            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IMemberInTaskServices, MemberInTaskServices>();
+            services.AddScoped<IPlanInProjectServices, PlanInProjectServices>();
+            services.AddScoped<IPlanServices, PlanServices>();
+            services.AddScoped<IPositionInProjectServices, PositionInProjectServices>();
+            services.AddScoped<IPositionWorkOfMemberServices, PositionWorkOfMemberServices>();
+            services.AddScoped<IProjectServices, ProjectServices>();
+            services.AddScoped<IRoleApplicationUserInProjectServices, RoleApplicationUserInProjectServices>();
+            services.AddScoped<IRoleInProjectServices, RoleInProjectServices>();
+            services.AddScoped<ITaskInPlanServices, TaskInPlanServices>();
+            services.AddScoped<ITaskServices, TaskServices>();
+            services.AddScoped<IStatusServices, StatusServices>();
         }
         private static void AddDbContext(IServiceCollection services, IConfiguration configuration)
         {

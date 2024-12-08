@@ -12,9 +12,4 @@
     <ProjectReference Include="..\PM.Domain\PM.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="ILogic\" />
-    <Folder Include="Logic\" />
-  </ItemGroup>
-
 </Project>
