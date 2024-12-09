@@ -1,19 +1,13 @@
-﻿using PM.Persistence.IServices;
-using Shared.member;
+﻿using PM.Domain;
+using PM.DomainServices.ILogic;
+using PM.Persistence.IServices;
 using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Security.Claims;
-using PM.Domain;
-using System.ComponentModel.DataAnnotations;
+using Shared.member;
 using Shared.task;
 
 namespace PM.DomainServices.Logic
 {
-    public class MemberLogic
+    public class MemberLogic : IMemberLogic
     {
         private readonly IApplicationUserServices _applicationUserServices;
         private readonly IMemberInTaskServices _memberInTaskServices;

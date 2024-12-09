@@ -1,18 +1,9 @@
-﻿using Microsoft.AspNetCore.Identity.UI.Services;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using PM.Domain;
+﻿using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.Persistence.IServices;
 using Shared;
 using Shared.member;
-using Shared.position;
 using Shared.task;
-using System;
-using System.Net.Sockets;
-using System.Runtime.ExceptionServices;
-using System.Security;
-using System.Threading.Tasks;
 
 namespace PM.DomainServices.Logic
 {
@@ -514,7 +505,10 @@ namespace PM.DomainServices.Logic
                         return ServicesResult<bool>.Failure("Failed to delete task members.");
                 }
             }
-
+            // proceed to delete the task in plan 
+            var taskPlan = (await _taskInPlanServices.GetAllAsync()).FirstOrDefault(x => x.TaskId == taskId);
+            if (taskPlan == null) return ServicesResult<bool>.Failure("Task in plan not found.");
+            if(! await _taskInPlanServices.DeleteAsync(taskPlan.Id)) return ServicesResult<bool>.Failure("Failed to delete task in plan.");
             // Proceed to delete the task
             if (await _taskServices.DeleteAsync(taskId))
                 return ServicesResult<bool>.Success(true);
