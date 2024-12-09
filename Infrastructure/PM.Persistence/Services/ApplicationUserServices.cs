@@ -164,5 +164,21 @@ namespace PM.Persistence.Services
             }
         }
         #endregion
+        #region Get a user specific  by email
+        /// <inheritdoc />
+        public async Task<ApplicationUser> GetUserByEmail(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                return user;
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        #endregion
+
     }
 }

@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using PM.Domain;
+using PM.DomainServices.ILogic;
 using PM.Persistence.IServices;
 using Shared;
 using Shared.member;
@@ -15,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace PM.DomainServices.Logic
 {
-    public class TaskLogic
+    public class TaskLogic : ITaskLogic
     {
         // Define regions for better code organization
         #region Dependencies
@@ -189,7 +190,7 @@ namespace PM.DomainServices.Logic
             // Retrieve members associated with the task
             var getMemberInTasks = (await _memberInTaskServices.GetAllAsync()).Where(x => x.TaskId == taskId);
             if (!getMemberInTasks.Any())
-                return ServicesResult<DetailTask>.Failure("No members found for this task.");
+                return ServicesResult<DetailTask>.Success(data);
 
             // Retrieve and add members to the task details
             foreach (var member in getMemberInTasks)

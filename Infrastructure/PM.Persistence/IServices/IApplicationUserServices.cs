@@ -69,5 +69,13 @@ namespace PM.Persistence.IServices
         Task<ApplicationUser> GetUser(string userId);
 
         #endregion
+        #region Get a user specific  by email
+        /// <summary>
+        /// Retrieves user information by their user email.
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns>Returns the <see cref="ApplicationUser"/></returns>
+        Task<ApplicationUser> GetUserByEmail(string email);
+        #endregion
     }
 }

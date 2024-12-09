@@ -37,8 +37,9 @@ namespace PM.DomainServices.ILogic
         /// </summary>
         /// <param name="userId">The ID of the user adding the task.</param>
         /// <param name="addTask">The task details to add.</param>
+        /// <param name="planId">The ID of the plan adding the task</param>
         /// <returns>A service result indicating the success or failure of the add operation.</returns>
-        Task<ServicesResult<bool>> Add(string userId, AddTask addTask);
+        Task<ServicesResult<bool>> Add(string userId, AddTask addTask, string planId);
 
         /// <summary>
         /// Updates the information of an existing task.
