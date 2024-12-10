@@ -1,18 +1,8 @@
-﻿using Shared.project;
-using Shared;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using PM.Persistence.IServices;
+﻿using PM.Domain;
 using PM.DomainServices.ILogic;
-using System.Diagnostics;
-using PM.Domain;
-using Microsoft.VisualBasic;
-using Shared.task;
-using System.Diagnostics.Eventing.Reader;
-using System.ComponentModel.DataAnnotations;
+using PM.Persistence.IServices;
+using Shared;
+using Shared.project;
 
 namespace PM.DomainServices.Logic
 {
@@ -25,7 +15,8 @@ namespace PM.DomainServices.Logic
         private readonly IStatusServices _statusServices;
         private readonly IMemberLogic _memberLogic;
         private readonly IPlanLogic _planLogic;
-        public ProjectLogic(IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices roleApplicationUserServices, IProjectServices projectServices, IRoleInProjectServices roleInProjectServices, IStatusServices statusServices, IMemberLogic memberLogic, IPlanLogic planLogic)
+        private readonly IPositionLogic _positionLogic;
+        public ProjectLogic(IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices roleApplicationUserServices, IProjectServices projectServices, IRoleInProjectServices roleInProjectServices, IStatusServices statusServices, IMemberLogic memberLogic, IPlanLogic planLogic, IPositionLogic position)
         {
             _applicationUserServices = applicationUserServices;
             _roleApplicationUserServices = roleApplicationUserServices;
@@ -34,132 +25,272 @@ namespace PM.DomainServices.Logic
             _statusServices = statusServices;
             _memberLogic = memberLogic;
             _planLogic = planLogic;
+            _positionLogic = position;
         }
 
+        #region GetProductListUserHasJoined
+        /// <summary>
+        /// Retrieves the list of projects a user has joined.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>A service result containing a list of projects the user has joined.</returns>
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasJoined(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            if((await _applicationUserServices.GetUser(userId)) == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId);
-            if (!projectUser.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (getRoleOwner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var data = new List<IndexProject>();
-            foreach (var project in projectUser)
-            {
-                if ((await _projectServices.GetValueByPrimaryKeyAsync(project.Id)).IsDeleted == true) continue;
-                else
-                {
-                    var owner = (await _roleApplicationUserServices.GetAllAsync()).FirstOrDefault(x => x.RoleInProjectId == getRoleOwner && x.ProjectId == project.ProjectId);
-                    if (owner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-                    var user = await _applicationUserServices.GetUser(owner.ApplicationUserId);
-                    if (user == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-                    var projectItem = await _projectServices.GetValueByPrimaryKeyAsync(project.ProjectId);
-                    var value = new IndexProject()
-                    {
-                        ProjectId = project.ProjectId,
-                        OwnerAvata = user.PathImage,
-                        ProjectName = projectItem.ProjectName,
-                        OwnerName = user.UserName
-                    };
+            // Validate user ID
+            if (string.IsNullOrEmpty(userId))
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID cannot be null or empty.");
 
-                    data.Add(value);
-                }
+            // Check if the user exists
+            var user = await _applicationUserServices.GetUser(userId);
+            if (user == null)
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
+
+            // Get the list of projects the user is part of
+            var userProjects = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId);
+            if (!userProjects.Any())
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("No projects found for the user.");
+
+            // Retrieve the "Owner" role ID
+            var ownerRole = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner");
+            if (ownerRole == null)
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found.");
+
+            var ownerRoleId = ownerRole.Id;
+
+            // Initialize the result list
+            var projectList = new List<IndexProject>();
+
+            // Iterate through each project the user is part of
+            foreach (var projectUser in userProjects)
+            {
+                // Skip deleted projects
+                var project = await _projectServices.GetValueByPrimaryKeyAsync(projectUser.ProjectId);
+                if (project == null || project.IsDeleted)
+                    continue;
+
+                // Get the owner of the project
+                var projectOwner = (await _roleApplicationUserServices.GetAllAsync())
+                    .FirstOrDefault(x => x.RoleInProjectId == ownerRoleId && x.ProjectId == projectUser.ProjectId);
+                if (projectOwner == null)
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("Project owner not found.");
+
+                var ownerUser = await _applicationUserServices.GetUser(projectOwner.ApplicationUserId);
+                if (ownerUser == null)
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner user not found.");
+
+                // Construct the project data
+                var projectItem = new IndexProject
+                {
+                    ProjectId = project.Id,
+                    ProjectName = project.ProjectName,
+                    OwnerName = ownerUser.UserName,
+                    OwnerAvata = ownerUser.PathImage
+                };
+
+                projectList.Add(projectItem);
             }
-            return ServicesResult<IEnumerable<IndexProject>>.Success(data);
+
+            // Return the list of projects
+            return ServicesResult<IEnumerable<IndexProject>>.Success(projectList);
         }
+        #endregion
+
+        #region GetProductListUserHasOwner
+        /// <summary>
+        /// Retrieves a list of projects where the specified user is the owner.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>A service result containing a list of projects owned by the user.</returns>
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasOwner(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            if ((await _applicationUserServices.GetUser(userId)) == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-           
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            var data = new List<IndexProject>();
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner);
-            if (!projectUser.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var user = await _applicationUserServices.GetUser(userId);
-            if (user == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            foreach (var item in projectUser)
-            {
-                if ((await _projectServices.GetValueByPrimaryKeyAsync(item.Id)).IsDeleted == true) continue;
-                else
-                {
-                    var project = await _projectServices.GetValueByPrimaryKeyAsync(item.ProjectId);
-                    if (project == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-                    var value = new IndexProject()
-                    {
-                        ProjectId = project.Id,
-                        OwnerName = user.UserName,
-                        ProjectName = project.ProjectName,
-                        OwnerAvata = user.PathImage
-                    };
-                    data.Add(value);
-                }
+            // Validate user ID
+            if (string.IsNullOrEmpty(userId))
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID cannot be null or empty.");
 
+            // Check if the user exists
+            var user = await _applicationUserServices.GetUser(userId);
+            if (user == null)
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
+
+            // Retrieve the "Owner" role ID
+            var ownerRole = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner");
+            if (ownerRole == null)
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found.");
+
+            var ownerRoleId = ownerRole.Id;
+
+            // Get all projects where the user is the owner
+            var ownedProjects = (await _roleApplicationUserServices.GetAllAsync())
+                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == ownerRoleId);
+
+            if (!ownedProjects.Any())
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("No owned projects found for the user.");
+
+            // Prepare the result list
+            var projectList = new List<IndexProject>();
+
+            // Iterate through the owned projects
+            foreach (var projectRole in ownedProjects)
+            {
+                // Fetch the project details
+                var project = await _projectServices.GetValueByPrimaryKeyAsync(projectRole.ProjectId);
+                if (project == null || project.IsDeleted)
+                    continue; // Skip null or deleted projects
+
+                // Add the project to the result list
+                var projectData = new IndexProject
+                {
+                    ProjectId = project.Id,
+                    ProjectName = project.ProjectName,
+                    OwnerName = user.UserName,
+                    OwnerAvata = user.PathImage
+                };
+
+                projectList.Add(projectData);
             }
-            return ServicesResult<IEnumerable<IndexProject>>.Success(data);
+
+            // Return the list of owned projects
+            return ServicesResult<IEnumerable<IndexProject>>.Success(projectList);
         }
+        #endregion
+
+        #region GetProductDetailProjectHasJoined
+        /// <summary>
+        /// Retrieves detailed information about a project that the user has joined.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="projectId">The ID of the project.</param>
+        /// <returns>A service result containing the project details.</returns>
         public async Task<ServicesResult<DetailProject>> GetProductDetailProjectHasJoined(string userId, string projectId)
         {
-            if (userId == null || projectId == null) return ServicesResult<DetailProject>.Failure("");
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.ProjectId == projectId);
-            if (!projectUser.Any()) return ServicesResult<DetailProject>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<DetailProject>.Failure("User ID or Project ID cannot be null or empty.");
+
+            // Check if the user is part of the project
+            var projectUserRoles = (await _roleApplicationUserServices.GetAllAsync())
+                .Where(x => x.ApplicationUserId == userId && x.ProjectId == projectId);
+
+            if (!projectUserRoles.Any())
+                return ServicesResult<DetailProject>.Failure("User is not part of the project.");
+
+            // Fetch the project details
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.IsAccessed != true && !(await _roleApplicationUserServices.GetAllAsync()).Any(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner))
-                return ServicesResult<DetailProject>.Failure("");
-            var roleUser = (await _roleApplicationUserServices.GetAllAsync()).FirstOrDefault(x => x.ProjectId == projectId && x.RoleInProjectId == getRoleOwner);
-            if (roleUser == null) return ServicesResult<DetailProject>.Failure("");
-            var user = await _applicationUserServices.GetUser(roleUser.ApplicationUserId);
-            if (user == null) return ServicesResult<DetailProject>.Failure("");
-            var data = new DetailProject()
+            if (project == null)
+                return ServicesResult<DetailProject>.Failure("Project not found.");
+
+            // Check if the user has access to the project
+            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+                .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+
+            if (ownerRoleId == null)
+                return ServicesResult<DetailProject>.Failure("Owner role not found.");
+
+            if (!project.IsAccessed && !projectUserRoles.Any(x => x.RoleInProjectId == ownerRoleId))
+                return ServicesResult<DetailProject>.Failure("User does not have access to this project.");
+
+            // Retrieve project owner details
+            var projectOwnerRole = (await _roleApplicationUserServices.GetAllAsync())
+                .FirstOrDefault(x => x.ProjectId == projectId && x.RoleInProjectId == ownerRoleId);
+
+            if (projectOwnerRole == null)
+                return ServicesResult<DetailProject>.Failure("Project owner not found.");
+
+            var ownerUser = await _applicationUserServices.GetUser(projectOwnerRole.ApplicationUserId);
+            if (ownerUser == null)
+                return ServicesResult<DetailProject>.Failure("Owner user details not found.");
+
+            // Prepare the project detail data
+            var projectDetails = new DetailProject
             {
                 ProjectId = projectId,
-                OwnerName = user.UserName,
-                CreateAt = project.CreateAt,
                 ProjectName = project.ProjectName,
+                ProjectDescription = project.ProjectDescription,
+                CreateAt = project.CreateAt,
+                StartAt = project.StartAt,
                 EndAt = project.EndAt,
                 IsAccessed = project.IsAccessed,
                 IsDeleted = project.IsDeleted,
                 IsDone = project.IsDone,
-                OwnerAvata = user.PathImage,
-                ProjectDescription = project.ProjectDescription,
-                QuantityMember = ((await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ProjectId == projectId)).Count(),
-                StartAt = project.StartAt,
-                Status = (await _statusServices.GetAllAsync()).FirstOrDefault(x => x.Id == project.StatusId).Value
+                Status = (await _statusServices.GetAllAsync())
+                    .FirstOrDefault(x => x.Id == project.StatusId)?.Value ?? "Unknown",
+                QuantityMember = (await _roleApplicationUserServices.GetAllAsync())
+                    .Count(x => x.ProjectId == projectId),
+                OwnerName = ownerUser.UserName,
+                OwnerAvata = ownerUser.PathImage
             };
-            var member = await _memberLogic.GetMembersInProject(userId, projectId);
-            if (member.Data != null) return ServicesResult<DetailProject>.Failure("");
-            data.Members = member.Data.Select(x => new Shared.member.IndexMember()
+
+            // Fetch and attach project members
+            var membersResult = await _memberLogic.GetMembersInProject(userId, projectId);
+            if (membersResult.Data == null)
+                return ServicesResult<DetailProject>.Failure("Failed to fetch project members.");
+
+            projectDetails.Members = membersResult.Data.Select(member => new Shared.member.IndexMember
             {
-                PositionWorkName = x.PositionWorkName,
-                UserName = x.UserName,
+                PositionWorkName = member.PositionWorkName,
+                UserName = member.UserName,
                 RoleUserInProjectId = userId,
-                UserAvata = user.PathImage,
+                UserAvata = ownerUser.PathImage
             }).ToList();
-            return ServicesResult<DetailProject>.Success(data);
+
+            // Return the project details
+            return ServicesResult<DetailProject>.Success(projectDetails);
         }
+        #endregion
+
+        #region AddProject
+        /// <summary>
+        /// Adds a new project if the user is authorized (not already an owner of a project with the same name).
+        /// </summary>
+        /// <param name="userId">The ID of the user trying to add the project.</param>
+        /// <param name="addProject">The project details to be added.</param>
+        /// <returns>A service result indicating success or failure.</returns>
         public async Task<ServicesResult<bool>> Add(string userId, AddProject addProject)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || addProject == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner);
-            if (!projectUser.Any()) return await AddMethod(userId, addProject);
-            foreach (var item in projectUser)
+            if (string.IsNullOrEmpty(userId) || addProject == null)
+                return ServicesResult<bool>.Failure("Invalid parameters.");
+
+            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+                                .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+
+            if (ownerRoleId == null)
+                return ServicesResult<bool>.Failure("Owner role not found.");
+
+            // Check if the user is already an owner of a project with the same name
+            var userProjects = (await _roleApplicationUserServices.GetAllAsync())
+                                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == ownerRoleId);
+
+            if (userProjects.Any())
             {
-                var project = await _projectServices.GetValueByPrimaryKeyAsync (item.ProjectId);
-                if (project == null) return ServicesResult<bool>.Failure("");
-                if(project.ProjectName == addProject.ProjectName) return ServicesResult<bool>.Failure("");
+                foreach (var project in userProjects)
+                {
+                    var existingProject = await _projectServices.GetValueByPrimaryKeyAsync(project.ProjectId);
+                    if (existingProject != null && existingProject.ProjectName == addProject.ProjectName)
+                    {
+                        return ServicesResult<bool>.Failure("Project with the same name already exists.");
+                    }
+                }
             }
+
+            // Proceed with adding the project
             return await AddMethod(userId, addProject);
         }
+        #endregion
+
+        #region AddMethod
+        /// <summary>
+        /// Adds the project and assigns the user as the owner.
+        /// </summary>
+        /// <param name="userId">The ID of the user to be assigned as the owner.</param>
+        /// <param name="addProject">The project details to be added.</param>
+        /// <returns>A service result indicating success or failure.</returns>
         private async Task<ServicesResult<bool>> AddMethod(string userId, AddProject addProject)
         {
-            var randon = new Random().Next(1000000, 9000000);
+            var random = new Random().Next(1000000, 9000000);
 
-            var project = new Project()
+            var project = new Project
             {
-                Id = $"1001-{randon}-{DateTime.Now}",
+                Id = $"1001-{random}-{DateTime.Now}",
                 ProjectName = addProject.ProjectName,
                 CreateAt = DateTime.Now,
                 EndAt = addProject.EndAt,
@@ -167,108 +298,321 @@ namespace PM.DomainServices.Logic
                 IsDeleted = false,
                 IsDone = false,
                 ProjectDescription = addProject.ProjectDescription,
-                StartAt = addProject.StartAt
+                StartAt = addProject.StartAt,
+                StatusId = DateTime.Now == addProject.StartAt ? 3 : (DateTime.Now < addProject.StartAt ? 2 : 1) // Conditional status assignment
             };
-            if (DateTime.Now == addProject.StartAt) project.StatusId = 3;
-            if (DateTime.Now < addProject.StartAt) project.StatusId = 2;
 
-            if(! await _projectServices.AddAsync(project)) return ServicesResult<bool>.Failure("");
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            var roleProject = new RoleApplicationUserInProject()
+            if (!await _projectServices.AddAsync(project))
+                return ServicesResult<bool>.Failure("Failed to create the project.");
+
+            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+                                .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+
+            if (ownerRoleId == null)
+                return ServicesResult<bool>.Failure("Owner role not found.");
+
+            var roleProject = new RoleApplicationUserInProject
             {
-                Id = $"1002-{randon}-{DateTime.Now}",
+                Id = $"1002-{random}-{DateTime.Now}",
                 ProjectId = project.Id,
                 ApplicationUserId = userId,
-                RoleInProjectId = getRoleOwner
+                RoleInProjectId = ownerRoleId
             };
-            if (await _roleApplicationUserServices.AddAsync(roleProject)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
+
+            if (await _roleApplicationUserServices.AddAsync(roleProject))
+            {
+                return ServicesResult<bool>.Success(true);
+            }
+
+            return ServicesResult<bool>.Failure("Failed to assign the user as project owner.");
         }
-        
+        #endregion
+
+        #region UpdateProjectInfo
+        /// <summary>
+        /// Updates the project information, but only if the user is the owner of the project.
+        /// </summary>
+        /// <param name="userId">The ID of the user trying to update the project.</param>
+        /// <param name="projectId">The ID of the project to update.</param>
+        /// <param name="updateProject">The updated project details.</param>
+        /// <returns>A service result indicating success or failure.</returns>
         public async Task<ServicesResult<bool>> UpdateInfo(string userId, string projectId, UpdateProject updateProject)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || updateProject == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId) || updateProject == null)
+                return ServicesResult<bool>.Failure("Invalid input parameters.");
+
+            // Get the 'Owner' role ID
+            var getRoleOwner = (await _roleInProjectServices.GetAllAsync())
+                                .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+            if (getRoleOwner == null)
+                return ServicesResult<bool>.Failure("Owner role not found.");
+
+            // Check if the user is the owner of the specified project
+            var projectUser = (await _roleApplicationUserServices.GetAllAsync())
+                                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
+            if (!projectUser.Any())
+                return ServicesResult<bool>.Failure("User is not the owner of the project.");
+
+            // Get the project to be updated
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
-            if (project.ProjectName == updateProject.ProjectName) return ServicesResult<bool>.Failure("");
+            if (project == null)
+                return ServicesResult<bool>.Failure("Project not found.");
+
+            // Check if the project name is the same as the one being updated (no changes)
+            if (project.ProjectName == updateProject.ProjectName)
+                return ServicesResult<bool>.Failure("No changes to the project name.");
+
+            // Update project details
             project.ProjectName = updateProject.ProjectName;
             project.ProjectDescription = updateProject.ProjectDescription;
-            if(await _projectServices.UpdateAsync(projectId, project)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
-        }
 
+            // Save the updated project information
+            if (await _projectServices.UpdateAsync(projectId, project))
+                return ServicesResult<bool>.Success(true);
+
+            // Return failure if update fails
+            return ServicesResult<bool>.Failure("Failed to update the project.");
+        }
+        #endregion
+        #region Helper Method
+        // Helper method to check if the user is the owner and get the project.
+        private async Task<(Project project, bool isOwner)> GetProjectAndCheckOwnerAsync(string userId, string projectId)
+        {
+            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+            if (getRoleOwner == null) return (null, false);
+
+            var projectUser = (await _roleApplicationUserServices.GetAllAsync())
+                              .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
+
+            if (!projectUser.Any()) return (null, false);
+
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project == null) return (null, false);
+
+            return (project, true);
+        }
+        #endregion
+
+        #region UpdateIsDelete
+        /// <summary>
+        /// Toggles the deletion status of a project. 
+        /// This operation can only be performed by the project owner.
+        /// </summary>
+        /// <param name="userId">The user ID of the person attempting to toggle the deletion status.</param>
+        /// <param name="projectId">The ID of the project to be updated.</param>
+        /// <returns>A result indicating whether the update was successful or not.</returns>
         public async Task<ServicesResult<bool>> UpdateIsDelete(string userId, string projectId)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("User or project ID cannot be null or empty.");
+
+            // Get project and check if user is the owner
+            var (project, isOwner) = await GetProjectAndCheckOwnerAsync(userId, projectId);
+            if (!isOwner || project == null)
+                return ServicesResult<bool>.Failure("User is not the owner or project not found.");
+
+            // Toggle the IsDeleted flag
             project.IsDeleted = !project.IsDeleted;
-            if (await _projectServices.UpdateAsync(projectId, project)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
+
+            // Update the project status
+            if (await _projectServices.UpdateAsync(projectId, project))
+                return ServicesResult<bool>.Success(true);
+
+            return ServicesResult<bool>.Failure("Failed to update project deletion status.");
         }
+        #endregion
+
+        #region UpdateIsAccessed
+        /// <summary>
+        /// Toggles the access status of a project. 
+        /// This operation can only be performed by the project owner.
+        /// </summary>
+        /// <param name="userId">The user ID of the person attempting to toggle the access status.</param>
+        /// <param name="projectId">The ID of the project to be updated.</param>
+        /// <returns>A result indicating whether the update was successful or not.</returns>
         public async Task<ServicesResult<bool>> UpdateIsAccessed(string userId, string projectId)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("User or project ID cannot be null or empty.");
+
+            // Get project and check if user is the owner
+            var (project, isOwner) = await GetProjectAndCheckOwnerAsync(userId, projectId);
+            if (!isOwner || project == null)
+                return ServicesResult<bool>.Failure("User is not the owner or project not found.");
+
+            // Toggle the IsAccessed flag
             project.IsAccessed = !project.IsAccessed;
-            if (await _projectServices.UpdateAsync(projectId, project)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
+
+            // Update the project status
+            if (await _projectServices.UpdateAsync(projectId, project))
+                return ServicesResult<bool>.Success(true);
+
+            return ServicesResult<bool>.Failure("Failed to update project access status.");
         }
+        #endregion
+
+        #region UpdateIsDone
+        /// <summary>
+        /// Toggles the completion status of a project. 
+        /// This operation can only be performed by the project owner.
+        /// </summary>
+        /// <param name="userId">The user ID of the person attempting to toggle the completion status.</param>
+        /// <param name="projectId">The ID of the project to be updated.</param>
+        /// <returns>A result indicating whether the update was successful or not.</returns>
         public async Task<ServicesResult<bool>> UpdateIsDone(string userId, string projectId)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
-            project.IsAccessed = !project.IsAccessed;
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("User or project ID cannot be null or empty.");
+
+            // Get project and check if user is the owner
+            var (project, isOwner) = await GetProjectAndCheckOwnerAsync(userId, projectId);
+            if (!isOwner || project == null)
+                return ServicesResult<bool>.Failure("User is not the owner or project not found.");
+
+            // Toggle the IsDone flag
+            project.IsDone = !project.IsDone;
+
+            // Update the project status
             if (!await _projectServices.UpdateAsync(projectId, project))
-            return ServicesResult<bool>.Failure("");
+                return ServicesResult<bool>.Failure("Failed to update project completion status.");
+
+            // After toggling IsDone, update project status
             return await UpdateStatus(userId, projectId);
         }
+        #endregion
+
+        #region UpdateStatus
+        /// <summary>
+        /// Updates the status of a project based on its completion and end date.
+        /// This operation can only be performed by the project owner.
+        /// </summary>
+        /// <param name="userId">The user ID of the person attempting to update the project status.</param>
+        /// <param name="projectId">The ID of the project to be updated.</param>
+        /// <returns>A result indicating whether the update was successful or not.</returns>
         public async Task<ServicesResult<bool>> UpdateStatus(string userId, string projectId)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("User or project ID cannot be null or empty.");
 
-            if (project.IsDone = false && project.EndAt < DateTime.Now) project.StatusId = 6;
-            if (project.IsDone = false && project.EndAt == DateTime.Now) project.StatusId = 5;
-            if (project.IsDone = false && project.EndAt > DateTime.Now) project.StatusId = 3;
-            if (project.IsDone = true && project.EndAt < DateTime.Now) project.StatusId = 7;
-            if (project.IsDone = true && project.EndAt == DateTime.Now) project.StatusId = 5;
-            if (project.IsDone = true && project.EndAt > DateTime.Now) project.StatusId = 4;
+            // Get project and check if user is the owner
+            var (project, isOwner) = await GetProjectAndCheckOwnerAsync(userId, projectId);
+            if (!isOwner || project == null)
+                return ServicesResult<bool>.Failure("User is not the owner or project not found.");
 
+            // Correct assignment mistakes in conditions (using == instead of =)
+            if (!project.IsDone && project.EndAt < DateTime.Now)
+                project.StatusId = 6; // Ended but not done
+            else if (!project.IsDone && project.EndAt == DateTime.Now)
+                project.StatusId = 5; // Ended today but not done
+            else if (!project.IsDone && project.EndAt > DateTime.Now)
+                project.StatusId = 3; // Active but not done
+            else if (project.IsDone && project.EndAt < DateTime.Now)
+                project.StatusId = 7; // Completed and ended
+            else if (project.IsDone && project.EndAt == DateTime.Now)
+                project.StatusId = 5; // Completed, ending today
+            else if (project.IsDone && project.EndAt > DateTime.Now)
+                project.StatusId = 4; // Completed, still ongoing
 
-            if (await _projectServices.UpdateAsync(projectId, project)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
+            // Update the project status
+            if (await _projectServices.UpdateAsync(projectId, project))
+                return ServicesResult<bool>.Success(true);
+
+            return ServicesResult<bool>.Failure("Failed to update project status.");
         }
+        #endregion
+
+
+        #region Delete Method
+        /// <summary>
+        /// Deletes a project along with its associated plans, members, and positions.
+        /// This method ensures that only the project owner can delete the project.
+        /// </summary>
+        /// <param name="userId">The user ID of the person attempting to delete the project.</param>
+        /// <param name="projectId">The ID of the project to be deleted.</param>
+        /// <returns>A result indicating whether the deletion was successful or not.</returns>
         public async Task<ServicesResult<bool>> Delete(string userId, string projectId)
         {
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner").Id;
-            if (userId == null || projectId == null) return ServicesResult<bool>.Failure("");
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner);
-            if (!projectUser.Any()) return ServicesResult<bool>.Failure("");
+            #region Validate Input Parameters
+            // Ensure that userId and projectId are not null or empty
+            if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
+                return ServicesResult<bool>.Failure("User ID or Project ID cannot be null or empty.");
+            #endregion
+
+            #region Check if User is the Project Owner
+            // Get the 'Owner' role ID
+            var getRoleOwner = (await _roleInProjectServices.GetAllAsync())
+                .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
+
+            // If 'Owner' role is not found, return failure
+            if (getRoleOwner == null)
+                return ServicesResult<bool>.Failure("Owner role not found.");
+
+            // Check if the user is the owner of the project
+            var projectUser = (await _roleApplicationUserServices.GetAllAsync())
+                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner);
+
+            // If the user is not the owner, return failure
+            if (!projectUser.Any())
+                return ServicesResult<bool>.Failure("User is not the owner of the project.");
+            #endregion
+
+            #region Retrieve Project Information
+            // Retrieve project details
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project == null) return ServicesResult<bool>.Failure("");
-            if (!(await _planLogic.Delete(userId, projectId)).Status) return ServicesResult<bool>.Failure("");
-            if (!(await _memberLogic.Delete(userId, projectId)).Status) return ServicesResult<bool>.Failure("");
-            if(await _projectServices.DeleteAsync(projectId)) return ServicesResult<bool>.Success(true);
-            return ServicesResult<bool>.Failure("");
+            // If project is not found, return failure
+            if (project == null)
+                return ServicesResult<bool>.Failure("Project not found.");
+            #endregion
+
+            #region Delete Associated Plans
+            // Attempt to delete associated plans
+            var planDeleteResult = await _planLogic.Delete(userId, projectId);
+            if (!planDeleteResult.Status)
+                return ServicesResult<bool>.Failure("Failed to delete associated plans.");
+            #endregion
+
+            #region Delete Associated Members
+            // Attempt to delete associated members
+            var memberDeleteResult = await _memberLogic.Delete(userId, projectId);
+            if (!memberDeleteResult.Status)
+                return ServicesResult<bool>.Failure("Failed to delete associated members.");
+            #endregion
+
+            #region Delete Associated Positions
+            // Retrieve associated positions for the project
+            var positions = (await _positionLogic.Get(userId, projectId))?.Data;
+
+            // If positions are found, attempt to delete each position
+            if (positions != null && positions.Any())
+            {
+                foreach (var position in positions)
+                {
+                    var positionDeleteResult = await _positionLogic.Delete(userId, position.PositionId, projectId);
+                    if (!positionDeleteResult.Status)
+                        return ServicesResult<bool>.Failure($"Failed to delete position with ID: {position.PositionId}");
+                }
+            }
+            else
+            {
+                return ServicesResult<bool>.Failure("No positions found to delete.");
+            }
+            #endregion
+
+            #region Delete the Project
+            // Finally, delete the project itself
+            if (await _projectServices.DeleteAsync(projectId))
+                return ServicesResult<bool>.Success(true);
+
+            // If project deletion fails, return failure
+            return ServicesResult<bool>.Failure("Failed to delete project.");
+            #endregion
         }
+        #endregion
+
     }
 }
