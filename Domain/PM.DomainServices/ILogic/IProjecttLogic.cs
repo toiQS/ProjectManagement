@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 namespace PM.DomainServices.ILogic
 {
     /// <summary>
-    /// Interface defining product-related operations and management logic.
+    /// Interface defining project-related operations and management logic.
     /// </summary>
-    public interface IProductLogic
+    public interface IProjecttLogic
     {
-        #region Product Retrieval
+        #region Project Retrieval
 
         /// <summary>
         /// Retrieves a list of projects that the user has joined.
@@ -26,9 +26,17 @@ namespace PM.DomainServices.ILogic
         /// <returns>A service result containing a list of projects owned by the user.</returns>
         Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasOwner(string userId);
 
+        /// <summary>
+        /// Retrieves detailed information about a project the user has joined.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <param name="projectId">The ID of the project.</param>
+        /// <returns>A service result containing the project's detailed information.</returns>
+        Task<ServicesResult<DetailProject>> GetProductDetailProjectHasJoined(string userId, string projectId);
+
         #endregion
 
-        #region Product Management
+        #region Project Management
 
         /// <summary>
         /// Adds a new project associated with a user.

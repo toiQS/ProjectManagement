@@ -43,7 +43,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="planId">The ID of the plan to update.</param>
         /// <param name="updatePlan">The updated plan details.</param>
         /// <returns>A result indicating whether the plan was successfully updated.</returns>
-        Task<ServicesResult<bool>> Upd(string userId, string planId, UpdatePlan updatePlan);
+        Task<ServicesResult<bool>> UpdateInfo(string userId, string planId, UpdatePlan updatePlan);
 
         /// <summary>
         /// Deletes a specific plan based on the user and plan IDs.
@@ -52,6 +52,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="planId">The ID of the plan to delete.</param>
         /// <returns>A result indicating whether the plan was successfully deleted.</returns>
         Task<ServicesResult<bool>> Delete(string userId, string planId);
+        Task<ServicesResult<bool>> UpdateIsDone(string userId, string planId);
 
         #endregion
     }
