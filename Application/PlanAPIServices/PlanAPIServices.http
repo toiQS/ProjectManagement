@@ -1,0 +1,6 @@
+@PlanAPIServices_HostAddress = http://localhost:5098
+
+GET {{PlanAPIServices_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
