@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Logic;
 
@@ -6,7 +7,7 @@ namespace PM.DomainServices
 {
     public static class Configurations
     {
-        public static void Initialize(this IServiceCollection services)
+        public static void AddInitialize(this IServiceCollection services,IConfiguration configuration)
         {
             RegisterLogic(services);
         }
