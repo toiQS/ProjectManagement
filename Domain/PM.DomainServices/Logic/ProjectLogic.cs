@@ -6,7 +6,7 @@ using Shared.project;
 
 namespace PM.DomainServices.Logic
 {
-    internal class ProjectLogic : IProjecttLogic
+    internal class ProjectLogic : IProjectLogic
     {
         private readonly IApplicationUserServices _applicationUserServices;
         private readonly IRoleApplicationUserInProjectServices _roleApplicationUserServices;

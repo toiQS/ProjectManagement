@@ -8,7 +8,7 @@ namespace PM.DomainServices.ILogic
     /// <summary>
     /// Interface defining project-related operations and management logic.
     /// </summary>
-    public interface IProjecttLogic
+    public interface IProjectLogic
     {
         #region Project Retrieval
 
