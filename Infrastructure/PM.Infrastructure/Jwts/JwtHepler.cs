@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using PM.Domain;
-using System;
+using Shared.appUser;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -24,6 +24,33 @@ namespace PM.Infrastructure.Jwts
             _configuration = configuration;
         }
 
+        public async Task<string> GenerateToken(ApplicationUser appUser,string role)
+        {
+            try
+            {
+                var claims = new List<Claim>
+                {
+                    new Claim (ClaimTypes.Email, appUser.Email),
+                    new Claim(ClaimTypes.Role, role)
+                };
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+                var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
+
+                var tokenOptions = new JwtSecurityToken(
+                    issuer: _configuration["Jwt:Issuer"],
+                    audience: _configuration["Jwt:Audience"],
+                    claims: claims,
+                    expires: DateTime.Now.AddMinutes(30),
+                    signingCredentials: signingCredentials
+                );
+
+                return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
+            }
+            catch
+            {
+                throw;
+            }
+        }
         
     }
 }

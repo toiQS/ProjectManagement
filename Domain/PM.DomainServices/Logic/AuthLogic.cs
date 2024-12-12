@@ -97,5 +97,13 @@ namespace PM.DomainServices.Logic
             return ServicesResult<bool>.Success(true);
         }
         #endregion
+
+        public async Task<ServicesResult<string>> GetRoleByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) ServicesResult<string>.Failure("");
+            var role = await _applicationUserServices.GetRoleByEmail(email);
+            if (role == null) return ServicesResult<string>.Failure("");
+            return ServicesResult<string>.Success(role);
+        }
     }
 }

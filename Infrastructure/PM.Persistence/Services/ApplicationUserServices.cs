@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using PM.Domain;
 using PM.Persistence.IServices;
+using System.Net.Http.Headers;
 
 namespace PM.Persistence.Services
 {
@@ -180,5 +181,22 @@ namespace PM.Persistence.Services
         }
         #endregion
 
+        #region
+        public async Task<string> GetRoleByEmail(string email)
+        {
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null) return string.Empty;
+                var role = await _userManager.GetRolesAsync(user);
+                if (role == null) return string.Empty;
+                return role.First();
+            }
+            catch
+            {
+                throw;
+            }
+        }
+        #endregion
     }
 }

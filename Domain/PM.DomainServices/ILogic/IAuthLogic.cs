@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using PM.Domain;
+using Shared;
 using Shared.appUser;
 using System;
 using System.Collections.Generic;
@@ -52,5 +53,8 @@ namespace PM.DomainServices.ILogic
         Task<ServicesResult<DetailUser>> Detail(string userId);
 
         #endregion
+
+        public Task<ServicesResult<string>> GetRoleByEmail(string email);
     }
 }
+    
