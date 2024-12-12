@@ -1,0 +1,75 @@
+﻿<Window x:Class="PM.WPF.Views.Pages.Pages_of_MainWindow.RepositoryPages.UpdateProject"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        Title="Update Project" Height="600" Width="600">
+    <Grid Background="#FF231E1E">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto" MinHeight="48"/>
+            <RowDefinition Height="auto" MinHeight="559.88"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <ui:TitleBar x:Name="TitleBar" Title="{Binding ViewModel.ApplicationTitle}" Grid.Row="0" CloseWindowByDoubleClickOnIcon="True"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid Margin="20">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Project Name -->
+                <StackPanel Grid.Row="0" Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock FontSize="16" FontWeight="Bold" Text="Project Name" Margin="10"  />
+                    <TextBox x:Name="txtProjectName" Width="400" Text="Enter project name" Margin="10" />
+                    <!-- Project Name - Used to update the name of the project -->
+                </StackPanel>
+
+                <!-- Project Version -->
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock FontSize="16" FontWeight="Bold" Text="Project Version" Margin="10" />
+                    <TextBox x:Name="txtProjectVersion" Width="400" Text="Enter project version" Margin="10" />
+                    <!-- Project Version - Used to update the project version -->
+                </StackPanel>
+
+                <!-- Project Description -->
+                <StackPanel Grid.Row="2" Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock FontSize="16" FontWeight="Bold" Text="Project Description" Margin="10" />
+                    <TextBox x:Name="txtProjectDescription" Width="400" Height="100" TextWrapping="Wrap" AcceptsReturn="True" Text="Enter project description" Margin="10" />
+                    <!-- Project Description - Used to update project details -->
+                </StackPanel>
+
+                <!-- Project Status -->
+                <StackPanel Grid.Row="3" Orientation="Vertical" Margin="0,0,0,10">
+                    <TextBlock FontSize="16" FontWeight="Bold" Text="Project Status" Margin="10" />
+                    <ComboBox x:Name="cmbProjectStatus" Width="400" SelectedIndex="0">
+                        <ComboBoxItem Content="Not Started"/>
+                        <ComboBoxItem Content="In Progress"/>
+                        <ComboBoxItem Content="Completed"/>
+                    </ComboBox>
+                    <!-- Project Status - Dropdown to select the project's current status -->
+                </StackPanel>
+
+                <!-- Save Button -->
+                <Grid Grid.Row="5" HorizontalAlignment="Center">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1*"/>
+                        <ColumnDefinition Width="1*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0" x:Name="btnSaveProject" Content="Save Project" Width="120" Height="40" HorizontalAlignment="Center" Margin="10"/>
+                    <Button Grid.Column="1" x:Name="btnCancelProject" Content="Cancel Project" Width="120" Height="40" Margin="10"/>
+                    <!-- Save Button - Click to save the updated project details -->
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>
