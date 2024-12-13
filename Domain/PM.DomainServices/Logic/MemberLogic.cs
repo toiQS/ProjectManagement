@@ -59,7 +59,7 @@ namespace PM.DomainServices.Logic
 
             #region Check User and Project Existence
             // Ensure the user exists
-            if ((await _applicationUserServices.GetUser(userId)) == null)
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null)
                 return ServicesResult<IEnumerable<IndexMember>>.Failure("User not found.");
 
             // Ensure the project exists
@@ -89,7 +89,7 @@ namespace PM.DomainServices.Logic
             foreach (var member in membersInProject)
             {
                 // Fetch user details
-                var user = await _applicationUserServices.GetUser(member.ApplicationUserId);
+                var user = await _applicationUserServices.GetUserDetailByUserId(member.ApplicationUserId);
                 if (user == null)
                     return ServicesResult<IEnumerable<IndexMember>>.Failure("A member's user data is missing.");
 
@@ -139,7 +139,7 @@ namespace PM.DomainServices.Logic
 
             #region Check User and Role Existence
             // Ensure the user exists and has roles assigned
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserServices.GetAllAsync()).Any(x => x.ApplicationUserId == userId))
                 return ServicesResult<DetailMember>.Failure("User not found or has no assigned roles.");
             #endregion
@@ -151,7 +151,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<DetailMember>.Failure("Member not found.");
 
             // Fetch user details
-            var user = await _applicationUserServices.GetUser(roleUser.ApplicationUserId);
+            var user = await _applicationUserServices.GetUserDetailByUserId(roleUser.ApplicationUserId);
             if (user == null)
                 return ServicesResult<DetailMember>.Failure("Member's user data is missing.");
 
@@ -241,7 +241,7 @@ namespace PM.DomainServices.Logic
             var getRoleLeaderId = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Leader")?.Id;
 
             // Ensure the user exists and has the necessary permissions in the project (Owner or Leader role)
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserServices.GetAllAsync())
                     .Any(x => x.ProjectId == projectId
                             && x.ApplicationUserId == userId
@@ -256,7 +256,7 @@ namespace PM.DomainServices.Logic
             // Check if the member is being added by email
             if (addMember.ValueUser.Contains("@"))
             {
-                user = await _applicationUserServices.GetUserByEmail(addMember.ValueUser);
+                user = await _applicationUserServices.GetUserDetailByMail(addMember.ValueUser);
                 if (user == null)
                     return ServicesResult<bool>.Failure("User not found by email.");
             }
@@ -322,7 +322,7 @@ namespace PM.DomainServices.Logic
             var getRoleLeaderId = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Leader")?.Id;
 
             // Ensure the user exists and has sufficient permissions (Owner or Leader role)
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId
                             && (x.RoleInProjectId == getRoleOwnerId || x.RoleInProjectId == getRoleLeaderId)))
@@ -391,7 +391,7 @@ namespace PM.DomainServices.Logic
             var getRoleLeaderId = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Leader")?.Id;
 
             // Ensure the user exists and has the necessary permissions (Owner or Leader role)
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId
                             && (x.RoleInProjectId == getRoleOwnerId || x.RoleInProjectId == getRoleLeaderId)))

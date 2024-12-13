@@ -66,7 +66,7 @@ namespace PM.DomainServices.Logic
             if (user == null)
                 return ServicesResult<DetailUser>.Failure("User not found.");
 
-            var role = await _applicationUserServices.GetUserDetailByUserId(userId);
+            var role = await _applicationUserServices.GetRoleByEmail(user.Email);
             var result = new DetailUser
             {
                 UserId = user.Id,

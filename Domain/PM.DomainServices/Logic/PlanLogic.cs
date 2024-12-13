@@ -71,7 +71,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexPlan>>.Failure("Invalid userId or projectId.");
 
             // Verify if the user exists and is associated with the project
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync()).Any(x => x.ProjectId == projectId && x.ApplicationUserId == userId))
                 return ServicesResult<IEnumerable<IndexPlan>>.Failure("User is not associated with the project.");
 
@@ -131,7 +131,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<DetailPlan>.Failure("Plan not associated with any project.");
 
             // Verify the user's existence and association with the project
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId && x.ProjectId == planProject.ProjectId))
                 return ServicesResult<DetailPlan>.Failure("User is not associated with the project.");
@@ -197,7 +197,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Invalid input parameters.");
 
             // Verify user existence and their association with the project
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync())
                     .Any(x => x.ProjectId == projectId && x.ApplicationUserId == userId))
                 return ServicesResult<bool>.Failure("User is not associated with the project.");
@@ -305,7 +305,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Plan not found in the project.");
 
             // Verify user existence and their association with the project
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId && x.ProjectId == planProject.ProjectId))
                 return ServicesResult<bool>.Failure("User is not authorized to update this plan.");
@@ -348,7 +348,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Plan is not associated with any project.");
 
             // Check user existence and authorization
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId && x.ProjectId == planProject.ProjectId))
                 return ServicesResult<bool>.Failure("User is not authorized to delete this plan.");
@@ -406,7 +406,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Plan not associated with any project.");
 
             // Check user existence and authorization
-            if ((await _applicationUserServices.GetUser(userId)) == null
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null
                 || !(await _roleApplicationUserInProjectServices.GetAllAsync())
                     .Any(x => x.ApplicationUserId == userId && x.ProjectId == planProject.ProjectId))
                 return ServicesResult<bool>.Failure("User is not authorized to update this plan.");
