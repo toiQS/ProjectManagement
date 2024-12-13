@@ -39,7 +39,7 @@ namespace PM.DomainServices.ILogic
         /// </summary>
         /// <param name="regiserModel">The registration model containing user details.</param>
         /// <returns>A service result indicating the success or failure of the registration operation.</returns>
-        Task<ServicesResult<bool>> Register(RegiserModel regiserModel);
+        Task<ServicesResult<bool>> RegisterUser(RegisterModel regiserModel);
 
         #endregion
 
@@ -52,9 +52,20 @@ namespace PM.DomainServices.ILogic
         /// <returns>A service result containing the user's details.</returns>
         Task<ServicesResult<DetailUser>> Detail(string userId);
 
-        #endregion
+        /// <summary>
+        /// Retrieves the role of a user by their email.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <returns>A service result containing the user's role.</returns>
+        Task<ServicesResult<string>> GetRoleByEmail(string email);
 
-        public Task<ServicesResult<string>> GetRoleByEmail(string email);
+        /// <summary>
+        /// Retrieves the detailed information of a user by their email.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <returns>A service result containing the user's details.</returns>
+        Task<ServicesResult<DetailUser>> GetUserDetailByMail(string email);
+
+        #endregion
     }
 }
-    

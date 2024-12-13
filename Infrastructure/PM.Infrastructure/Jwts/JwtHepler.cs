@@ -24,15 +24,24 @@ namespace PM.Infrastructure.Jwts
             _configuration = configuration;
         }
 
-        public string GenerateToken( string email,string role)
+        #region Generate Token
+
+        /// <summary>
+        /// Generates a JWT token based on the user's email and role.
+        /// </summary>
+        /// <param name="email">The email of the user.</param>
+        /// <param name="role">The role of the user.</param>
+        /// <returns>The generated JWT token as a string.</returns>
+        public string GenerateToken(string email, string role)
         {
             try
             {
                 var claims = new List<Claim>
                 {
-                    new Claim (ClaimTypes.Email, email),
+                    new Claim(ClaimTypes.Email, email),
                     new Claim(ClaimTypes.Role, role)
                 };
+
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
                 var signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256Signature);
 
@@ -46,17 +55,30 @@ namespace PM.Infrastructure.Jwts
 
                 return new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             }
-            catch
+            catch (Exception ex)
             {
+                // Log exception (optional: use a logging framework)
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
+
+        #endregion
+
+        #region Parse Token
+
+        /// <summary>
+        /// Parses a JWT token and extracts the user's email and role.
+        /// </summary>
+        /// <param name="token">The JWT token to parse.</param>
+        /// <returns>A <see cref="UserResult"/> object containing the email and role.</returns>
         public UserResult ParseToken(string token)
         {
             try
             {
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
                 var tokenHandler = new JwtSecurityTokenHandler();
+
                 var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
                 {
                     ValidateIssuerSigningKey = true,
@@ -65,22 +87,27 @@ namespace PM.Infrastructure.Jwts
                     ValidIssuer = _configuration["Jwt:Issuer"],
                     ValidateAudience = true,
                     ValidAudience = _configuration["Jwt:Audience"],
-                    ValidateLifetime = true // Kiểm tra token có hết hạn hay không
+                    ValidateLifetime = true // Validate token expiration
                 }, out SecurityToken validatedToken);
+
                 var jwtToken = (JwtSecurityToken)validatedToken;
                 var email = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
                 var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
-                UserResult userResult = new UserResult()
+
+                return new UserResult
                 {
                     Email = email,
                     Role = role
                 };
-                return userResult;
             }
-            catch
+            catch (Exception ex)
             {
+                // Log exception (optional: use a logging framework)
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
+
+        #endregion
     }
 }

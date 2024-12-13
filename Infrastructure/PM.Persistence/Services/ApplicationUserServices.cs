@@ -51,7 +51,7 @@ namespace PM.Persistence.Services
                 var createResult = await _userManager.CreateAsync(user, password);
                 if (!createResult.Succeeded) return false;
 
-                var roleResult = await _userManager.AddToRoleAsync(user, "User");
+                var roleResult = await _userManager.AddToRoleAsync(user, "Customer");
                 return roleResult.Succeeded;
             }
             catch (Exception ex)

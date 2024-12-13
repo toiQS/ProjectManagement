@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace AuthAPIServices.Controllers
+namespace Furni.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]

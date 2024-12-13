@@ -1,4 +1,5 @@
-﻿using PM.DomainServices.ILogic;
+﻿using PM.Domain;
+using PM.DomainServices.ILogic;
 using PM.Persistence.IServices;
 using Shared;
 using Shared.appUser;
@@ -22,6 +23,7 @@ namespace PM.DomainServices.Logic
         }
 
         #region Login
+
         /// <inheritdoc />
         public async Task<ServicesResult<bool>> Login(LoginModel loginModel)
         {
@@ -34,11 +36,13 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<bool>.Success(true);
         }
+
         #endregion
 
         #region Register
+
         /// <inheritdoc />
-        public async Task<ServicesResult<bool>> Register(RegiserModel regiserModel)
+        public async Task<ServicesResult<bool>> RegisterUser(RegisterModel regiserModel)
         {
             if (regiserModel == null)
                 return ServicesResult<bool>.Failure("Register model is null.");
@@ -53,9 +57,11 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<bool>.Success(true);
         }
+
         #endregion
 
         #region Get User Details
+
         /// <inheritdoc />
         public async Task<ServicesResult<DetailUser>> Detail(string userId)
         {
@@ -81,9 +87,11 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<DetailUser>.Success(result);
         }
+
         #endregion
 
         #region Logout
+
         /// <inheritdoc />
         public async Task<ServicesResult<bool>> Logout(string userId)
         {
@@ -96,14 +104,53 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<bool>.Success(true);
         }
+
         #endregion
 
+        #region Get Role by Email
+
+        /// <inheritdoc />
         public async Task<ServicesResult<string>> GetRoleByEmail(string email)
         {
-            if (string.IsNullOrEmpty(email)) ServicesResult<string>.Failure("");
+            if (string.IsNullOrEmpty(email))
+                return ServicesResult<string>.Failure("Email is null or empty.");
+
             var role = await _applicationUserServices.GetRoleByEmail(email);
-            if (role == null) return ServicesResult<string>.Failure("");
+            if (role == null)
+                return ServicesResult<string>.Failure("Role not found.");
+
             return ServicesResult<string>.Success(role);
         }
+
+        #endregion
+
+        #region Get User by Email
+
+        /// <inheritdoc />
+        public async Task<ServicesResult<DetailUser>> GetUserDetailByMail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+                return ServicesResult<DetailUser>.Failure("Email is null or empty.");
+
+            var user = await _applicationUserServices.GetUserDetailByMail(email);
+            if (user == null)
+                return ServicesResult<DetailUser>.Failure("User not found.");
+
+            var data = new DetailUser
+            {
+                UserId = user.Id,
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                UserName = user.UserName,
+                Avata = user.PathImage,
+                Email = email,
+                Phone = user.Phone,
+                Role = await _applicationUserServices.GetRoleByEmail(user.Email)
+            };
+
+            return ServicesResult<DetailUser>.Success(data);
+        }
+
+        #endregion
     }
 }
