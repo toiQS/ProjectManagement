@@ -85,7 +85,7 @@ namespace PM.DomainServices.Logic
 
             #region Authorization Check
             // Verify the user exists and has access to the project
-            var userExists = await _applicationUserServices.GetUser(userId);
+            var userExists = await _applicationUserServices.GetUserDetailByUserId(userId);
             var userHasAccess = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ProjectId == projectId && x.ApplicationUserId == userId);
 
@@ -144,7 +144,7 @@ namespace PM.DomainServices.Logic
 
             #region Authorization Check
             // Check if the user exists and has the "Owner" role in the project
-            var userExists = await _applicationUserServices.GetUser(userId);
+            var userExists = await _applicationUserServices.GetUserDetailByUserId(userId);
             var userHasOwnerRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ProjectId == projectId && x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner);
 
@@ -206,7 +206,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Position not found.");
 
             // Check if the user exists and has the "Owner" role in the project
-            var userExists = await _applicationUserServices.GetUser(userId);
+            var userExists = await _applicationUserServices.GetUserDetailByUserId(userId);
             var userHasOwnerRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ProjectId == position.ProjectId && x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner);
 
@@ -286,7 +286,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Position not found.");
 
             // Check if the user exists and has the "Owner" role in the project
-            var userExists = await _applicationUserServices.GetUser(userId);
+            var userExists = await _applicationUserServices.GetUserDetailByUserId(userId);
             var userHasOwnerRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ProjectId == existingPosition.ProjectId && x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner);
 

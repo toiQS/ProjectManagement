@@ -28,8 +28,8 @@ namespace PM.DomainServices.Logic
             if (loginModel == null)
                 return ServicesResult<bool>.Failure("Login model is null.");
 
-            var user = await _applicationUserServices.LoginServices(loginModel.Email, loginModel.Password);
-            if (user == null)
+            var user = await _applicationUserServices.Login(loginModel.Email, loginModel.Password);
+            if (!user)
                 return ServicesResult<bool>.Failure("Invalid email or password.");
 
             return ServicesResult<bool>.Success(true);
@@ -43,7 +43,7 @@ namespace PM.DomainServices.Logic
             if (regiserModel == null)
                 return ServicesResult<bool>.Failure("Register model is null.");
 
-            var registrationSuccess = await _applicationUserServices.RegisterApplicationUser(
+            var registrationSuccess = await _applicationUserServices.RegisterUser(
                 regiserModel.UserName,
                 regiserModel.Email,
                 regiserModel.Password);
@@ -62,11 +62,11 @@ namespace PM.DomainServices.Logic
             if (string.IsNullOrEmpty(userId))
                 return ServicesResult<DetailUser>.Failure("User ID is null or empty.");
 
-            var user = await _applicationUserServices.GetUser(userId);
+            var user = await _applicationUserServices.GetUserDetailByUserId(userId);
             if (user == null)
                 return ServicesResult<DetailUser>.Failure("User not found.");
 
-            var role = await _applicationUserServices.GetRoleApplicatonUserByUserIdAsync(userId);
+            var role = await _applicationUserServices.GetUserDetailByUserId(userId);
             var result = new DetailUser
             {
                 UserId = user.Id,

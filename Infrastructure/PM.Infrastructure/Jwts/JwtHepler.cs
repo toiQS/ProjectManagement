@@ -24,13 +24,13 @@ namespace PM.Infrastructure.Jwts
             _configuration = configuration;
         }
 
-        public async Task<string> GenerateToken(ApplicationUser appUser,string role)
+        public string GenerateToken( string email,string role)
         {
             try
             {
                 var claims = new List<Claim>
                 {
-                    new Claim (ClaimTypes.Email, appUser.Email),
+                    new Claim (ClaimTypes.Email, email),
                     new Claim(ClaimTypes.Role, role)
                 };
                 var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
@@ -51,6 +51,36 @@ namespace PM.Infrastructure.Jwts
                 throw;
             }
         }
-        
+        public UserResult ParseToken(string token)
+        {
+            try
+            {
+                var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var principal = tokenHandler.ValidateToken(token, new TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = securityKey,
+                    ValidateIssuer = true,
+                    ValidIssuer = _configuration["Jwt:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = _configuration["Jwt:Audience"],
+                    ValidateLifetime = true // Kiểm tra token có hết hạn hay không
+                }, out SecurityToken validatedToken);
+                var jwtToken = (JwtSecurityToken)validatedToken;
+                var email = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+                var role = jwtToken.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Role)?.Value;
+                UserResult userResult = new UserResult()
+                {
+                    Email = email,
+                    Role = role
+                };
+                return userResult;
+            }
+            catch
+            {
+                throw;
+            }
+        }
     }
 }

@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
-using PM.Domain;
+﻿using PM.Domain;
+using System.Numerics;
+using Microsoft.AspNetCore.Identity;
 using PM.Persistence.IServices;
-using System.Net.Http.Headers;
 
 namespace PM.Persistence.Services
 {
@@ -30,9 +30,15 @@ namespace PM.Persistence.Services
             _signInManager = signInManager;
         }
 
-        #region Register User
-        /// <inheritdoc />
-        public async Task<bool> RegisterApplicationUser(string userName, string email, string password)
+        #region User Registration
+        /// <summary>
+        /// Registers a new user with the "User" role.
+        /// </summary>
+        /// <param name="userName">The username of the new user.</param>
+        /// <param name="email">The email address of the new user.</param>
+        /// <param name="password">The password for the new user.</param>
+        /// <returns>True if the registration was successful; otherwise, false.</returns>
+        public async Task<bool> RegisterUser(string userName, string email, string password)
         {
             try
             {
@@ -55,11 +61,15 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
-        #endregion
 
-        #region Register Admin
-        /// <inheritdoc />
-        public async Task<bool> RegisterApplicationAdmin(string userName, string email, string password)
+        /// <summary>
+        /// Registers a new admin with the "Admin" role.
+        /// </summary>
+        /// <param name="userName">The username of the new admin.</param>
+        /// <param name="email">The email address of the new admin.</param>
+        /// <param name="password">The password for the new admin.</param>
+        /// <returns>True if the registration was successful; otherwise, false.</returns>
+        public async Task<bool> RegisterAdmin(string userName, string email, string password)
         {
             try
             {
@@ -84,9 +94,14 @@ namespace PM.Persistence.Services
         }
         #endregion
 
-        #region Login
-        /// <inheritdoc />
-        public async Task<ApplicationUser> LoginServices(string email, string password)
+        #region Authentication
+        /// <summary>
+        /// Logs in a user with the specified email and password.
+        /// </summary>
+        /// <param name="email">The user's email.</param>
+        /// <param name="password">The user's password.</param>
+        /// <returns>True if login was successful; otherwise, false.</returns>
+        public async Task<bool> Login(string email, string password)
         {
             try
             {
@@ -94,9 +109,9 @@ namespace PM.Persistence.Services
                 if (user != null && await _userManager.CheckPasswordAsync(user, password))
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return user;
+                    return true;
                 }
-                return null;
+                return false;
             }
             catch (Exception ex)
             {
@@ -105,31 +120,12 @@ namespace PM.Persistence.Services
                 throw;
             }
         }
-        #endregion
 
-        #region Get Role of User
-        /// <inheritdoc />
-        public async Task<string> GetRoleApplicatonUserByUserIdAsync(string userId)
-        {
-            try
-            {
-                var user = await _userManager.FindByIdAsync(userId);
-                if (user == null) return null;
-
-                var roles = await _userManager.GetRolesAsync(user);
-                return roles.FirstOrDefault(); // Assume a single-role system
-            }
-            catch (Exception ex)
-            {
-                // Log the exception
-                Console.WriteLine(ex.Message);
-                return null;
-            }
-        }
-        #endregion
-
-        #region Logout
-        /// <inheritdoc />
+        /// <summary>
+        /// Logs out the currently authenticated user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to log out.</param>
+        /// <returns>True if logout was successful; otherwise, false.</returns>
         public async Task<bool> Logout(string userId)
         {
             try
@@ -149,9 +145,13 @@ namespace PM.Persistence.Services
         }
         #endregion
 
-        #region Get User by ID
-        /// <inheritdoc />
-        public async Task<ApplicationUser> GetUser(string userId)
+        #region User Management
+        /// <summary>
+        /// Retrieves user details by user ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The user details, or null if the user does not exist.</returns>
+        public async Task<ApplicationUser> GetUserDetailByUserId(string userId)
         {
             try
             {
@@ -164,36 +164,70 @@ namespace PM.Persistence.Services
                 throw;
             }
         }
-        #endregion
-        #region Get a user specific  by email
-        /// <inheritdoc />
-        public async Task<ApplicationUser> GetUserByEmail(string email)
+
+        /// <summary>
+        /// Retrieves user details by email.
+        /// </summary>
+        /// <param name="email">The email of the user.</param>
+        /// <returns>The user details, or null if the user does not exist.</returns>
+        public async Task<ApplicationUser> GetUserDetailByMail(string email)
         {
             try
             {
-                var user = await _userManager.FindByEmailAsync(email);
-                return user;
+                return await _userManager.FindByEmailAsync(email);
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }
         #endregion
 
-        #region
+        #region Role Management
+        /// <summary>
+        /// Retrieves the role of a user by their user ID.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>The role of the user, or null if no role is assigned.</returns>
+        public async Task<string> GetRoleApplicatonUserByUserIdAsync(string userId)
+        {
+            try
+            {
+                var user = await _userManager.FindByIdAsync(userId);
+                if (user == null) return null;
+
+                var roles = await _userManager.GetRolesAsync(user);
+                return roles.FirstOrDefault(); // Assume a single-role system
+            }
+            catch (Exception ex)
+            {
+                // Log the exception
+                Console.WriteLine(ex.Message);
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// Retrieves the role of a user by their email.
+        /// </summary>
+        /// <param name="email">The email of the user.</param>
+        /// <returns>The role of the user, or an empty string if no role is found.</returns>
         public async Task<string> GetRoleByEmail(string email)
         {
             try
             {
                 var user = await _userManager.FindByEmailAsync(email);
                 if (user == null) return string.Empty;
-                var role = await _userManager.GetRolesAsync(user);
-                if (role == null) return string.Empty;
-                return role.First();
+
+                var roles = await _userManager.GetRolesAsync(user);
+                return roles.FirstOrDefault() ?? string.Empty;
             }
-            catch
+            catch (Exception ex)
             {
+                // Log the exception
+                Console.WriteLine(ex.Message);
                 throw;
             }
         }

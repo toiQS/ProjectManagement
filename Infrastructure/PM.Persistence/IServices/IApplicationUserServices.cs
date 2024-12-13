@@ -1,4 +1,5 @@
 ﻿using PM.Domain;
+using System.Numerics;
 
 namespace PM.Persistence.IServices
 {
@@ -7,76 +8,66 @@ namespace PM.Persistence.IServices
     /// </summary>
     public interface IApplicationUserServices
     {
-        #region User Registration
+        #region Authentication
+        /// <summary>
+        /// Logs in a user with the specified email and password.
+        /// </summary>
+        /// <param name="email">The email address of the user.</param>
+        /// <param name="password">The password of the user.</param>
+        /// <returns>True if login was successful; otherwise, false.</returns>
+        Task<bool> Login(string email, string password);
 
         /// <summary>
-        /// Registers a new application user.
+        /// Logs out the currently authenticated user.
+        /// </summary>
+        /// <param name="userId">The ID of the user to log out.</param>
+        /// <returns>True if logout was successful; otherwise, false.</returns>
+        Task<bool> Logout(string userId);
+        #endregion
+
+        #region User Registration
+        /// <summary>
+        /// Registers a new user with the "User" role.
         /// </summary>
         /// <param name="userName">The username of the new user.</param>
         /// <param name="email">The email address of the new user.</param>
-        /// <param name="password">The password of the new user.</param>
-        /// <returns>Returns true if the registration is successful, otherwise false.</returns>
-        Task<bool> RegisterApplicationUser(string userName, string email, string password);
+        /// <param name="password">The password for the new user.</param>
+        /// <returns>True if registration was successful; otherwise, false.</returns>
+        Task<bool> RegisterUser(string userName, string email, string password);
 
         /// <summary>
-        /// Registers a new application admin user.
+        /// Registers a new admin with the "Admin" role.
         /// </summary>
-        /// <param name="userName">The username of the admin user.</param>
-        /// <param name="email">The email address of the admin user.</param>
-        /// <param name="password">The password of the admin user.</param>
-        /// <returns>Returns true if the registration is successful, otherwise false.</returns>
-        Task<bool> RegisterApplicationAdmin(string userName, string email, string password);
-
+        /// <param name="userName">The username of the new admin.</param>
+        /// <param name="email">The email address of the new admin.</param>
+        /// <param name="password">The password for the new admin.</param>
+        /// <returns>True if registration was successful; otherwise, false.</returns>
+        Task<bool> RegisterAdmin(string userName, string email, string password);
         #endregion
 
-        #region User Authentication
-
+        #region User Management
         /// <summary>
-        /// Authenticates a user using their email and password.
-        /// </summary>
-        /// <param name="email">The user's email address.</param>
-        /// <param name="password">The user's password.</param>
-        /// <returns>Returns the authenticated <see cref="ApplicationUser"/> if successful, otherwise null.</returns>
-        Task<ApplicationUser> LoginServices(string email, string password);
-
-        /// <summary>
-        /// Logs out a user by their user ID.
-        /// </summary>
-        /// <param name="userId">The ID of the user to log out.</param>
-        /// <returns>Returns true if the logout is successful, otherwise false.</returns>
-        Task<bool> Logout(string userId);
-
-        #endregion
-
-        #region User Role Management
-
-        /// <summary>
-        /// Retrieves the role of an application user by their user ID.
+        /// Retrieves user details by user ID.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
-        /// <returns>Returns the role name as a string.</returns>
-        Task<string> GetRoleApplicatonUserByUserIdAsync(string userId);
-
-        #endregion
-
-        #region User Retrieval
+        /// <returns>The user details, or null if the user does not exist.</returns>
+        Task<ApplicationUser> GetUserDetailByUserId(string userId);
 
         /// <summary>
-        /// Retrieves user information by their user ID.
+        /// Retrieves user details by email.
         /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>Returns the <see cref="ApplicationUser"/> object.</returns>
-        Task<ApplicationUser> GetUser(string userId);
+        /// <param name="email">The email of the user.</param>
+        /// <returns>The user details, or null if the user does not exist.</returns>
+        Task<ApplicationUser> GetUserDetailByMail(string email);
         #endregion
 
-        #region 
+        #region Role Management
         /// <summary>
-        /// 
+        /// Retrieves the role of a user by their email.
         /// </summary>
-        /// <param name="email"></param>
-        /// <returns></returns>
-        public Task<string> GetRoleByEmail(string email);
+        /// <param name="email">The email of the user.</param>
+        /// <returns>The role of the user, or an empty string if no role is found.</returns>
+        Task<string> GetRoleByEmail(string email);
         #endregion
-
     }
 }

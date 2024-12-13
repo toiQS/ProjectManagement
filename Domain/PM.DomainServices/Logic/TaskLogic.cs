@@ -96,7 +96,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexTask>>.Failure("Project not found.");
 
             // Check if the user exists and has a valid role in the project
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserInProjectServices.GetAllAsync()).Any(s => s.ApplicationUserId == userId && s.ProjectId == getProjectId))
                 return ServicesResult<IEnumerable<IndexTask>>.Failure("User not authorized.");
 
@@ -156,7 +156,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<DetailTask>.Failure("Project not found.");
 
             // Check if the user exists and has a valid role in the project
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserInProjectServices.GetAllAsync()).Any(s => s.ApplicationUserId == userId && s.ProjectId == getProjectId))
                 return ServicesResult<DetailTask>.Failure("User not authorized.");
 
@@ -194,7 +194,7 @@ namespace PM.DomainServices.Logic
                 if (getRoleUserInProject == null)
                     return ServicesResult<DetailTask>.Failure("Role in project not found.");
 
-                var user = await _applicationUserServices.GetUser(getRoleUserInProject.ApplicationUserId);
+                var user = await _applicationUserServices.GetUserDetailByUserId(getRoleUserInProject.ApplicationUserId);
                 if (user == null)
                     return ServicesResult<DetailTask>.Failure("User not found.");
 
@@ -242,7 +242,7 @@ namespace PM.DomainServices.Logic
             var getRoleManagerId = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Manager")?.Id;
 
             // Check if the user has valid roles in the project (Owner, Leader, or Manager)
-            if ((await _applicationUserServices.GetUser(userId)) == null ||
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null ||
                 !(await _roleApplicationUserInProjectServices.GetAllAsync()).Any(x => x.ApplicationUserId == userId && x.ProjectId == getProjectId &&
                 (x.RoleInProjectId == getRoleLeaderId || x.RoleInProjectId == getRoleManagerId || x.RoleInProjectId == getRoleOwnerId)))
                 return ServicesResult<bool>.Failure("User not authorized to add task.");
@@ -367,7 +367,7 @@ namespace PM.DomainServices.Logic
             var userHasRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ApplicationUserId == userId && x.ProjectId == getProjectId &&
                     (x.RoleInProjectId == getRoleLeaderId || x.RoleInProjectId == getRoleManagerId || x.RoleInProjectId == getRoleOwnerId));
-            if ((await _applicationUserServices.GetUser(userId)) == null || !userHasRole)
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null || !userHasRole)
                 return ServicesResult<bool>.Failure("User not authorized to update task.");
 
             // Check if a task with the same name already exists in the plan
@@ -489,7 +489,7 @@ namespace PM.DomainServices.Logic
             var userHasRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ApplicationUserId == userId && x.ProjectId == getProjectId &&
                     (x.RoleInProjectId == getRoleLeaderId || x.RoleInProjectId == getRoleManagerId || x.RoleInProjectId == getRoleOwnerId));
-            if ((await _applicationUserServices.GetUser(userId)) == null || !userHasRole)
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null || !userHasRole)
                 return ServicesResult<bool>.Failure("User not authorized to delete task.");
 
             // Retrieve the task and its associated members
@@ -549,7 +549,7 @@ namespace PM.DomainServices.Logic
             var userHasRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ApplicationUserId == userId && x.ProjectId == getProjectId &&
                     (x.RoleInProjectId == getRoleLeaderId || x.RoleInProjectId == getRoleManagerId || x.RoleInProjectId == getRoleOwnerId));
-            if ((await _applicationUserServices.GetUser(userId)) == null || !userHasRole)
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null || !userHasRole)
                 return ServicesResult<bool>.Failure("User not authorized to update task status.");
 
             // Retrieve the task
@@ -609,7 +609,7 @@ namespace PM.DomainServices.Logic
             var userHasRole = (await _roleApplicationUserInProjectServices.GetAllAsync())
                 .Any(x => x.ApplicationUserId == userId && x.ProjectId == getProjectId &&
                     (x.RoleInProjectId == getRoleLeaderId || x.RoleInProjectId == getRoleManagerId || x.RoleInProjectId == getRoleOwnerId));
-            if ((await _applicationUserServices.GetUser(userId)) == null || !userHasRole)
+            if ((await _applicationUserServices.GetUserDetailByUserId(userId)) == null || !userHasRole)
                 return ServicesResult<bool>.Failure("User not authorized to update task completion status.");
 
             // Retrieve the task

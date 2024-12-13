@@ -15,52 +15,42 @@ namespace AuthAPIServices.Controllers
         private readonly IAuthLogic _authLogic;
         private readonly ILoggerHelper<AuthController> _loggerHelper;
         private readonly IJwtHelper _jwtHelper;
-        public Task<IActionResult> Login(LoginModel loginModel)
-        {
 
-        }
-        public async Task<IActionResult> Logout(string token)
+        public AuthController(IAuthLogic authLogic, ILoggerHelper<AuthController> loggerHelper, IJwtHelper jwtHelper)
         {
+            _authLogic = authLogic;
+            _loggerHelper = loggerHelper;
+            _jwtHelper = jwtHelper;
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(new { Error = "Invalid model state.", Details = ModelState });
+
             try
             {
-                if (token == null)
-                {
-                    _loggerHelper.LogWarning("");
-                    return BadRequest();
-                }
-                //var 
+                var loginResult = await _authLogic.Login(loginModel);
+                if (!loginResult.Status)
+                    return Unauthorized(new { Error = "Invalid email or password." });
+
+                var roleResult = await _authLogic.GetRoleByEmail(loginModel.Email);
+                if (roleResult.Data == null)
+                    return BadRequest(new { Error = "Unable to determine user role." });
+
+                var token = _jwtHelper.GenerateToken(loginModel.Email, roleResult.Data);
+                if (string.IsNullOrEmpty(token))
+                    return StatusCode(StatusCodes.Status500InternalServerError, new { Error = "Token generation failed." });
+
+                return Ok(new { Token = token });
             }
             catch (Exception ex)
             {
+                _loggerHelper.LogError(ex, "Error occurred during login process.");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Error = "An internal error occurred." });
+            }
+        }
 
-            }
-        }
-        public async Task<IActionResult> Register(RegiserModel regiserModel)
-        {
-            try
-            {
-                var register = await _authLogic.Register(regiserModel);
-                if (register.Status)
-                {
-                    _loggerHelper.LogInfo("");
-                    return Ok();
-                }
-                else
-                {
-                    _loggerHelper.LogInfo("");
-                    return BadRequest(register);
-                }
-                
-            }
-            catch (Exception ex)
-            {
-                _loggerHelper.LogError(ex,"");
-                throw;
-            }
-        }
-        public Task<IActionResult> Detail(string userId)
-        {
-
-        }
     }
 }

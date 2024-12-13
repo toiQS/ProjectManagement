@@ -41,7 +41,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID cannot be null or empty.");
 
             // Check if the user exists
-            var user = await _applicationUserServices.GetUser(userId);
+            var user = await _applicationUserServices.GetUserDetailByUserId(userId);
             if (user == null)
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
 
@@ -74,7 +74,7 @@ namespace PM.DomainServices.Logic
                 if (projectOwner == null)
                     return ServicesResult<IEnumerable<IndexProject>>.Failure("Project owner not found.");
 
-                var ownerUser = await _applicationUserServices.GetUser(projectOwner.ApplicationUserId);
+                var ownerUser = await _applicationUserServices.GetUserDetailByUserId(projectOwner.ApplicationUserId);
                 if (ownerUser == null)
                     return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner user not found.");
 
@@ -108,7 +108,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID cannot be null or empty.");
 
             // Check if the user exists
-            var user = await _applicationUserServices.GetUser(userId);
+            var user = await _applicationUserServices.GetUserDetailByUserId(userId);
             if (user == null)
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
 
@@ -196,7 +196,7 @@ namespace PM.DomainServices.Logic
             if (projectOwnerRole == null)
                 return ServicesResult<DetailProject>.Failure("Project owner not found.");
 
-            var ownerUser = await _applicationUserServices.GetUser(projectOwnerRole.ApplicationUserId);
+            var ownerUser = await _applicationUserServices.GetUserDetailByUserId(projectOwnerRole.ApplicationUserId);
             if (ownerUser == null)
                 return ServicesResult<DetailProject>.Failure("Owner user details not found.");
 
