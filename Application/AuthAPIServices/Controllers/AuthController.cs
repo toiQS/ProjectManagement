@@ -40,12 +40,12 @@ namespace AuthAPIService2s.Controllers
                 // Attempt to log in the user
                 var loginResult = await _authLogic.Login(loginModel);
                 if (!loginResult.Status)
-                    return Unauthorized(new { Error = "Invalid email or password." });
+                    return Unauthorized(new { Error = loginResult.Message});
 
                 // Retrieve user role
                 var roleResult = await _authLogic.GetRoleByEmail(loginModel.Email);
                 if (roleResult.Data == null)
-                    return BadRequest(new { Error = "Unable to determine user role." });
+                    return BadRequest(new { Error = roleResult.Message});
 
                 // Generate JWT token
                 var token = _jwtHelper.GenerateToken(loginModel.Email, roleResult.Data);
@@ -81,7 +81,7 @@ namespace AuthAPIService2s.Controllers
                 if (registerResult.Status)
                     return Ok(new { Message = "User registered successfully." });
 
-                return BadRequest(new { Error = "Registration failed." });
+                return BadRequest(new { Error = registerResult.Message });
             }
             catch (Exception ex)
             {
@@ -112,8 +112,8 @@ namespace AuthAPIService2s.Controllers
 
                 // Get user details
                 var userDetails = await _authLogic.GetUserDetailByMail(tokenDetails.Email);
-                if (userDetails == null)
-                    return NotFound(new { Error = "User not found." });
+                if (!userDetails.Status)
+                    return NotFound(new { Error = userDetails.Message });
 
                 return Ok(userDetails);
             }
