@@ -347,7 +347,7 @@ namespace PM.DomainServices.Logic
 
             // Update the member's role
             getRoleUser.RoleInProjectId = getRoleId;
-            if (!(await _roleApplicationUserServices.UpdateAsync(memberId, getRoleUser)))
+            if (!(await _roleApplicationUserServices.UpdateAsync( getRoleUser)))
                 return ServicesResult<bool>.Failure("Failed to update member role.");
 
             // Retrieve the position work information for the specified member
@@ -358,7 +358,7 @@ namespace PM.DomainServices.Logic
 
             // Update the member's position
             getPositionWork.PostitionInProjectId = getPositionId;
-            if (!await _positionWorkOfMemberServices.UpdateAsync(getPositionWork.Id, getPositionWork))
+            if (!await _positionWorkOfMemberServices.UpdateAsync( getPositionWork))
                 return ServicesResult<bool>.Failure("Failed to update member position.");
             #endregion
 

@@ -57,17 +57,11 @@ namespace PM.Persistence.Services
                 return false;
             }
         }
-        public async Task<bool> UpdateAsync(string id, T entity)
+        public async Task<bool> UpdateAsync(T entity)
         {
             try
             {
-                var getEntity = await _dbSet.FindAsync(id);
-                if (getEntity == null)
-                {
-                    throw new Exception("Can't get data");
-                }
-                getEntity = entity;
-                _dbSet.Update(getEntity);
+                _dbSet.Update(entity);
                 await _context.SaveChangesAsync();
                 return true;
             }

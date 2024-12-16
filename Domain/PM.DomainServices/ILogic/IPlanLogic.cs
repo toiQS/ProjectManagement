@@ -52,6 +52,12 @@ namespace PM.DomainServices.ILogic
         /// <param name="planId">The ID of the plan to delete.</param>
         /// <returns>A result indicating whether the plan was successfully deleted.</returns>
         Task<ServicesResult<bool>> Delete(string userId, string planId);
+        /// <summary>
+        /// Update an exitsting plan is done
+        /// </summary>
+        /// <param name="userId">The Id of the user updating the plan</param>
+        /// <param name="planId">The ID of the plan to delete</param>
+        /// <returns></returns>
         Task<ServicesResult<bool>> UpdateIsDone(string userId, string planId);
 
         #endregion

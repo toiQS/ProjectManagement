@@ -300,7 +300,7 @@ namespace PM.DomainServices.Logic
             existingPosition.PositionDescription = position.PrositionDescription;
 
             // Save changes
-            var updateResult = await _positionInProjectServices.UpdateAsync(positionId, existingPosition);
+            var updateResult = await _positionInProjectServices.UpdateAsync(existingPosition);
             return updateResult ? ServicesResult<bool>.Success(true) : ServicesResult<bool>.Failure("Failed to update the position.");
             #endregion
         }

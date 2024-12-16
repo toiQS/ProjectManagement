@@ -451,7 +451,7 @@ namespace PM.DomainServices.Logic
             }
 
             // Update the task in the database
-            if (await _taskServices.UpdateAsync(taskId, getTask))
+            if (await _taskServices.UpdateAsync(getTask))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update task.");
@@ -569,7 +569,7 @@ namespace PM.DomainServices.Logic
                 getTask.StatusId = 5; // Task completed (just finished)
 
             // Update the task status in the database
-            if (await _taskServices.UpdateAsync(taskId, getTask))
+            if (await _taskServices.UpdateAsync(getTask))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update task status.");
@@ -620,7 +620,7 @@ namespace PM.DomainServices.Logic
             getTask.IsDone = !getTask.IsDone;
 
             // Update the task in the database
-            if (!(await _taskServices.UpdateAsync(taskId, getTask)))
+            if (!(await _taskServices.UpdateAsync(getTask)))
                 return ServicesResult<bool>.Failure("Failed to update task completion status.");
 
             // After updating the completion status, also update the task status based on the new state

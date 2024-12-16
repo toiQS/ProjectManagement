@@ -368,7 +368,7 @@ namespace PM.DomainServices.Logic
             project.ProjectDescription = updateProject.ProjectDescription;
 
             // Save the updated project information
-            if (await _projectServices.UpdateAsync(projectId, project))
+            if (await _projectServices.UpdateAsync(project))
                 return ServicesResult<bool>.Success(true);
 
             // Return failure if update fails
@@ -417,7 +417,7 @@ namespace PM.DomainServices.Logic
             project.IsDeleted = !project.IsDeleted;
 
             // Update the project status
-            if (await _projectServices.UpdateAsync(projectId, project))
+            if (await _projectServices.UpdateAsync(project))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update project deletion status.");
@@ -447,7 +447,7 @@ namespace PM.DomainServices.Logic
             project.IsAccessed = !project.IsAccessed;
 
             // Update the project status
-            if (await _projectServices.UpdateAsync(projectId, project))
+            if (await _projectServices.UpdateAsync(project))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update project access status.");
@@ -477,7 +477,7 @@ namespace PM.DomainServices.Logic
             project.IsDone = !project.IsDone;
 
             // Update the project status
-            if (!await _projectServices.UpdateAsync(projectId, project))
+            if (!await _projectServices.UpdateAsync(project))
                 return ServicesResult<bool>.Failure("Failed to update project completion status.");
 
             // After toggling IsDone, update project status
@@ -519,7 +519,7 @@ namespace PM.DomainServices.Logic
                 project.StatusId = 4; // Completed, still ongoing
 
             // Update the project status
-            if (await _projectServices.UpdateAsync(projectId, project))
+            if (await _projectServices.UpdateAsync(project))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update project status.");

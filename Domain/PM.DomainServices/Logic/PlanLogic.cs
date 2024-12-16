@@ -319,7 +319,7 @@ namespace PM.DomainServices.Logic
             plan.PlanName = updatePlan.PlanName;
 
             // Save the updated plan
-            if (await _planServices.UpdateAsync(planId, plan))
+            if (await _planServices.UpdateAsync(plan))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update the plan.");
@@ -438,7 +438,7 @@ namespace PM.DomainServices.Logic
             }
 
             // Update the plan in the database
-            if (await _planServices.UpdateAsync(planId, plan))
+            if (await _planServices.UpdateAsync(plan))
                 return ServicesResult<bool>.Success(true);
 
             return ServicesResult<bool>.Failure("Failed to update the plan.");

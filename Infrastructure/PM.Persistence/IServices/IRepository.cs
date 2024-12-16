@@ -39,10 +39,9 @@
         /// <summary>
         /// Updates an existing entity in the repository.
         /// </summary>
-        /// <param name="id">The primary key of the entity to be updated.</param>
         /// <param name="entity">The updated entity object.</param>
         /// <returns>True if the operation was successful, otherwise false.</returns>
-        Task<bool> UpdateAsync(string id, T entity);
+        Task<bool> UpdateAsync( T entity);
 
         #endregion
 
