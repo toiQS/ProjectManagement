@@ -3,6 +3,7 @@
     "BaseUrl" : "https://localhost:5008"
   },
   "Routes": [
+    // routes root
     {
       "UpstreamPathTemplate": "/gateway/root",
       "UpstreamHttpMethod": [ "Get" ],
@@ -24,6 +25,38 @@
           "Port": 5001
         }
       ]
+    },
+    // routes for authenticate user
+    {
+      "UpstreamPathTemplate": "/gateway/auth",
+      "UpstreamHttpMethod": [ "Post" ],
+      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5298
+        }
+      ]
+    },
+
+    // routes project
+
+
+    // template
+    {
+      "DownstreamPathTemplate": "",
+      "DownstreamScheme": "",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "",
+          "Port": 500
+        }
+      ],
+      "UpstreamPathTemplate": "",
+      "UpstreamHttpMethod": [ "" ]
     }
+
+
   ]
 }
