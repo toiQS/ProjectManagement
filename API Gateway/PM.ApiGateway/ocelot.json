@@ -1,62 +1,22 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl" : "https://localhost:5008"
+    "BaseUrl" : "https://localhost:5000"
   },
   "Routes": [
-    // routes root
+
+    //router of authenticaton user
     {
-      "UpstreamPathTemplate": "/gateway/root",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/root",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ]
-    },
-    {
-      "UpstreamPathTemplate": "/gateway/root/",
-      "UpstreamHttpMethod": [ "Get" ],
-      "DownstreamPathTemplate": "/api/root",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ]
-    },
-    // routes for authenticate user
-    {
-      "UpstreamPathTemplate": "/gateway/auth",
-      "UpstreamHttpMethod": [ "Post" ],
-      "DownstreamPathTemplate": "/api/auth/login",
       "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/Demo",
       "DownstreamHostAndPorts": [
         {
-          "Host": "localhost",
-          "Port": 5298
-        }
-      ]
-    },
-
-    // routes project
-
-
-    // template
-    {
-      "DownstreamPathTemplate": "",
-      "DownstreamScheme": "",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "",
-          "Port": 500
+          "Port": 5002,
+          "Host": "localhost"
         }
       ],
-      "UpstreamPathTemplate": "",
-      "UpstreamHttpMethod": [ "" ]
+      "UpstreamHttpMethod": [ "GetDemo" ],
+      "UpstreamPathTemplate": "/gateway/demo"
     }
-
 
   ]
 }

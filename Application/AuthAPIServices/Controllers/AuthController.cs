@@ -8,7 +8,7 @@ using Shared.appUser;
 
 namespace AuthAPIService2s.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
