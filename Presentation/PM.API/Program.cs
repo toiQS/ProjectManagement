@@ -9,7 +9,7 @@ builder.Services.AddSwaggerGen( c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Project Management API", Version = "v1" });
 });
-
+builder.Services.AddHttpClient();
 
 var app = builder.Build();
 

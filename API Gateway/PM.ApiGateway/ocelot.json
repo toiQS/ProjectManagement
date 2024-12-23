@@ -1,34 +1,43 @@
 {
   "GlobalConfiguration": {
-    "BaseUrl" : "https://localhost:5000"
+    "BaseUrl": "http://localhost:5000"
   },
   "Routes": [
-
-    //router of authenticaton user
     {
-      "DownstreamPathTemplate": "/api/Auth/Login/login",
-      "DownstreamScheme": "http",
+      "DownstreamPathTemplate": "/api/auth/login",
+      "UpstreamPathTemplate": "/auth/login",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Port": 5002,
-          "Host": "localhost"
+          "Host": "localhost",
+          "Port": 5002
         }
-      ],
-      "UpstreamHttpMethod": [ "Post" ],
-      "UpstreamPathTemplate": "/gateway/auth/login"
+      ]
     },
     {
-      "DownstreamScheme": "http",
-      "DownstreamPathTemplate": "/api/Demo",
+      "DownstreamPathTemplate": "/api/auth/register",
+      "UpstreamPathTemplate": "/auth/register",
+      "UpstreamHttpMethod": [ "POST" ],
+      "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
-          "Port": 5002,
-          "Host": "localhost"
+          "Host": "localhost",
+          "Port": 5002
         }
-      ],
-      "UpstreamHttpMethod": [ "Get" ],
-      "UpstreamPathTemplate": "/gateway/demo"
+      ]
+    },
+    {
+      "DownstreamPathTemplate": "/api/auth/user-details",
+      "UpstreamPathTemplate": "/auth/user-details",
+      "UpstreamHttpMethod": [ "GET" ],
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ]
     }
-
   ]
 }
