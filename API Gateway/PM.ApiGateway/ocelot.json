@@ -6,6 +6,18 @@
 
     //router of authenticaton user
     {
+      "DownstreamPathTemplate": "/api/Auth/Login/login",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5002,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/gateway/auth/login"
+    },
+    {
       "DownstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Demo",
       "DownstreamHostAndPorts": [
@@ -14,7 +26,7 @@
           "Host": "localhost"
         }
       ],
-      "UpstreamHttpMethod": [ "GetDemo" ],
+      "UpstreamHttpMethod": [ "Get" ],
       "UpstreamPathTemplate": "/gateway/demo"
     }
 

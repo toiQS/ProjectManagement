@@ -7,6 +7,7 @@ namespace AuthAPIServices.Controllers
     [ApiController]
     public class DemoController : ControllerBase
     {
+        public DemoController() { }
         [HttpGet]
         public async Task<IActionResult> GetDemo()
         {
