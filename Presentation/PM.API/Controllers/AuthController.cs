@@ -1,43 +1,51 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Shared;
 using Shared.appUser;
 using System.Net.Http.Json;
 
 namespace PM.API.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
         private readonly HttpClient _httpClient;
-        private string _gatewayUrl = "http://localhost:5000/auth/"; // URL của Ocelot Gateway
-
         public AuthController(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _httpClient.BaseAddress = new Uri(_gatewayUrl);
+            _httpClient.BaseAddress = new Uri("https://localhost:5000");
         }
-
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Login(string email, string password)
         {
-            var model = new LoginModel
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(password)) return BadRequest();
+            var model = new LoginModel()
             {
                 Email = email,
                 Password = password
             };
-
-            // Gửi yêu cầu đến Ocelot Gateway
-            var response = await _httpClient.PostAsJsonAsync("login", model);
-
-            // Kiểm tra trạng thái phản hồi
-            if (!response.IsSuccessStatusCode)
+            var response = await _httpClient.PostAsJsonAsync("/auth/login", model);
+            if (response.IsSuccessStatusCode)
             {
-                var error = await response.Content.ReadAsStringAsync();
-                return StatusCode((int)response.StatusCode, new { Error = error });
+                return Ok(response.Content.ReadAsStringAsync().Result);
             }
-
-            var result = await response.Content.ReadAsStringAsync();
-            return Ok(new { Message = "Login successful", Data = result });
+            return BadRequest();
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(string username, string email, string password)
+        {
+            var model = new RegisterModel()
+            {
+                Email = email,
+                Password = password,
+                UserName = username
+            };
+            var response = await _httpClient.PostAsJsonAsync("/auth/register", model);
+            if (response.IsSuccessStatusCode)
+            {
+                return Ok(response.Content.ReadAsStringAsync().Result);
+            }
+            return BadRequest();
         }
     }
 }
