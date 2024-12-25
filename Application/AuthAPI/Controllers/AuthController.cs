@@ -20,7 +20,7 @@ namespace AuthAPI.Controllers
             _loggerHelper = loggerHelper;
         }
 
-        [HttpPost("login")]
+        [HttpPost]
         public async Task<IActionResult> Login(LoginModel model)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -29,7 +29,16 @@ namespace AuthAPI.Controllers
                 return BadRequest(response.Message);
             var roleUser = await _auth.GetRoleByEmail(model.Email);
             var token = _jwtHelper.GenerateToken(model.Email,roleUser.Data);
-            return Ok(response);
+            return Ok(token);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterModel model)
+        {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var response = await _auth.RegisterUser(model);
+            if (!response.Status)
+                return BadRequest(response.Message);
+            return Ok("Success");
         }
 
     }

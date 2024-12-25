@@ -5,7 +5,7 @@
   "Routes": [
     // authentication user
     {
-      "DownstreamPathTemplate": "/api/auth/login",
+      "DownstreamPathTemplate": "/api/Auth/Login",
       "DownstreamScheme": "https",
       "DownstreamHostAndPorts": [
         {
@@ -15,6 +15,30 @@
       ],
       "UpstreamHttpMethod": [ "Post" ],
       "UpstreamPathTemplate": "/auth/login"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/Register",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5001
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/auth/register"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Auth/Demo",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5001,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/auth/demo"
     }
   ]
 }
