@@ -28,13 +28,13 @@ namespace PM.DomainServices.Logic
             _positionLogic = position;
         }
 
-        #region GetProductListUserHasJoined
+        #region GetProjectListUserHasJoined
         /// <summary>
         /// Retrieves the list of projects a user has joined.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
         /// <returns>A service result containing a list of projects the user has joined.</returns>
-        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasJoined(string userId)
+        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectListUserHasJoined(string userId)
         {
             // Validate user ID
             if (string.IsNullOrEmpty(userId))
@@ -95,13 +95,13 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
-        #region GetProductListUserHasOwner
+        #region GetProjectListUserHasOwner
         /// <summary>
         /// Retrieves a list of projects where the specified user is the owner.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
         /// <returns>A service result containing a list of projects owned by the user.</returns>
-        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasOwner(string userId)
+        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectListUserHasOwner(string userId)
         {
             // Validate user ID
             if (string.IsNullOrEmpty(userId))
@@ -154,14 +154,14 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
-        #region GetProductDetailProjectHasJoined
+        #region GetProjectDetailProjectHasJoined
         /// <summary>
         /// Retrieves detailed information about a project that the user has joined.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
         /// <param name="projectId">The ID of the project.</param>
         /// <returns>A service result containing the project details.</returns>
-        public async Task<ServicesResult<DetailProject>> GetProductDetailProjectHasJoined(string userId, string projectId)
+        public async Task<ServicesResult<DetailProject>> GetProjectDetailProjectHasJoined(string userId, string projectId)
         {
             // Validate input parameters
             if (string.IsNullOrEmpty(userId) || string.IsNullOrEmpty(projectId))
