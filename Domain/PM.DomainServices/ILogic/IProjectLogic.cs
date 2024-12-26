@@ -17,14 +17,14 @@ namespace PM.DomainServices.ILogic
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
         /// <returns>A service result containing a list of projects the user has joined.</returns>
-        Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasJoined(string userId);
+        Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectListUserHasJoined(string userId);
 
         /// <summary>
         /// Retrieves a list of projects that the user owns.
         /// </summary>
         /// <param name="userId">The ID of the user.</param>
         /// <returns>A service result containing a list of projects owned by the user.</returns>
-        Task<ServicesResult<IEnumerable<IndexProject>>> GetProductListUserHasOwner(string userId);
+        Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectListUserHasOwner(string userId);
 
         /// <summary>
         /// Retrieves detailed information about a project the user has joined.
@@ -32,7 +32,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user.</param>
         /// <param name="projectId">The ID of the project.</param>
         /// <returns>A service result containing the project's detailed information.</returns>
-        Task<ServicesResult<DetailProject>> GetProductDetailProjectHasJoined(string userId, string projectId);
+        Task<ServicesResult<DetailProject>> GetProjectDetailProjectHasJoined(string userId, string projectId);
 
         #endregion
 

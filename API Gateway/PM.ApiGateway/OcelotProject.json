@@ -2,46 +2,6 @@
   "GlobalConfiguration": {
     "BaseUrl": "https://localhost:5000"
   },
-  "Routes": [
-    // authentication user
-    {
-      "DownstreamPathTemplate": "/api/Auth/Login",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamHttpMethod": [ "Post" ],
-      "UpstreamPathTemplate": "/auth/login"
-    },
-    {
-      "DownstreamPathTemplate": "/api/Auth/Register",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "UpstreamHttpMethod": [ "Post" ],
-      "UpstreamPathTemplate": "/auth/register"
-    },
-    {
-      "DownstreamPathTemplate": "/api/Auth/Demo",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Port": 5001,
-          "Host": "localhost"
-        }
-      ],
-      "UpstreamHttpMethod": [ "Post" ],
-      "UpstreamPathTemplate": "/auth/demo"
-    },
-    
-  ],
   "Route": [
     /// route of project
     {
@@ -114,7 +74,7 @@
         }
       ],
       "UpstreamHttpMethod": [ "Delete" ],
-      "UpstreamPathTemplate": "/project/delete-project"
+      "UpstreamPathTemplate": "project/delete-project"
     },
     {
       "DownstreamPathTemplate": "/api/Project/update-is-delete",
@@ -127,30 +87,6 @@
       ],
       "UpstreamHttpMethod": [ "Patch" ],
       "UpstreamPathTemplate": "/project/update-is-delete"
-    },
-    {
-      "DownstreamPathTemplate": "/api/Project/update-is-delete",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamHttpMethod": [ "Patch" ],
-      "UpstreamPathTemplate": "/project/update-is-done"
-    },
-    {
-      "DownstreamPathTemplate": "/api/Project/update-status",
-      "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5002
-        }
-      ],
-      "UpstreamHttpMethod": [ "Patch" ],
-      "UpstreamPathTemplate": "/project/update-status"
     }
   ]
 }
