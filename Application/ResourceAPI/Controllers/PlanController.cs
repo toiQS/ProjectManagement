@@ -3,40 +3,45 @@ using Microsoft.AspNetCore.Mvc;
 using PM.DomainServices.ILogic;
 using PM.Infrastructure.Jwts;
 using PM.Infrastructure.Loggers;
-using Shared.member;
+using Shared.plan;
 
 namespace ResourceAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MemberController : ControllerBase
+    public class PlanController : ControllerBase
     {
         #region Fields
-        private readonly IAuthLogic _authLogic;
+        private readonly ILoggerHelper<PlanController> _loggerHelper;
         private readonly IJwtHelper _jwtHelper;
-        private readonly ILoggerHelper<MemberController> _loggerHelper;
-        private readonly IMemberLogic _memberLogic;
+        private readonly IPlanLogic _planLogic;
+        private readonly IAuthLogic _authLogic;
         #endregion
 
         #region Constructor
-        public MemberController(IAuthLogic authLogic, IJwtHelper jwtHelper, ILoggerHelper<MemberController> loggerHelper, IMemberLogic memberLogic)
+        public PlanController(
+            ILoggerHelper<PlanController> loggerHelper,
+            IJwtHelper jwtHelper,
+            IPlanLogic planLogic,
+            IAuthLogic authLogic)
         {
-            _authLogic = authLogic;
-            _jwtHelper = jwtHelper;
             _loggerHelper = loggerHelper;
-            _memberLogic = memberLogic;
+            _jwtHelper = jwtHelper;
+            _planLogic = planLogic;
+            _authLogic = authLogic;
         }
         #endregion
 
         #region Get Methods
+
         /// <summary>
-        /// Retrieves the members in a specific project.
+        /// Retrieves all plans associated with a specific project ID.
         /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <param name="projectId">Project ID</param>
-        /// <returns>List of members in the project</returns>
-        [HttpGet("members-in-project")]
-        public async Task<IActionResult> GetMemberInProject(string token, string projectId)
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="projectId">ID of the project.</param>
+        /// <returns>List of plans in the project.</returns>
+        [HttpGet("project/{projectId}")]
+        public async Task<IActionResult> GetPlansInProjectId(string token, string projectId)
         {
             try
             {
@@ -66,37 +71,37 @@ namespace ResourceAPI.Controllers
                     return BadRequest(user);
                 }
 
-                var members = await _memberLogic.GetMembersInProject(user.Data.UserId, projectId);
-                if (!members.Status)
+                var plans = await _planLogic.GetPlansInProjectId(user.Data.UserId, projectId);
+                if (!plans.Status)
                 {
-                    _loggerHelper.LogDebug(members.Message);
-                    return BadRequest(members);
+                    _loggerHelper.LogDebug(plans.Message);
+                    return BadRequest(plans);
                 }
 
-                return Ok(members);
+                return Ok(plans);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(ex, "Error fetching members in project.");
+                _loggerHelper.LogError(ex, "Error fetching plans in project.");
                 throw;
             }
         }
 
         /// <summary>
-        /// Retrieves a member's details by their ID.
+        /// Retrieves detailed information about a specific plan by its ID.
         /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <param name="memberId">Member ID</param>
-        /// <returns>Member details</returns>
-        [HttpGet("member-details")]
-        public async Task<IActionResult> GetMemberByMemberId(string token, string memberId)
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="planId">ID of the plan.</param>
+        /// <returns>Details of the specified plan.</returns>
+        [HttpGet("{planId}")]
+        public async Task<IActionResult> GetDetailPlanById(string token, string planId)
         {
             try
             {
-                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(memberId))
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(planId))
                 {
-                    _loggerHelper.LogWarning("Token or Member ID is null or empty.");
-                    return BadRequest("Token and Member ID are required.");
+                    _loggerHelper.LogWarning("Token or Plan ID is null or empty.");
+                    return BadRequest("Token and Plan ID are required.");
                 }
 
                 var result = _jwtHelper.ParseToken(token);
@@ -119,40 +124,42 @@ namespace ResourceAPI.Controllers
                     return BadRequest(user);
                 }
 
-                var member = await _memberLogic.GetMemberByMemberId(user.Data.UserId, memberId);
-                if (!member.Status)
+                var plan = await _planLogic.GetDetailPlanById(user.Data.UserId, planId);
+                if (!plan.Status)
                 {
-                    _loggerHelper.LogDebug(member.Message);
-                    return BadRequest(member);
+                    _loggerHelper.LogDebug(plan.Message);
+                    return BadRequest(plan);
                 }
 
-                return Ok(member);
+                return Ok(plan);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(ex, "Error fetching member details.");
+                _loggerHelper.LogError(ex, "Error fetching plan details.");
                 throw;
             }
         }
+
         #endregion
 
         #region Create Methods
+
         /// <summary>
-        /// Adds a new member to a project.
+        /// Adds a new plan to a specific project.
         /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <param name="projectId">Project ID</param>
-        /// <param name="addMember">New member details</param>
-        /// <returns>Operation result</returns>
-        [HttpPost("add-member")]
-        public async Task<IActionResult> AddNewMember(string token, string projectId, AddMember addMember)
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="projectId">ID of the project.</param>
+        /// <param name="plan">Details of the plan to be added.</param>
+        /// <returns>Status of the creation operation.</returns>
+        [HttpPost("project/{projectId}")]
+        public async Task<IActionResult> AddNewPlan(string token, string projectId, AddPlan plan)
         {
             try
             {
-                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(projectId) || addMember == null || !ModelState.IsValid)
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(projectId) || plan == null || !ModelState.IsValid)
                 {
-                    _loggerHelper.LogWarning("Invalid input.");
-                    return BadRequest("Invalid input.");
+                    _loggerHelper.LogWarning("Invalid input for adding a new plan.");
+                    return BadRequest("Invalid input parameters.");
                 }
 
                 var result = _jwtHelper.ParseToken(token);
@@ -175,40 +182,42 @@ namespace ResourceAPI.Controllers
                     return BadRequest(user);
                 }
 
-                var resultAdd = await _memberLogic.Add(user.Data.UserId, addMember, projectId);
-                if (!resultAdd.Status)
+                var response = await _planLogic.Add(user.Data.UserId, projectId, plan);
+                if (!response.Status)
                 {
-                    _loggerHelper.LogDebug(resultAdd.Message);
-                    return BadRequest(resultAdd);
+                    _loggerHelper.LogDebug(response.Message);
+                    return BadRequest(response);
                 }
 
-                return Ok(resultAdd);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(ex, "Error adding member.");
+                _loggerHelper.LogError(ex, "Error adding a new plan.");
                 throw;
             }
         }
+
         #endregion
 
         #region Update Methods
+
         /// <summary>
-        /// Updates information of a specific member.
+        /// Updates the details of a specific plan.
         /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <param name="memberId">Member ID</param>
-        /// <param name="updateMember">Updated member details</param>
-        /// <returns>Operation result</returns>
-        [HttpPut("update-member")]
-        public async Task<IActionResult> UpdateInfo(string token, string memberId, UpdateMember updateMember)
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="planId">ID of the plan.</param>
+        /// <param name="plan">Updated details of the plan.</param>
+        /// <returns>Status of the update operation.</returns>
+        [HttpPut("{planId}")]
+        public async Task<IActionResult> UpdateInfo(string token, string planId, UpdatePlan plan)
         {
             try
             {
-                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(memberId) || updateMember == null || !ModelState.IsValid)
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(planId) || plan == null || !ModelState.IsValid)
                 {
-                    _loggerHelper.LogWarning("Invalid input.");
-                    return BadRequest("Invalid input.");
+                    _loggerHelper.LogWarning("Invalid input for updating a plan.");
+                    return BadRequest("Invalid input parameters.");
                 }
 
                 var result = _jwtHelper.ParseToken(token);
@@ -231,39 +240,37 @@ namespace ResourceAPI.Controllers
                     return BadRequest(user);
                 }
 
-                var resultUpdate = await _memberLogic.UpdateInfo(user.Data.UserId, memberId, updateMember);
-                if (!resultUpdate.Status)
+                var response = await _planLogic.UpdateInfo(user.Data.UserId, planId, plan);
+                if (!response.Status)
                 {
-                    _loggerHelper.LogDebug(resultUpdate.Message);
-                    return BadRequest(resultUpdate);
+                    _loggerHelper.LogDebug(response.Message);
+                    return BadRequest(response);
                 }
 
-                return Ok(resultUpdate);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(ex, "Error updating member information.");
+                _loggerHelper.LogError(ex, "Error updating the plan.");
                 throw;
             }
         }
-        #endregion
 
-        #region Delete Methods
         /// <summary>
-        /// Deletes a member from a project.
+        /// Marks a specific plan as done.
         /// </summary>
-        /// <param name="token">JWT token</param>
-        /// <param name="memberId">Member ID</param>
-        /// <returns>Operation result</returns>
-        [HttpDelete("delete-member")]
-        public async Task<IActionResult> Delete(string token, string memberId)
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="planId">ID of the plan.</param>
+        /// <returns>Status of the operation.</returns>
+        [HttpPut("{planId}/done")]
+        public async Task<IActionResult> UpdateIsDone(string token, string planId)
         {
             try
             {
-                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(memberId))
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(planId))
                 {
-                    _loggerHelper.LogWarning("Invalid input.");
-                    return BadRequest("Token and Member ID are required.");
+                    _loggerHelper.LogWarning("Invalid input for marking a plan as done.");
+                    return BadRequest("Invalid input parameters.");
                 }
 
                 var result = _jwtHelper.ParseToken(token);
@@ -286,21 +293,22 @@ namespace ResourceAPI.Controllers
                     return BadRequest(user);
                 }
 
-                var resultDelete = await _memberLogic.Delete(user.Data.UserId, memberId);
-                if (!resultDelete.Status)
+                var response = await _planLogic.UpdateIsDone(user.Data.UserId, planId);
+                if (!response.Status)
                 {
-                    _loggerHelper.LogDebug(resultDelete.Message);
-                    return BadRequest(resultDelete);
+                    _loggerHelper.LogDebug(response.Message);
+                    return BadRequest(response);
                 }
 
-                return Ok(resultDelete);
+                return Ok(response);
             }
             catch (Exception ex)
             {
-                _loggerHelper.LogError(ex, "Error deleting member.");
+                _loggerHelper.LogError(ex, "Error marking the plan as done.");
                 throw;
             }
         }
+
         #endregion
     }
 }
