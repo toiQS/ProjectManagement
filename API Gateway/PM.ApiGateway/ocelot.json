@@ -3,6 +3,15 @@
     "BaseUrl": "https://localhost:5000"
   },
   "Routes": [
+
+    //schemas
+    // - auth
+    // - member
+    // - plan
+    // - position
+    // - project
+    // - task
+
     // authentication user
     {
       "DownstreamPathTemplate": "/api/Auth/Login",
@@ -40,9 +49,178 @@
       "UpstreamHttpMethod": [ "Post" ],
       "UpstreamPathTemplate": "/auth/demo"
     },
-    
-  ],
-  "Route": [
+    /// route of member
+    {
+      "DownstreamPathTemplate": "/api/Member/members-in-project",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/member/members-in-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Member/member-details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/member/members-in-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Member/add-member",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/member/add-member"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Member/update-member",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Put" ],
+      "UpstreamPathTemplate": "/member/update-member"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Member/delete-member",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Delete" ],
+      "UpstreamPathTemplate": "/member/delete-member"
+    },
+
+    /// route of plan
+    {
+      "DownstreamPathTemplate": "/api/Plan/get-plans-in-project",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5002,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/plan/get-plans-in-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Plan/get-detail-plan",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/plan/get-detail-plan"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Plan/add-plan",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/plan/add-plan"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Plan/update-plan",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Put" ],
+      "UpstreamPathTemplate": "/plan/update-plan"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Plan/update-is-done",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Patch" ],
+      "UpstreamPathTemplate": "/plan/update-is-done"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Plan/delete-plan",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Delete" ],
+      "UpstreamPathTemplate": "/plan/delete-plan"
+    },
+    /// route of position
+    {
+      "DownstreamPathTemplate": "/api/Position/get-position",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/position/get-position"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Position/add-position",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/position/add-position"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Position/update-position",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Put" ],
+      "UpstreamPathTemplate": "/position/update-position"
+    },
     /// route of project
     {
       "DownstreamPathTemplate": "/api/Project/joined-projects",
@@ -151,6 +329,79 @@
       ],
       "UpstreamHttpMethod": [ "Patch" ],
       "UpstreamPathTemplate": "/project/update-status"
+    },
+    // route of task
+    {
+      "DownstreamPathTemplate": "/api/Task/get-tasks",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/task/get-tasks"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Task/get-task-detail",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/task/get-task-detail"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Task/add-task",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/task/add-task"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Task/update-task",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Put" ],
+      "UpstreamPathTemplate": "/task/update-task"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Task/update-task-status",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Patch" ],
+      "UpstreamPathTemplate": "/task/update-task-status"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Task/delete-task",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Delete" ],
+      "UpstreamPathTemplate": "/task/delete-task"
     }
   ]
 }

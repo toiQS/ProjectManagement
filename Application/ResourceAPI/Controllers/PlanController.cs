@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Azure;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PM.DomainServices.ILogic;
 using PM.Infrastructure.Jwts;
@@ -40,7 +41,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="projectId">ID of the project.</param>
         /// <returns>List of plans in the project.</returns>
-        [HttpGet("project/{projectId}")]
+        [HttpGet("get-plans-in-project")]
         public async Task<IActionResult> GetPlansInProjectId(string token, string projectId)
         {
             try
@@ -93,7 +94,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="planId">ID of the plan.</param>
         /// <returns>Details of the specified plan.</returns>
-        [HttpGet("{planId}")]
+        [HttpGet("get-detail-plan")]
         public async Task<IActionResult> GetDetailPlanById(string token, string planId)
         {
             try
@@ -151,7 +152,7 @@ namespace ResourceAPI.Controllers
         /// <param name="projectId">ID of the project.</param>
         /// <param name="plan">Details of the plan to be added.</param>
         /// <returns>Status of the creation operation.</returns>
-        [HttpPost("project/{projectId}")]
+        [HttpPost("add-plan")]
         public async Task<IActionResult> AddNewPlan(string token, string projectId, AddPlan plan)
         {
             try
@@ -209,7 +210,7 @@ namespace ResourceAPI.Controllers
         /// <param name="planId">ID of the plan.</param>
         /// <param name="plan">Updated details of the plan.</param>
         /// <returns>Status of the update operation.</returns>
-        [HttpPut("{planId}")]
+        [HttpPut("update-plan")]
         public async Task<IActionResult> UpdateInfo(string token, string planId, UpdatePlan plan)
         {
             try
@@ -262,7 +263,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="planId">ID of the plan.</param>
         /// <returns>Status of the operation.</returns>
-        [HttpPut("{planId}/done")]
+        [HttpPatch("update-is-done")]
         public async Task<IActionResult> UpdateIsDone(string token, string planId)
         {
             try
@@ -309,6 +310,59 @@ namespace ResourceAPI.Controllers
             }
         }
 
+        #endregion
+        #region method delete of plan
+        /// <summary>
+        /// delete a specific plan in database
+        /// </summary>
+        /// <param name="token">JWT token for authentication.</param>
+        /// <param name="planId">ID of the plan.</param>
+        /// <returns>Delete a specific plan is exist in database</returns>
+        [HttpDelete("delete-plan")]
+        public async Task<IActionResult> Delete(string token, string planId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(planId))
+                {
+                    _loggerHelper.LogWarning("Invalid input for marking a plan as done.");
+                    return BadRequest("Invalid input parameters.");
+                }
+
+                var result = _jwtHelper.ParseToken(token);
+                if (result == null)
+                {
+                    _loggerHelper.LogWarning("Failed to parse token.");
+                    return BadRequest("Invalid token.");
+                }
+
+                if (result.Role == "Admin")
+                {
+                    _loggerHelper.LogWarning("Admin role not allowed.");
+                    return BadRequest("Access denied.");
+                }
+
+                var user = await _authLogic.GetUserDetailByMail(result.Email);
+                if (!user.Status)
+                {
+                    _loggerHelper.LogDebug(user.Message);
+                    return BadRequest(user);
+                }
+                var response = await _planLogic.Delete(user.Data.UserId,planId);
+                if (!response.Status)
+                {
+                    _loggerHelper.LogDebug(response.Message);
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+            catch (Exception ex) 
+            {
+                _loggerHelper.LogError(ex, "Error delete the plan.");
+                throw;
+            }
+        }
         #endregion
     }
 }

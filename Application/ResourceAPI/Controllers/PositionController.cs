@@ -40,7 +40,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="projectId">ID of the project.</param>
         /// <returns>Position details.</returns>
-        [HttpGet("{projectId}")]
+        [HttpGet("get-position")]
         public async Task<IActionResult> GetPosition(string token, string projectId)
         {
             try
@@ -98,7 +98,7 @@ namespace ResourceAPI.Controllers
         /// <param name="projectId">ID of the project.</param>
         /// <param name="addPosition">Details of the position to be added.</param>
         /// <returns>Status of the operation.</returns>
-        [HttpPost("{projectId}")]
+        [HttpPost("add-position")]
         public async Task<IActionResult> AddNewPosition(string token, string projectId, AddPosition addPosition)
         {
             try
@@ -156,7 +156,7 @@ namespace ResourceAPI.Controllers
         /// <param name="positionId">ID of the position to be updated.</param>
         /// <param name="updatePosition">Updated details of the position.</param>
         /// <returns>Status of the operation.</returns>
-        [HttpPut("{positionId}")]
+        [HttpPut("update-position")]
         public async Task<IActionResult> Update(string token, string positionId, UpdatePositon updatePosition)
         {
             try
@@ -214,7 +214,7 @@ namespace ResourceAPI.Controllers
         /// <param name="positionId">ID of the position to be deleted.</param>
         /// <param name="projectId">ID of the project containing the position.</param>
         /// <returns>Status of the operation.</returns>
-        [HttpDelete("{positionId}/{projectId}")]
+        [HttpDelete("position-delete")]
         public async Task<IActionResult> Delete(string token, string positionId, string projectId)
         {
             try

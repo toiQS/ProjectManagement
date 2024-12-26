@@ -34,7 +34,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="planId">Plan ID to retrieve tasks.</param>
         /// <returns>List of tasks in the specified plan.</returns>
-        [HttpGet("tasks/plan")]
+        [HttpGet("get-tasks")]
         public async Task<IActionResult> GetTaskListInPlan(string token, string planId)
         {
             try
@@ -87,7 +87,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="taskId">Task ID to retrieve details.</param>
         /// <returns>Details of the specified task.</returns>
-        [HttpGet("tasks/detail")]
+        [HttpGet("get-task-detail")]
         public async Task<IActionResult> GetTaskDetail(string token, string taskId)
         {
             try
@@ -145,7 +145,7 @@ namespace ResourceAPI.Controllers
         /// <param name="planId">Plan ID to which the task will be added.</param>
         /// <param name="addTask">Task details.</param>
         /// <returns>Result of task creation.</returns>
-        [HttpPost("tasks/add")]
+        [HttpPost("add-task")]
         public async Task<IActionResult> AddNewTask(string token, string planId, AddTask addTask)
         {
             try
@@ -199,7 +199,7 @@ namespace ResourceAPI.Controllers
         /// <param name="taskId">Task ID to be updated.</param>
         /// <param name="updateTask">Updated task details.</param>
         /// <returns>Result of task update.</returns>
-        [HttpPut("tasks/update")]
+        [HttpPut("update-task")]
         public async Task<IActionResult> UpdateTaskInfo(string token, string taskId, UpdateTask updateTask)
         {
             try
@@ -256,7 +256,7 @@ namespace ResourceAPI.Controllers
         /// <param name="token">JWT token for authentication.</param>
         /// <param name="taskId">Task ID to update status.</param>
         /// <returns>Result of status update.</returns>
-        [HttpPut("tasks/status")]
+        [HttpPatch("update-task-status")]
         public async Task<IActionResult> UpdateTaskStatus(string token, string taskId)
         {
             try
@@ -303,6 +303,61 @@ namespace ResourceAPI.Controllers
             }
         }
 
+        #endregion
+        #region task delete
+        /// <summary>
+        /// delete a specific task in database
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="taskId"></param>
+        /// <returns>a services result of action delete</returns>
+        /// 
+        [HttpDelete("delete-task")]
+        public async Task<IActionResult> Delete(string token, string taskId)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(token) || string.IsNullOrEmpty(taskId))
+                {
+                    _loggerHelper.LogWarning("Token or Task ID is null or empty.");
+                    return BadRequest("Token and Task ID are required.");
+                }
+
+                var result = _jwtHelper.ParseToken(token);
+                if (result == null)
+                {
+                    _loggerHelper.LogWarning("Failed to parse token.");
+                    return BadRequest("Invalid token.");
+                }
+
+                if (result.Role == "Admin")
+                {
+                    _loggerHelper.LogWarning("Admin role not allowed.");
+                    return BadRequest("Access denied.");
+                }
+
+                var user = await _authLogic.GetUserDetailByMail(result.Email);
+                if (!user.Status)
+                {
+                    _loggerHelper.LogDebug(user.Message);
+                    return BadRequest(user);
+                }
+
+                var statusResult = await _taskLogic.Delete(user.Data.UserId, taskId);
+                if (!statusResult.Status)
+                {
+                    _loggerHelper.LogDebug(statusResult.Message);
+                    return BadRequest(statusResult);
+                }
+
+                return Ok(statusResult);
+            }
+            catch (Exception ex)
+            {
+                _loggerHelper.LogError(ex, "Error updating task status.");
+                throw;
+            }
+        }
         #endregion
     }
 }
