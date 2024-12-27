@@ -12,6 +12,6 @@
 - 1009 task
 - 1010 member in task
 - 1011 application user
-- 
+- 1012 status
 
 

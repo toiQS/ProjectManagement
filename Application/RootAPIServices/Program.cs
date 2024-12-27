@@ -23,6 +23,16 @@ using (var scope = app.Services.CreateScope())
     var services = scope.ServiceProvider;
     await RoleSeeder.Initialize(services);
 }
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await RoleInProjectSeeder.Initialize(services);
+}
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    await StatusSeeder.Initialize(services);
+}
 
 // Configure the HTTP request pipeline.
 

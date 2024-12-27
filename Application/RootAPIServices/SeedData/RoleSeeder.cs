@@ -4,7 +4,7 @@ namespace RootAPIServices.SeedData
 {
     public static class RoleSeeder
     {
-        public static async Task Initialize(IServiceProvider serviceProvider)
+        public static async Task Initialize(this IServiceProvider serviceProvider)
         {
             try
             {
