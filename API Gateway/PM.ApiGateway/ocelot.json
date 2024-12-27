@@ -72,7 +72,7 @@
         }
       ],
       "UpstreamHttpMethod": [ "Get" ],
-      "UpstreamPathTemplate": "/member/members-in-project"
+      "UpstreamPathTemplate": "/member/members-details"
     },
     {
       "DownstreamPathTemplate": "/api/Member/add-member",
