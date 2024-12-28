@@ -227,17 +227,17 @@ namespace ResourceAPI.Controllers
                 if (!user.Status)
                 {
                     _loggerHelper.LogDebug(user.Message);
-                    return BadRequest(user);
+                    return BadRequest(user.Message);
                 }
 
                 var resultAdd = await _projectLogic.Add(user.Data.UserId, addProject);
                 if (!resultAdd.Status)
                 {
                     _loggerHelper.LogWarning(resultAdd.Message);
-                    return BadRequest(resultAdd);
+                    return BadRequest(resultAdd.Message);
                 }
 
-                return Ok(resultAdd);
+                return Ok(resultAdd.Data);
             }
             catch (Exception ex)
             {
