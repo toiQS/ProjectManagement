@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using Shared;
 using Shared.project;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using System.Text;
 
 namespace PM.API.Controllers
 {
@@ -20,25 +23,25 @@ namespace PM.API.Controllers
         public async Task<IActionResult> GetProjectListUserHasJoined(string token)
         {
             if (string.IsNullOrWhiteSpace(token)) return BadRequest("");
-            var response = await _httpClient.GetFromJsonAsync<ServicesResult<IEnumerable<IndexProject>>>($"/project/joined-projects/{token}");
-            if(response == null) return BadRequest(response.Message);
-            return Ok(response.Data);
+            var response = await _httpClient.GetAsync($"/project/joined-projects?token={token}");
+            if(response == null) return BadRequest(response.Content.ReadAsStringAsync().Result);
+            return Ok(response.Content.ReadAsStringAsync().Result);
         }
         [HttpGet("owned-projects")]
         public async Task<IActionResult> GetProjectListUserHasOwner(string token)
         {
             if (string.IsNullOrWhiteSpace(token)) return BadRequest("");
-            var response = await _httpClient.GetFromJsonAsync<ServicesResult<IEnumerable<IndexProject>>>($"/project/owned-projects/{token}");
-            if (response == null) return BadRequest(response.Message);
-            return Ok(response.Data);
+            var response = await _httpClient.GetAsync($"/project/owned-projects?token={token}");
+            if (response == null) return BadRequest(response.Content.ReadAsStringAsync().Result);
+            return Ok(response.Content.ReadAsStringAsync().Result);
         }
         [HttpGet("joined-project-details")]
         public async Task<IActionResult> GetProjectDetailProjectHasJoined(string token, string projectId)
         {
             if (string.IsNullOrWhiteSpace(token) || string.IsNullOrEmpty(projectId)) return BadRequest();
-            var response = await _httpClient.GetFromJsonAsync<ServicesResult<IEnumerable<IndexProject>>>($"/project/joined-project-details?token={token}&projectId={projectId}");
-            if (response == null) return BadRequest(response.Message);
-            return Ok(response.Data);
+            var response = await _httpClient.GetAsync($"/project/joined-project-details?token={token}&projectId={projectId}");
+            if (response == null) return BadRequest(response.Content.ReadAsStringAsync().Result);
+            return Ok(response.Content.ReadAsStringAsync().Result);
         }
 
         [HttpPost("add-project")]
@@ -51,7 +54,12 @@ namespace PM.API.Controllers
                 EndAt = endAt,
                 ProjectDescription = projectDescription
             };
-            var response = await _httpClient.PostAsJsonAsync($"/project/add-project?token={token}", model);
+            var requestContent = new StringContent(
+            JsonConvert.SerializeObject(model),
+            Encoding.UTF8,
+            "application/json");
+            //_httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            var response = await _httpClient.PostAsJsonAsync($"/project/add-project?token={token}", requestContent);
             if (response.IsSuccessStatusCode)
             {
                 return Ok("Add success");
