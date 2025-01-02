@@ -2,6 +2,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Logic;
+using PM.Persistence.IServices;
+using PM.Persistence.Services;
 
 namespace PM.DomainServices
 {
@@ -9,6 +11,7 @@ namespace PM.DomainServices
     {
         public static void AddInitialize(this IServiceCollection services,IConfiguration configuration)
         {
+            RegisterServices(services);
             RegisterLogic(services);
         }
         private static void RegisterLogic(IServiceCollection services)
@@ -19,6 +22,22 @@ namespace PM.DomainServices
             services.AddScoped<IPositionLogic, PositionLogic>();
             services.AddScoped<IProjectLogic, ProjectLogic>();
             services.AddScoped<ITaskLogic, TaskLogic>();
+        }
+        private static void RegisterServices(IServiceCollection services)
+        {
+            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IMemberInTaskServices, MemberInTaskServices>();
+            services.AddScoped<IPlanInProjectServices, PlanInProjectServices>();
+            services.AddScoped<IPlanServices, PlanServices>();
+            services.AddScoped<IPositionInProjectServices, PositionInProjectServices>();
+            services.AddScoped<IPositionWorkOfMemberServices, PositionWorkOfMemberServices>();
+            services.AddScoped<IProjectServices, ProjectServices>();
+            services.AddScoped<IRoleApplicationUserInProjectServices, RoleApplicationUserInProjectServices>();
+            services.AddScoped<IRoleInProjectServices, RoleInProjectServices>();
+            services.AddScoped<ITaskInPlanServices, TaskInPlanServices>();
+            services.AddScoped<ITaskServices, TaskServices>();
+            services.AddScoped<IStatusServices, StatusServices>();
         }
     }
 }

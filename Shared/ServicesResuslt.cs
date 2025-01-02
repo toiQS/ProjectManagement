@@ -18,13 +18,14 @@ namespace Shared
         {
             if (data is null)
             {
-                Status = false;
-                Message = "Data is null here";
+                Status = true;
+                Message = "Data does not exist";
             }
             else
             {
                 Data = data;
                 Status = true;
+                Message = "Success";
             }
         }
 

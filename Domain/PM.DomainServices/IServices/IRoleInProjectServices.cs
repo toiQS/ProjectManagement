@@ -1,4 +1,5 @@
 ﻿using PM.Domain;
+using PM.DomainServices.Repository;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.IServices
 {
-    public interface IPositionWorkOfMemberServices : IRepository<PositionWorkOfMember>
+    public interface IRoleInProjectServices : IRepository<RoleInProject>
     {
     }
 }

@@ -1,4 +1,5 @@
 ﻿using PM.Domain;
+using PM.DomainServices.Repository;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
-    public class TaskInPlanServices(ApplicationDbContext _context) : Repository<TaskInPlan>(_context), ITaskInPlanServices
+    public class PositionWorkOfMemberServices(ApplicationDbContext _context): Repository<PositionWorkOfMember>(_context), IPositionWorkOfMemberServices
     {
     }
 }

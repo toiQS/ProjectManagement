@@ -1,4 +1,5 @@
 ﻿using PM.Domain;
+using PM.DomainServices.Repository;
 using PM.Persistence.Context;
 using PM.Persistence.IServices;
 using System;
@@ -9,7 +10,8 @@ using System.Threading.Tasks;
 
 namespace PM.Persistence.Services
 {
-    public class TaskServices(ApplicationDbContext _context) : Repository<TaskDTO>(_context), ITaskServices
+    public class RoleApplicationUserInProjectServices
+        (ApplicationDbContext _context) : Repository<RoleApplicationUserInProject>(_context), IRoleApplicationUserInProjectServices
     {
     }
 }

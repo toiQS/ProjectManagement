@@ -1,4 +1,6 @@
-﻿namespace PM.Persistence.IServices
+﻿using Shared;
+
+namespace PM.DomainServices.Repository
 {
     /// <summary>
     /// Generic repository interface for CRUD operations.
@@ -12,14 +14,14 @@
         /// Retrieves all entities from the repository.
         /// </summary>
         /// <returns>An enumerable collection of all entities.</returns>
-        Task<IEnumerable<T>> GetAllAsync();
+        Task<ServicesResult<IEnumerable<T>> >GetAllAsync();
 
         /// <summary>
         /// Retrieves a single entity by its primary key.
         /// </summary>
         /// <param name="id">The primary key of the entity.</param>
         /// <returns>The entity that matches the primary key, or null if not found.</returns>
-        Task<T> GetValueByPrimaryKeyAsync(string id);
+        Task<ServicesResult<T>> GetValueByPrimaryKeyAsync(string id);
 
         #endregion
 
@@ -30,7 +32,7 @@
         /// </summary>
         /// <param name="entity">The entity to be added.</param>
         /// <returns>True if the operation was successful, otherwise false.</returns>
-        Task<bool> AddAsync(T entity);
+        Task<ServicesResult<bool>> AddAsync(T entity);
 
         #endregion
 
@@ -41,7 +43,7 @@
         /// </summary>
         /// <param name="entity">The updated entity object.</param>
         /// <returns>True if the operation was successful, otherwise false.</returns>
-        Task<bool> UpdateAsync( T entity);
+        Task<ServicesResult<bool>> UpdateAsync(T entity);
 
         #endregion
 
@@ -52,7 +54,7 @@
         /// </summary>
         /// <param name="id">The primary key of the entity to be deleted.</param>
         /// <returns>True if the operation was successful, otherwise false.</returns>
-        Task<bool> DeleteAsync(string id);
+        Task<ServicesResult<bool>> DeleteAsync(string id);
 
         #endregion
     }

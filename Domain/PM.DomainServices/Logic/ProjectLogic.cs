@@ -46,12 +46,16 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
 
             // Get the list of projects the user is part of
-            var userProjects = (await _roleApplicationUserServices.GetAllAsync()).Where(x => x.ApplicationUserId == userId);
+            var getProjects = (await _roleApplicationUserServices.GetAllAsync());
+            if(getProjects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Failure(getProjects.Message);
+            var userProjects = getProjects.Data.Where(x => x.ApplicationUserId == userId);
             if (!userProjects.Any())
-                return ServicesResult<IEnumerable<IndexProject>>.Failure("No projects found for the user.");
+                return ServicesResult<IEnumerable<IndexProject>>.Success(new List<IndexProject> { });
 
             // Retrieve the "Owner" role ID
-            var ownerRole = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner");
+            var getRoles = (await _roleInProjectServices.GetAllAsync());
+            if (getRoles.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Failure(getRoles.Message);
+            var ownerRole = getRoles.Data.FirstOrDefault(x => x.RoleName == "Owner");
             if (ownerRole == null)
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found.");
 
@@ -65,12 +69,16 @@ namespace PM.DomainServices.Logic
             {
                 // Skip deleted projects
                 var project = await _projectServices.GetValueByPrimaryKeyAsync(projectUser.ProjectId);
-                if (project == null || project.IsDeleted)
+                if (project == null) return ServicesResult<IEnumerable<IndexProject>>.Success(new List<IndexProject> { });
+                if (project.Status && project.Data.IsDeleted)
                     continue;
 
                 // Get the owner of the project
-                var projectOwner = (await _roleApplicationUserServices.GetAllAsync())
+                var getProject = (await _roleApplicationUserServices.GetAllAsync());
+                if (getProject.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Failure(getProject.Message);
+                var projectOwner = getProject.Data
                     .FirstOrDefault(x => x.RoleInProjectId == ownerRoleId && x.ProjectId == projectUser.ProjectId);
+
                 if (projectOwner == null)
                     return ServicesResult<IEnumerable<IndexProject>>.Failure("Project owner not found.");
 
@@ -81,8 +89,8 @@ namespace PM.DomainServices.Logic
                 // Construct the project data
                 var projectItem = new IndexProject
                 {
-                    ProjectId = project.Id,
-                    ProjectName = project.ProjectName,
+                    ProjectId = project.Data.Id,
+                    ProjectName = project.Data.ProjectName,
                     OwnerName = ownerUser.UserName,
                     OwnerAvata = ownerUser.PathImage
                 };
@@ -113,14 +121,16 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("User not found.");
 
             // Retrieve the "Owner" role ID
-            var ownerRole = (await _roleInProjectServices.GetAllAsync()).FirstOrDefault(x => x.RoleName == "Owner");
+            var getRoles = (await _roleInProjectServices.GetAllAsync());
+            if (getRoles.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Failure(getRoles.Message);
+            var ownerRole = getRoles.Data.FirstOrDefault(x => x.RoleName == "Owner");
             if (ownerRole == null)
                 return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found.");
 
             var ownerRoleId = ownerRole.Id;
 
             // Get all projects where the user is the owner
-            var ownedProjects = (await _roleApplicationUserServices.GetAllAsync())
+            var ownedProjects = (await _roleApplicationUserServices.GetAllAsync()).Data
                 .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == ownerRoleId);
 
             if (!ownedProjects.Any())
@@ -134,14 +144,14 @@ namespace PM.DomainServices.Logic
             {
                 // Fetch the project details
                 var project = await _projectServices.GetValueByPrimaryKeyAsync(projectRole.ProjectId);
-                if (project == null || project.IsDeleted)
+                if (project == null || project.Data.IsDeleted)
                     continue; // Skip null or deleted projects
 
                 // Add the project to the result list
                 var projectData = new IndexProject
                 {
-                    ProjectId = project.Id,
-                    ProjectName = project.ProjectName,
+                    ProjectId = project.Data.Id,
+                    ProjectName = project.Data.ProjectName,
                     OwnerName = user.UserName,
                     OwnerAvata = user.PathImage
                 };
@@ -168,7 +178,7 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<DetailProject>.Failure("User ID or Project ID cannot be null or empty.");
 
             // Check if the user is part of the project
-            var projectUserRoles = (await _roleApplicationUserServices.GetAllAsync())
+            var projectUserRoles = (await _roleApplicationUserServices.GetAllAsync()).Data
                 .Where(x => x.ApplicationUserId == userId && x.ProjectId == projectId);
 
             if (!projectUserRoles.Any())
@@ -180,17 +190,21 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<DetailProject>.Failure("Project not found.");
 
             // Check if the user has access to the project
-            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+            var getRole = (await _roleInProjectServices.GetAllAsync());
+            if (getRole.Data == null) return ServicesResult<DetailProject>.Failure(getRole.Message);
+            var ownerRoleId = getRole.Data
                 .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
 
             if (ownerRoleId == null)
                 return ServicesResult<DetailProject>.Failure("Owner role not found.");
 
-            if (!project.IsAccessed && !projectUserRoles.Any(x => x.RoleInProjectId == ownerRoleId))
+            if (!project.Data.IsAccessed && !projectUserRoles.Any(x => x.RoleInProjectId == ownerRoleId))
                 return ServicesResult<DetailProject>.Failure("User does not have access to this project.");
 
             // Retrieve project owner details
-            var projectOwnerRole = (await _roleApplicationUserServices.GetAllAsync())
+            var getProjects = (await _roleApplicationUserServices.GetAllAsync());
+            if (getProjects.Data == null) return ServicesResult<DetailProject>.Failure("")
+            var projectOwnerRole = .Data
                 .FirstOrDefault(x => x.ProjectId == projectId && x.RoleInProjectId == ownerRoleId);
 
             if (projectOwnerRole == null)
@@ -204,17 +218,17 @@ namespace PM.DomainServices.Logic
             var projectDetails = new DetailProject
             {
                 ProjectId = projectId,
-                ProjectName = project.ProjectName,
-                ProjectDescription = project.ProjectDescription,
-                CreateAt = project.CreateAt,
-                StartAt = project.StartAt,
-                EndAt = project.EndAt,
-                IsAccessed = project.IsAccessed,
-                IsDeleted = project.IsDeleted,
-                IsDone = project.IsDone,
-                Status = (await _statusServices.GetAllAsync())
-                    .FirstOrDefault(x => x.Id == project.StatusId)?.Value ?? "Unknown",
-                QuantityMember = (await _roleApplicationUserServices.GetAllAsync())
+                ProjectName = project.Data.ProjectName,
+                ProjectDescription = project.Data.ProjectDescription,
+                CreateAt = project.Data.CreateAt,
+                StartAt = project.Data.StartAt,
+                EndAt = project.Data.EndAt,
+                IsAccessed = project.Data.IsAccessed,
+                IsDeleted = project.Data.IsDeleted,
+                IsDone = project.Data.IsDone,
+                Status = (await _statusServices.GetAllAsync()).Data
+                    .FirstOrDefault(x => x.Id == project.Data.StatusId)?.Value ?? "Unknown",
+                QuantityMember = (await _roleApplicationUserServices.GetAllAsync()).Data
                     .Count(x => x.ProjectId == projectId),
                 OwnerName = ownerUser.UserName,
                 OwnerAvata = ownerUser.PathImage
@@ -250,14 +264,14 @@ namespace PM.DomainServices.Logic
             if (string.IsNullOrEmpty(userId) || addProject == null)
                 return ServicesResult<bool>.Failure("Invalid parameters.");
 
-            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+            var ownerRoleId = (await _roleInProjectServices.GetAllAsync()).Data
                                 .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
 
             if (ownerRoleId == null)
                 return ServicesResult<bool>.Failure("Owner role not found.");
 
             // Check if the user is already an owner of a project with the same name
-            var userProjects = (await _roleApplicationUserServices.GetAllAsync())
+            var userProjects = (await _roleApplicationUserServices.GetAllAsync()).Data
                                 .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == ownerRoleId);
 
             if (userProjects.Any())
@@ -265,7 +279,7 @@ namespace PM.DomainServices.Logic
                 foreach (var project in userProjects)
                 {
                     var existingProject = await _projectServices.GetValueByPrimaryKeyAsync(project.ProjectId);
-                    if (existingProject != null && existingProject.ProjectName == addProject.ProjectName)
+                    if (existingProject != null && existingProject.Data.ProjectName == addProject.ProjectName)
                     {
                         return ServicesResult<bool>.Failure("Project with the same name already exists.");
                     }
@@ -302,10 +316,10 @@ namespace PM.DomainServices.Logic
                 StatusId = DateTime.Now == addProject.StartAt ? 3 : (DateTime.Now < addProject.StartAt ? 2 : 1) // Conditional status assignment
             };
 
-            if (!await _projectServices.AddAsync(project))
+            if (!(await _projectServices.AddAsync(project)).Status)
                 return ServicesResult<bool>.Failure("Failed to create the project.");
 
-            var ownerRoleId = (await _roleInProjectServices.GetAllAsync())
+            var ownerRoleId = (await _roleInProjectServices.GetAllAsync()).Data
                                 .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
 
             if (ownerRoleId == null)
@@ -319,7 +333,7 @@ namespace PM.DomainServices.Logic
                 RoleInProjectId = ownerRoleId
             };
 
-            if (await _roleApplicationUserServices.AddAsync(roleProject))
+            if ((await _roleApplicationUserServices.AddAsync(roleProject)).Status)
             {
                 return ServicesResult<bool>.Success(true);
             }
@@ -343,13 +357,13 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Invalid input parameters.");
 
             // Get the 'Owner' role ID
-            var getRoleOwner = (await _roleInProjectServices.GetAllAsync())
+            var getRoleOwner = (await _roleInProjectServices.GetAllAsync()).Data
                                 .FirstOrDefault(x => x.RoleName == "Owner")?.Id;
             if (getRoleOwner == null)
                 return ServicesResult<bool>.Failure("Owner role not found.");
 
             // Check if the user is the owner of the specified project
-            var projectUser = (await _roleApplicationUserServices.GetAllAsync())
+            var projectUser = (await _roleApplicationUserServices.GetAllAsync()).Data
                                 .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == getRoleOwner && x.ProjectId == projectId);
             if (!projectUser.Any())
                 return ServicesResult<bool>.Failure("User is not the owner of the project.");
@@ -360,15 +374,15 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure("Project not found.");
 
             // Check if the project name is the same as the one being updated (no changes)
-            if (project.ProjectName == updateProject.ProjectName)
+            if (project.Data.ProjectName == updateProject.ProjectName)
                 return ServicesResult<bool>.Failure("No changes to the project name.");
 
             // Update project details
-            project.ProjectName = updateProject.ProjectName;
-            project.ProjectDescription = updateProject.ProjectDescription;
+            project.Data.ProjectName = updateProject.ProjectName;
+            project.Data.ProjectDescription = updateProject.ProjectDescription;
 
             // Save the updated project information
-            if (await _projectServices.UpdateAsync(project))
+            if ((await _projectServices.UpdateAsync(project.Data)).Status)
                 return ServicesResult<bool>.Success(true);
 
             // Return failure if update fails
