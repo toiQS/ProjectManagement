@@ -61,7 +61,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user performing the deletion.</param>
         /// <param name="projectId">The ID of the project to delete.</param>
         /// <returns>A service result indicating the success or failure of the deletion operation.</returns>
-        Task<ServicesResult<bool>> Delete(string userId, string projectId);
+        Task<ServicesResult<bool>> DeleteProjectAsync(string userId, string projectId);
 
         #endregion
 
@@ -73,7 +73,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user performing the operation.</param>
         /// <param name="projectId">The ID of the project to update.</param>
         /// <returns>A service result indicating the success or failure of the operation.</returns>
-        Task<ServicesResult<bool>> UpdateIsDelete(string userId, string projectId);
+        Task<ServicesResult<bool>> UpdateIsDeletedAsync(string userId, string projectId);
 
         /// <summary>
         /// Updates the "IsAccessed" status of a project.
@@ -81,7 +81,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user performing the operation.</param>
         /// <param name="projectId">The ID of the project to update.</param>
         /// <returns>A service result indicating the success or failure of the operation.</returns>
-        Task<ServicesResult<bool>> UpdateIsAccessed(string userId, string projectId);
+        Task<ServicesResult<bool>> UpdateIsAccessedAsync(string userId, string projectId);
 
         /// <summary>
         /// Updates the "IsDone" status of a project.
@@ -89,7 +89,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user performing the operation.</param>
         /// <param name="projectId">The ID of the project to update.</param>
         /// <returns>A service result indicating the success or failure of the operation.</returns>
-        Task<ServicesResult<bool>> UpdateIsDone(string userId, string projectId);
+        Task<ServicesResult<bool>> UpdateIsDoneAsync(string userId, string projectId);
 
         /// <summary>
         /// Updates the status of a project.
@@ -97,7 +97,7 @@ namespace PM.DomainServices.ILogic
         /// <param name="userId">The ID of the user performing the operation.</param>
         /// <param name="projectId">The ID of the project to update.</param>
         /// <returns>A service result indicating the success or failure of the operation.</returns>
-        Task<ServicesResult<bool>> UpdateStatus(string userId, string projectId);
+        Task<ServicesResult<bool>> UpdateProjectStatusAsync(string userId, string projectId);
 
         #endregion
     }

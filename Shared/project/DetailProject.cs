@@ -1,4 +1,5 @@
 ﻿using Shared.member;
+using Shared.plan;
 using Shared.task;
 using System;
 using System.Collections.Generic;
@@ -20,7 +21,7 @@ namespace Shared.project
         public bool IsDone { get; set; }
         public string OwnerName { get; set; } = string.Empty; //user name 
         public string OwnerAvata { get; set; } = string.Empty;
-        public List<IndexTask> Tasks { get; set; } = new List<IndexTask>();
+        public List<IndexPlan> Plans { get; set; } = new List<IndexPlan>();
         public List<IndexMember> Members { get; set; } = new List<IndexMember> { };
         public string Status { get; set; } = string.Empty;
         public int QuantityMember { get; set; } = 0;
