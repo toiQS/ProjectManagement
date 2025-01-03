@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using PM.DomainServices.Models;
 using PM.Persistence.Context;
-using Shared;
 
 namespace PM.DomainServices.Repository
 {
@@ -60,7 +60,7 @@ namespace PM.DomainServices.Repository
             try
             {
                 var getData = await _dbSet.FindAsync(id);
-                return getData != null ? ServicesResult<T>.Success(getData) : ServicesResult<T>.Failure("Entity not found");
+                return ServicesResult<T>.Success(getData);
             }
             catch (Exception ex)
             {

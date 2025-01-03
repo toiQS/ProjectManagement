@@ -1,5 +1,5 @@
-﻿using Shared;
-using Shared.position;
+﻿using PM.DomainServices.Models;
+using PM.DomainServices.Models.positions;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

@@ -1,5 +1,5 @@
-﻿using Shared;
-using Shared.plan;
+﻿using PM.DomainServices.Models;
+using PM.DomainServices.Models.plans;
 
 namespace PM.DomainServices.ILogic
 {

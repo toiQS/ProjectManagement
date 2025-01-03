@@ -1,4 +1,4 @@
-﻿using Shared;
+﻿using PM.DomainServices.Models;
 
 namespace PM.DomainServices.Repository
 {

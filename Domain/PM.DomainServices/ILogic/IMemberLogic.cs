@@ -1,4 +1,5 @@
-﻿using Shared;
+﻿using PM.DomainServices.Models;
+using PM.DomainServices.Models.members;
 using Shared.member;
 
 namespace PM.DomainServices.ILogic

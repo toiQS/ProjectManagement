@@ -1,7 +1,5 @@
-﻿using Shared;
-using Shared.task;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+﻿using PM.DomainServices.Models;
+using PM.DomainServices.Models.tasks;
 
 namespace PM.DomainServices.ILogic
 {
