@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.AspNetCore.Rewrite;
 using PM.Domain;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
@@ -38,10 +41,33 @@ namespace PM.DomainServices.Logic
             _roleInProjectServices = roleInProjectServices;
 
             // Set the owner's role on initialization.
-            var roleResult = GetOwnerRoleId().GetAwaiter().GetResult();
-            if (roleResult.Status)
+            //var roleResult = GetOwnerRoleId().GetAwaiter().GetResult();
+            //if (roleResult.Status)
+            //{
+            //    _ownRole = roleResult.Data;
+            //}
+            //var projects =  _projectServices.GetAllAsync().GetAwaiter().GetResult();
+            //while (projects.Status == false)
+            //{
+
+            //}
+            ServicesResult<string> roleResult;
+            do
             {
-                _ownRole = roleResult.Data;
+                roleResult = GetOwnerRoleId().GetAwaiter().GetResult();
+            }
+            while (roleResult.Status == false);
+            _ownRole = roleResult.Data;
+            ServicesResult<IEnumerable<Project>> projectList;
+            do
+            {
+                projectList = _projectServices.GetAllAsync().GetAwaiter().GetResult();
+            }
+            while (projectList.Status == false);
+            foreach (var item in projectList.Data)
+            {
+               var result = UpdateStatusMethod(item.Id).GetAwaiter().GetResult();
+                if (result.Status == false)  ServicesResult<bool>.Failure(result.Message);
             }
         }
 
@@ -312,9 +338,142 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
+        public async Task<ServicesResult<bool>> UpdateInfo(string userId, string projectId, UpdateProject updateProject)
+        {
+            if (string.IsNullOrEmpty(projectId) || updateProject == null) return ServicesResult<bool>.Failure("");
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
+            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
+
+            if (project.Status == false|| project.Data == null) return ServicesResult<bool>.Failure(project.Message);
+            if (project.Data.ProjectName == updateProject.ProjectName) return ServicesResult<bool>.Failure("A project with the same name already existed.");
+            project.Data.ProjectName = updateProject.ProjectName;
+            project.Data.ProjectDescription = updateProject.ProjectDescription;
+            var result = await _projectServices.UpdateAsync(project.Data);
+            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
+        }
+
+        public async Task<ServicesResult<bool>> UpdateIsDeletedAsync(string userId, string projectId)
+        {
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
+
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
+            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
+
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
+            project.Data.IsDeleted = !project.Data.IsDeleted;
+            var result = await _projectServices.UpdateAsync(project.Data);
+            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
+        }
+
+        public async Task<ServicesResult<bool>> UpdateIsAccessedAsync(string userId, string projectId)
+        {
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
+            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
+
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
+            project.Data.IsAccessed = !project.Data.IsAccessed;
+            var result = await _projectServices.UpdateAsync(project.Data);
+            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
+        }
+
+        public async Task<ServicesResult<bool>> UpdateIsDoneAsync(string userId, string projectId)
+        {
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+            
+            if(string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
+
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
+            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
+
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
+            project.Data.IsDone = !project.Data.IsDone;
+            var result = await _projectServices.UpdateAsync(project.Data);
+            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
+        }
+
+        public async Task<ServicesResult<bool>> UpdateProjectStatusAsync(string userId, string projectId)
+        {
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
+            var result  = await UpdateStatusMethod(projectId);
+            if (!result.Status) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
 
 
+        }
+        private async Task<ServicesResult<bool>> UpdateStatusMethod(string projectId)
+        {
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
 
+
+            if (!project.Data.IsDone && project.Data.EndAt < DateTime.Now)
+                project.Data.StatusId = 6; // Ended but not done
+            else if (!project.Data.IsDone && project.Data.EndAt == DateTime.Now)
+                project.Data.StatusId = 5; // Ended today but not done
+            else if (!project.Data.IsDone && project.Data.EndAt > DateTime.Now)
+                project.Data.StatusId = 3; // Active but not done
+            else if (project.Data.IsDone && project.Data.EndAt < DateTime.Now)
+                project.Data.StatusId = 7; // Completed and ended
+            else if (project.Data.IsDone && project.Data.EndAt == DateTime.Now)
+                project.Data.StatusId = 5; // Completed, ending today
+            else if (project.Data.IsDone && project.Data.EndAt > DateTime.Now)
+                project.Data.StatusId = 4; // Completed, still ongoing
+
+            var result = await _projectServices.UpdateAsync(project.Data);
+            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
+            return ServicesResult<bool>.Success(true);
+        }
         #region Helper Methods
 
         /// <summary>
