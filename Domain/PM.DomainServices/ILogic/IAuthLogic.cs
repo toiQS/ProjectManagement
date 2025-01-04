@@ -1,5 +1,4 @@
 ﻿using PM.DomainServices.Models;
-using PM.DomainServices.Models.auths;
 using PM.DomainServices.Models.users;
 
 namespace PM.DomainServices.ILogic
@@ -9,58 +8,6 @@ namespace PM.DomainServices.ILogic
     /// </summary>
     public interface IAuthLogic
     {
-        #region Authentication
-
-        /// <summary>
-        /// Authenticates a user using their login credentials.
-        /// </summary>
-        /// <param name="loginModel">The login model containing user credentials.</param>
-        /// <returns>A service result indicating the success or failure of the login operation.</returns>
-        Task<ServicesResult<bool>> Login(LoginModel loginModel);
-
-        /// <summary>
-        /// Logs out a user by their user ID.
-        /// </summary>
-        /// <param name="id">The ID of the user to be logged out.</param>
-        /// <returns>A service result indicating the success or failure of the logout operation.</returns>
-        Task<ServicesResult<bool>> Logout(string id);
-
-        #endregion
-
-        #region Registration
-
-        /// <summary>
-        /// Registers a new user in the system.
-        /// </summary>
-        /// <param name="regiserModel">The registration model containing user details.</param>
-        /// <returns>A service result indicating the success or failure of the registration operation.</returns>
-        Task<ServicesResult<bool>> RegisterUser(RegisterModel regiserModel);
-
-        #endregion
-
-        #region User Details
-
-        /// <summary>
-        /// Retrieves the detailed information of a user by their user ID.
-        /// </summary>
-        /// <param name="userId">The ID of the user whose details are being retrieved.</param>
-        /// <returns>A service result containing the user's details.</returns>
-        Task<ServicesResult<DetailUser>> Detail(string userId);
-
-        /// <summary>
-        /// Retrieves the role of a user by their email.
-        /// </summary>
-        /// <param name="email">The email address of the user.</param>
-        /// <returns>A service result containing the user's role.</returns>
-        Task<ServicesResult<string>> GetRoleByEmail(string email);
-
-        /// <summary>
-        /// Retrieves the detailed information of a user by their email.
-        /// </summary>
-        /// <param name="email">The email address of the user.</param>
-        /// <returns>A service result containing the user's details.</returns>
-        Task<ServicesResult<DetailUser>> GetUserDetailByMail(string email);
-
-        #endregion
+       
     }
 }
