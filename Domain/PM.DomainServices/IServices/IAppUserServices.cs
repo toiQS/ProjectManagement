@@ -22,5 +22,11 @@ namespace PM.Persistence.IServices
         /// <param name="updateAppUser">An object containing the updated user information.</param>
         /// <returns>A <see cref="ServicesResult{T}"/> indicating the success or failure of the update operation.</returns>
         Task<ServicesResult<bool>> UpdateInfoUser(string userId, UpdateAppUser updateAppUser);
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="email"></param>
+        /// <returns></returns>
+        Task<ServicesResult<string>> GetRoleOfUserByEmail(string email);
     }
 }
