@@ -51,7 +51,7 @@ namespace PM.DomainServices.Models
             if (data is null)
             {
                 Status = true;
-                Message = "Data does not exist";
+                Message = "No data available";
             }
             else
             {
