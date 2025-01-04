@@ -5,6 +5,7 @@ using PM.DomainServices.Models.projects;
 using PM.DomainServices.Models.users;
 using PM.Persistence.IServices;
 using System.Data;
+using System.Timers;
 
 namespace PM.DomainServices.Logic
 {
@@ -209,6 +210,107 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
+
+        #region AddProject
+        /// <summary>
+        /// Adds a new project if the user is authorized and no project with the same name exists for the user.
+        /// </summary>
+        /// <param name="userId">The ID of the user attempting to add the project.</param>
+        /// <param name="addProject">The details of the project to be added.</param>
+        /// <returns>A <see cref="ServicesResult{T}"/> indicating success or failure.</returns>
+        public async Task<ServicesResult<bool>> Add(string userId, AddProject addProject)
+        {
+            // Validate input parameters
+            if (string.IsNullOrEmpty(userId) || addProject == null)
+                return ServicesResult<bool>.Failure("Invalid parameters.");
+
+            // Check and retrieve user information
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status)
+                return ServicesResult<bool>.Failure(userResult.Message);
+
+            if (userResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+
+            // Retrieve all roles associated with users
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false);
+
+            // Check if the user owns a project with the same name
+            var ownedProjects = rolesResult.Data.Where(x => x.ApplicationUserId == userId).ToList();
+            foreach (var role in ownedProjects)
+            {
+                var projectResult = await _projectServices.GetValueByPrimaryKeyAsync(role.ProjectId);
+                if (!projectResult.Status || projectResult.Data == null)
+                    continue;
+
+                if (projectResult.Data.ProjectName == addProject.ProjectName)
+                    return ServicesResult<bool>.Failure("A project with the same name already exists.");
+            }
+
+            // Add the new project
+            var addResult = await AddMethod(userId, addProject);
+            if (!addResult.Status)
+                return ServicesResult<bool>.Failure(addResult.Message);
+
+            return ServicesResult<bool>.Success(true);
+        }
+        #endregion
+
+        #region AddMethod
+        /// <summary>
+        /// Internal method to create a new project and assign the user as the owner.
+        /// </summary>
+        /// <param name="userId">The ID of the user to be assigned as the owner.</param>
+        /// <param name="addProject">The project details to be added.</param>
+        /// <returns>A <see cref="ServicesResult{T}"/> indicating success or failure.</returns>
+        private async Task<ServicesResult<bool>> AddMethod(string userId, AddProject addProject)
+        {
+            // Generate unique IDs for the project and role
+            var randomIdPart = new Random().Next(1000000, 9000000);
+            var timestamp = DateTime.Now.ToString("yyyyMMddHHmmss");
+
+            var project = new Project
+            {
+                Id = $"1001-{randomIdPart}-{timestamp}",
+                ProjectName = addProject.ProjectName,
+                CreateAt = DateTime.Now,
+                StartAt = addProject.StartAt,
+                EndAt = addProject.EndAt,
+                ProjectDescription = addProject.ProjectDescription,
+                IsAccessed = true,
+                IsDeleted = false,
+                IsDone = false,
+                StatusId = DateTime.Now == addProject.StartAt
+                    ? 3 // Ongoing
+                    : (DateTime.Now < addProject.StartAt ? 2 : 1) // Upcoming or Overdue
+            };
+
+            // Save the project to the database
+            var projectAddResult = await _projectServices.AddAsync(project);
+            if (!projectAddResult.Status)
+                return ServicesResult<bool>.Failure($"Failed to create the project. {projectAddResult.Message}");
+
+            // Assign the user as the owner of the project
+            var roleAssignment = new RoleApplicationUserInProject
+            {
+                Id = $"1002-{randomIdPart}-{timestamp}",
+                ProjectId = project.Id,
+                ApplicationUserId = userId,
+                RoleInProjectId = _ownRole
+            };
+
+            var roleAddResult = await _roleApplicationUserServices.AddAsync(roleAssignment);
+            if (!roleAddResult.Status)
+                return ServicesResult<bool>.Failure("Failed to assign the user as project owner.");
+
+            return ServicesResult<bool>.Success(true);
+        }
+        #endregion
 
 
 
