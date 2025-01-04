@@ -139,5 +139,25 @@ namespace PM.Persistence.Services
         }
 
         #endregion
+
+        public async Task<ServicesResult<string>> GetRoleOfUserByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email)) return ServicesResult<string>.Failure("");
+            try
+            {
+                var user = await _userManager.FindByEmailAsync(email);
+                if (user == null) return ServicesResult<string>.Failure("");
+                var role = await _userManager.GetRolesAsync(user);
+                if (role == null) return ServicesResult<string>.Failure("");
+                return ServicesResult<string>.Success(role.First());
+            }
+            catch (Exception ex)
+            {
+                // Log exception (placeholder for a logging framework)
+                Console.WriteLine($"Error: {ex.Message}");
+                return ServicesResult<string>.Failure("An error occurred while updating user information.");
+            }
+        }
+
     }
 }
