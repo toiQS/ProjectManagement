@@ -1,4 +1,6 @@
-﻿using PM.DomainServices.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using PM.DomainServices.Models;
+using PM.DomainServices.Models.auths;
 using PM.DomainServices.Models.users;
 
 namespace PM.DomainServices.ILogic
@@ -8,6 +10,7 @@ namespace PM.DomainServices.ILogic
     /// </summary>
     public interface IAuthLogic
     {
-       
+        public Task<ServicesResult<AppUserClaim>> Login(LoginModel loginModel);
+        public Task<ServicesResult<bool>> Register(RegisterModel registerModel);
     }
 }
