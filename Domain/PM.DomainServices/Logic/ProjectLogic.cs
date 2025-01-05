@@ -19,7 +19,7 @@ namespace PM.DomainServices.Logic
         private readonly IProjectServices _projectServices;
         private readonly IRoleInProjectServices _roleInProjectServices;
         private readonly IStatusServices _statusServices;
-        private static string _ownRole;
+        private string _ownRole;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectLogic"/> class.
