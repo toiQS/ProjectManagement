@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Authorization.Infrastructure;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http.Timeouts;
-using Microsoft.AspNetCore.Rewrite;
-using PM.Domain;
+﻿using PM.Domain;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
 using PM.DomainServices.Models.users;
 using PM.Persistence.IServices;
 using System.Data;
-using System.Timers;
 
 namespace PM.DomainServices.Logic
 {
@@ -33,45 +28,64 @@ namespace PM.DomainServices.Logic
             IApplicationUserServices applicationUserServices,
             IRoleApplicationUserInProjectServices roleApplicationUserServices,
             IProjectServices projectServices,
-            IRoleInProjectServices roleInProjectServices)
+            IRoleInProjectServices roleInProjectServices,
+            IStatusServices statusServices)
         {
             _applicationUserServices = applicationUserServices;
             _roleApplicationUserServices = roleApplicationUserServices;
             _projectServices = projectServices;
             _roleInProjectServices = roleInProjectServices;
+            _statusServices = statusServices;
 
-            // Set the owner's role on initialization.
-            //var roleResult = GetOwnerRoleId().GetAwaiter().GetResult();
-            //if (roleResult.Status)
-            //{
-            //    _ownRole = roleResult.Data;
-            //}
-            //var projects =  _projectServices.GetAllAsync().GetAwaiter().GetResult();
-            //while (projects.Status == false)
-            //{
+            // Initialize the owner's role.
+            InitializeOwnerRole();
 
-            //}
+            // Update the status of all projects.
+            UpdateAllProjectStatuses();
+        }
+
+        #endregion
+
+        #region Initialization Methods
+
+        /// <summary>
+        /// Initializes the owner's role by retrieving it from the database.
+        /// </summary>
+        private void InitializeOwnerRole()
+        {
             ServicesResult<string> roleResult;
             do
             {
                 roleResult = GetOwnerRoleId().GetAwaiter().GetResult();
-            }
-            while (roleResult.Status == false);
+            } while (!roleResult.Status);
+
             _ownRole = roleResult.Data;
+        }
+
+        /// <summary>
+        /// Updates the statuses of all projects in the database.
+        /// </summary>
+        private void UpdateAllProjectStatuses()
+        {
             ServicesResult<IEnumerable<Project>> projectList;
             do
             {
                 projectList = _projectServices.GetAllAsync().GetAwaiter().GetResult();
-            }
-            while (projectList.Status == false);
-            foreach (var item in projectList.Data)
+            } while (!projectList.Status);
+
+            foreach (var project in projectList.Data)
             {
-               var result = UpdateStatusMethod(item.Id).GetAwaiter().GetResult();
-                if (result.Status == false)  ServicesResult<bool>.Failure(result.Message);
+                var result = UpdateStatusMethod(project.Id).GetAwaiter().GetResult();
+                if (!result.Status)
+                {
+                    // Log failure (can integrate logging here if needed).
+                    ServicesResult<bool>.Failure(result.Message);
+                }
             }
         }
 
         #endregion
+
 
         #region Methods for Retrieving Projects
 
@@ -338,129 +352,96 @@ namespace PM.DomainServices.Logic
         }
         #endregion
 
+        #region Update Project Information
+        /// <summary>
+        /// Updates project information such as name and description.
+        /// </summary>
         public async Task<ServicesResult<bool>> UpdateInfo(string userId, string projectId, UpdateProject updateProject)
         {
-            if (string.IsNullOrEmpty(projectId) || updateProject == null) return ServicesResult<bool>.Failure("");
+            if (string.IsNullOrEmpty(projectId) || updateProject == null)
+                return ServicesResult<bool>.Failure("Invalid input.");
+
             var userResult = await CheckAndGetUserInfo(userId);
             if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
-            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(false);
 
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null)
+                return ServicesResult<bool>.Failure(project.Message);
 
             var rolesResult = await _roleApplicationUserServices.GetAllAsync();
-            if (!rolesResult.Status)
-                return ServicesResult<bool>.Failure(rolesResult.Message);
+            if (!rolesResult.Status) return ServicesResult<bool>.Failure(rolesResult.Message);
 
-            if (rolesResult.Data == null)
-                return ServicesResult<bool>.Success(false);
-            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
+            var ownerRoles = rolesResult.Data
+                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole)
+                .ToList();
             if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
 
-            if (project.Status == false|| project.Data == null) return ServicesResult<bool>.Failure(project.Message);
-            if (project.Data.ProjectName == updateProject.ProjectName) return ServicesResult<bool>.Failure("A project with the same name already existed.");
+            if (project.Data.ProjectName == updateProject.ProjectName)
+                return ServicesResult<bool>.Failure("A project with the same name already exists.");
+
             project.Data.ProjectName = updateProject.ProjectName;
             project.Data.ProjectDescription = updateProject.ProjectDescription;
-            var result = await _projectServices.UpdateAsync(project.Data);
-            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
-        }
 
+            var result = await _projectServices.UpdateAsync(project.Data);
+            return result.Status ? ServicesResult<bool>.Success(true) : ServicesResult<bool>.Failure(result.Message);
+        }
+        #endregion
+
+        #region Update Project Flags (IsDeleted, IsAccessed, IsDone)
+        /// <summary>
+        /// Toggles the IsDeleted flag of a project.
+        /// </summary>
         public async Task<ServicesResult<bool>> UpdateIsDeletedAsync(string userId, string projectId)
         {
-            var userResult = await CheckAndGetUserInfo(userId);
-            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
-            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
-
-            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
-
-            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
-            if (!rolesResult.Status)
-                return ServicesResult<bool>.Failure(rolesResult.Message);
-
-            if (rolesResult.Data == null)
-                return ServicesResult<bool>.Success(false);
-            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
-            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
-
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
-            project.Data.IsDeleted = !project.Data.IsDeleted;
-            var result = await _projectServices.UpdateAsync(project.Data);
-            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
+            return await ToggleProjectFlagAsync(userId, projectId, project => project.IsDeleted = !project.IsDeleted);
         }
 
+        /// <summary>
+        /// Toggles the IsAccessed flag of a project.
+        /// </summary>
         public async Task<ServicesResult<bool>> UpdateIsAccessedAsync(string userId, string projectId)
         {
-            var userResult = await CheckAndGetUserInfo(userId);
-            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
-            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
-
-            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
-            if (!rolesResult.Status)
-                return ServicesResult<bool>.Failure(rolesResult.Message);
-
-            if (rolesResult.Data == null)
-                return ServicesResult<bool>.Success(false);
-            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
-            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
-
-            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
-            project.Data.IsAccessed = !project.Data.IsAccessed;
-            var result = await _projectServices.UpdateAsync(project.Data);
-            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
+            return await ToggleProjectFlagAsync(userId, projectId, project => project.IsAccessed = !project.IsAccessed);
         }
 
+        /// <summary>
+        /// Toggles the IsDone flag of a project.
+        /// </summary>
         public async Task<ServicesResult<bool>> UpdateIsDoneAsync(string userId, string projectId)
         {
-            var userResult = await CheckAndGetUserInfo(userId);
-            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
-            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
-            
-            if(string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
-
-            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
-            if (!rolesResult.Status)
-                return ServicesResult<bool>.Failure(rolesResult.Message);
-
-            if (rolesResult.Data == null)
-                return ServicesResult<bool>.Success(false);
-            var ownerRoles = rolesResult.Data.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole).ToList();
-            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
-
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
-            project.Data.IsDone = !project.Data.IsDone;
-            var result = await _projectServices.UpdateAsync(project.Data);
-            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
+            return await ToggleProjectFlagAsync(userId, projectId, project => project.IsDone = !project.IsDone);
         }
+        #endregion
 
+        #region Update Project Status
+        /// <summary>
+        /// Updates the status of a project based on its completion and end date.
+        /// </summary>
         public async Task<ServicesResult<bool>> UpdateProjectStatusAsync(string userId, string projectId)
         {
             var userResult = await CheckAndGetUserInfo(userId);
             if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
-            if (userResult.Data == null) return ServicesResult<bool>.Success(true);
-            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("");
-            var result  = await UpdateStatusMethod(projectId);
-            if (!result.Status) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(false);
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("Invalid project ID.");
 
-
+            var result = await UpdateStatusMethod(projectId);
+            return result.Status ? ServicesResult<bool>.Success(true) : ServicesResult<bool>.Failure(result.Message);
         }
+
+        /// <summary>
+        /// Updates the status of a project.
+        /// </summary>
         private async Task<ServicesResult<bool>> UpdateStatusMethod(string projectId)
         {
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
-
+            if (project.Status == false || project.Data == null)
+                return ServicesResult<bool>.Failure(project.Message);
 
             if (!project.Data.IsDone && project.Data.EndAt < DateTime.Now)
                 project.Data.StatusId = 6; // Ended but not done
             else if (!project.Data.IsDone && project.Data.EndAt == DateTime.Now)
-                project.Data.StatusId = 5; // Ended today but not done
+                project.Data.StatusId = 5; // Ending today but not done
             else if (!project.Data.IsDone && project.Data.EndAt > DateTime.Now)
                 project.Data.StatusId = 3; // Active but not done
             else if (project.Data.IsDone && project.Data.EndAt < DateTime.Now)
@@ -471,10 +452,38 @@ namespace PM.DomainServices.Logic
                 project.Data.StatusId = 4; // Completed, still ongoing
 
             var result = await _projectServices.UpdateAsync(project.Data);
-            if (result.Status == false) return ServicesResult<bool>.Failure(result.Message);
-            return ServicesResult<bool>.Success(true);
+            return result.Status ? ServicesResult<bool>.Success(true) : ServicesResult<bool>.Failure(result.Message);
         }
+        #endregion
+
         #region Helper Methods
+        /// <summary>
+        /// Toggles a specific project flag (e.g., IsDeleted, IsAccessed, IsDone).
+        /// </summary>
+        private async Task<ServicesResult<bool>> ToggleProjectFlagAsync(string userId, string projectId, Action<Project> toggleAction)
+        {
+            var userResult = await CheckAndGetUserInfo(userId);
+            if (!userResult.Status) return ServicesResult<bool>.Failure(userResult.Message);
+            if (userResult.Data == null) return ServicesResult<bool>.Success(false);
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<bool>.Failure("Invalid project ID.");
+
+            var rolesResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!rolesResult.Status) return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            var ownerRoles = rolesResult.Data
+                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == _ownRole)
+                .ToList();
+            if (!ownerRoles.Any()) return ServicesResult<bool>.Success(false);
+
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null) return ServicesResult<bool>.Failure(project.Message);
+
+            toggleAction(project.Data);
+
+            var result = await _projectServices.UpdateAsync(project.Data);
+            return result.Status ? ServicesResult<bool>.Success(true) : ServicesResult<bool>.Failure(result.Message);
+        }
+        
 
         /// <summary>
         /// Retrieves the user information and validates the input.
