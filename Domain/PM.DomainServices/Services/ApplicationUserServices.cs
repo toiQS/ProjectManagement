@@ -78,7 +78,7 @@ namespace PM.Persistence.Services
                     Avata = user.PathImage,
                     Email = user.Email,
                     Phone = user.Phone,
-                    Role = roles.FirstOrDefault(),
+                    Role = roles.FirstOrDefault(), //role in system
                     UserId = user.Id
                 };
 
