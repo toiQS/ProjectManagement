@@ -46,12 +46,12 @@ namespace PM.DomainServices.Models
         /// Constructor for creating a success result with data.
         /// </summary>
         /// <param name="data">The data associated with the success result.</param>
-        public ServicesResult(T data)
+        public ServicesResult(T data, string? message)
         {
             if (data is null)
             {
                 Status = true;
-                Message = "No data available";
+                Message = $"No data available, {message}";
             }
             else
             {
@@ -70,9 +70,9 @@ namespace PM.DomainServices.Models
         /// </summary>
         /// <param name="data">The data to include in the result.</param>
         /// <returns>A success <see cref="ServicesResult{T}"/> instance.</returns>
-        public static ServicesResult<T> Success(T data)
+        public static ServicesResult<T> Success(T data, string message)
         {
-            return new ServicesResult<T>(data);
+            return new ServicesResult<T>(data, message);
         }
 
         /// <summary>
