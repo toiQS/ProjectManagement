@@ -13,7 +13,7 @@ namespace PM.Domain
     public class RoleInProject
     {
         [Key]
-        public string Id { get; set; }
+        public string Id { get; set; } = string.Empty;
         [Column(name: "Role Name")]
         public string RoleName { get; set; } = string.Empty;
         [Column(name: "Role Description")]
