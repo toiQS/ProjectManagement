@@ -8,7 +8,7 @@ using PM.Persistence.IServices;
 
 namespace PM.DomainServices.Logic
 {
-    public class ProjectLogic
+    public class ProjectLogic : IProjectLogic
     {
         private DetailAppUser DetailAppUser { get; set; } = new DetailAppUser();
         private readonly IApplicationUserServices _applicationUserServices;
