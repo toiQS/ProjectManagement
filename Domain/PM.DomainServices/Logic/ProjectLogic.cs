@@ -1,4 +1,5 @@
-﻿using PM.Domain;
+﻿using Microsoft.AspNetCore.Razor.TagHelpers;
+using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
@@ -19,6 +20,22 @@ namespace PM.DomainServices.Logic
         private readonly IPlanLogic _planLogic;
         private readonly IPositionLogic _positionLogic;
         private string _ownerRole = string.Empty;
+        public ProjectLogic(DetailAppUser detailAppUser, IApplicationUserServices applicationUserServices, IRoleApplicationUserInProjectServices roleApplicationUserServices, IProjectServices projectServices, IRoleInProjectServices roleInProjectServices, IStatusServices statusServices, IMemberLogic memberLogic, IPlanLogic planLogic, IPositionLogic positionLogic)
+        {
+            DetailAppUser = detailAppUser;
+            _applicationUserServices = applicationUserServices;
+            _roleApplicationUserServices = roleApplicationUserServices;
+            _projectServices = projectServices;
+            _roleInProjectServices = roleInProjectServices;
+            _statusServices = statusServices;
+            _memberLogic = memberLogic;
+            _planLogic = planLogic;
+            _positionLogic = positionLogic;
+
+            InitializeOwnerRole();
+            UpdateAllProjectStatuses();
+        }
+
 
         #region Check and Get User
         /// <summary>
@@ -296,13 +313,64 @@ namespace PM.DomainServices.Logic
 
             project.Data.ProjectName = updateProject.ProjectName;
             project.Data.ProjectDescription = updateProject.ProjectDescription;
+            
 
             var result = await _projectServices.UpdateAsync(project.Data);
             return result.Status ? ServicesResult<bool>.Success(true,string.Empty) : ServicesResult<bool>.Failure(result.Message);
         }
         #endregion
 
+        #region update status of project
+        /// <summary>
+        /// Toggles the IsDeleted flag of a project.
+        /// </summary>
+        public async Task<ServicesResult<bool>> UpdateIsDeletedAsync( string projectId)
+        {
+            return await ToggleProjectFlagAsync( projectId, project => project.IsDeleted = !project.IsDeleted);
+        }
+        /// <summary>
+        /// Toggles the IsAccessed flag of a project.
+        /// </summary>
+        public async Task<ServicesResult<bool>> UpdateIsAccessedAsync(string userId, string projectId)
+        {
+            return await ToggleProjectFlagAsync(projectId, project => project.IsAccessed = !project.IsAccessed);
+        }
 
+        /// <summary>
+        /// Toggles the IsDone flag of a project.
+        /// </summary>
+        public async Task<ServicesResult<bool>> UpdateIsDoneAsync(string userId, string projectId)
+        {
+            return await ToggleProjectFlagAsync(projectId, project => project.IsDone = !project.IsDone);
+        }
+
+        /// <summary>
+        /// Updates the status of a project.
+        /// </summary>
+        private async Task<ServicesResult<bool>> UpdateStatusMethod(string projectId)
+        {
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Status == false || project.Data == null)
+                return ServicesResult<bool>.Failure(project.Message);
+
+            if (!project.Data.IsDone && project.Data.EndAt < DateTime.Now)
+                project.Data.StatusId = 6; // Ended but not done
+            else if (!project.Data.IsDone && project.Data.EndAt == DateTime.Now)
+                project.Data.StatusId = 5; // Ending today but not done
+            else if (!project.Data.IsDone && project.Data.EndAt > DateTime.Now)
+                project.Data.StatusId = 3; // Active but not done
+            else if (project.Data.IsDone && project.Data.EndAt < DateTime.Now)
+                project.Data.StatusId = 7; // Completed and ended
+            else if (project.Data.IsDone && project.Data.EndAt == DateTime.Now)
+                project.Data.StatusId = 5; // Completed, ending today
+            else if (project.Data.IsDone && project.Data.EndAt > DateTime.Now)
+                project.Data.StatusId = 4; // Completed, still ongoing
+
+            var result = await _projectServices.UpdateAsync(project.Data);
+            return result.Status ? ServicesResult<bool>.Success(true, string.Empty) : ServicesResult<bool>.Failure(result.Message);
+        }
+
+        #endregion
 
         #region Private Method Support
 
@@ -431,6 +499,27 @@ namespace PM.DomainServices.Logic
             return ServicesResult<bool>.Success(true, string.Empty);
         }
 
+        /// <summary>
+        /// Updates the statuses of all projects in the database.
+        /// </summary>
+        private void UpdateAllProjectStatuses()
+        {
+            ServicesResult<IEnumerable<Project>> projectList;
+            do
+            {
+                projectList = _projectServices.GetAllAsync().GetAwaiter().GetResult();
+            } while (!projectList.Status);
+
+            foreach (var project in projectList.Data)
+            {
+                var result = UpdateStatusMethod(project.Id).GetAwaiter().GetResult();
+                if (!result.Status)
+                {
+                    // Log failure (can integrate logging here if needed).
+                    ServicesResult<bool>.Failure(result.Message);
+                }
+            }
+        }
         #endregion
     }
 }
