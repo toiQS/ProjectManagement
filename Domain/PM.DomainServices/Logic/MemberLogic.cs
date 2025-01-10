@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using PM.Domain;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.members;
@@ -7,6 +8,8 @@ using PM.DomainServices.Models.tasks;
 using PM.DomainServices.Models.users;
 using PM.Persistence.IServices;
 using Shared.member;
+using System.Collections.Frozen;
+using System.Collections.Generic;
 
 namespace PM.DomainServices.Logic
 {
@@ -25,6 +28,7 @@ namespace PM.DomainServices.Logic
         private DetailAppUser _user = new DetailAppUser();
         private string _ownerRole = string.Empty;
         private List<Status> _statuses = new List<Status>();
+        private List<PositionInProject> _positions = new List<PositionInProject>();
 
         public MemberLogic(IApplicationUserServices applicationUserServices, IMemberInTaskServices memberInTaskServices, IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices, IRoleApplicationUserInProjectServices roleApplicationUserServices, IProjectServices projectServices, IRoleInProjectServices roleInProjectServices, ITaskServices taskServices, IStatusServices statusServices, string project, DetailAppUser user, string ownerRole)
         {
@@ -37,8 +41,10 @@ namespace PM.DomainServices.Logic
             _roleInProjectServices = roleInProjectServices;
             _taskServices = taskServices;
             _statusServices = statusServices;
+
             InitializeOwnerRole();
             InitializeStatuses();
+            IntilizePosition();
         }
 
 
@@ -328,8 +334,10 @@ namespace PM.DomainServices.Logic
                 return ServicesResult<bool>.Failure(membersResult.Message);
 
             if (membersResult.Data == null)
-                return ServicesResult<bool>.Success(false, "No members found in the project.");
-
+                return ServicesResult<bool>.Success(false, "No members found in the database.");
+            var checkUserHasPower = membersResult.Data.Any(x => x.ApplicationUserId == _user.UserId && (x.RoleInProjectId == _ownerRole|| x.RoleInProjectId == leaderRoleId));
+            if (!checkUserHasPower) 
+                return ServicesResult<bool>.Success(false, "The user haven't power for this action");
             // Check if the user is already a member of the project
             var isMemberExists = membersResult.Data.Any(x => x.ApplicationUserId == appUserId);
             if (isMemberExists)
@@ -345,6 +353,94 @@ namespace PM.DomainServices.Logic
 
         #endregion
 
+        #region update info member
+        /// <summary>
+        /// Updates the information of a member in the project.
+        /// </summary>
+        /// <param name="memberId">The ID of the member to update.</param>
+        /// <param name="updateMember">The updated member information.</param>
+        /// <returns>A service result indicating the success or failure of the update operation.</returns>
+        public async Task<ServicesResult<bool>> UpdateInfo(string memberId, UpdateMember updateMember)
+        {
+            // Validate input
+            if (string.IsNullOrEmpty(memberId) || updateMember == null)
+                return ServicesResult<bool>.Failure("Invalid member ID or update data.");
+
+            // Retrieve all roles
+            var rolesResult = await _roleInProjectServices.GetAllAsync();
+            if (!rolesResult.Status)
+                return ServicesResult<bool>.Failure(rolesResult.Message);
+
+            if (rolesResult.Data == null)
+                return ServicesResult<bool>.Success(false, "No roles found in the database.");
+
+            // Find the "Leader" role ID
+            var leaderRoleId = rolesResult.Data.FirstOrDefault(x => x.RoleName == "Leader")?.Id;
+            if (leaderRoleId == null)
+                return ServicesResult<bool>.Success(false, "Leader role not found in the database.");
+
+            // Retrieve all members in the project
+            var membersResult = await _roleApplicationUserServices.GetAllAsync();
+            if (!membersResult.Status)
+                return ServicesResult<bool>.Failure(membersResult.Message);
+
+            if (membersResult.Data == null)
+                return ServicesResult<bool>.Success(false, "No members found in the database.");
+
+            // Check if the user has the necessary permissions (Owner or Leader role)
+            var userHasPermission = membersResult.Data.Any(x =>
+                x.ApplicationUserId == _user.UserId &&
+                (x.RoleInProjectId == _ownerRole || x.RoleInProjectId == leaderRoleId));
+
+            if (!userHasPermission)
+                return ServicesResult<bool>.Success(false, "The user does not have permission to perform this action.");
+
+            // Check if the member exists in the project
+            var getMember = await _roleApplicationUserServices.GetValueByPrimaryKeyAsync(memberId);
+            if (!getMember.Status)
+                return ServicesResult<bool>.Failure("Unable to retrieve the member.");
+
+            if (getMember.Data == null)
+                return ServicesResult<bool>.Success(false, "The member does not exist in the project.");
+
+            // Update the member's role in the project
+            var newRole = rolesResult.Data.FirstOrDefault(x => x.RoleName == updateMember.RoleNameUserInProject);
+            if (newRole == null)
+                return ServicesResult<bool>.Failure($"Role '{updateMember.RoleNameUserInProject}' not found in the database.");
+
+            getMember.Data.RoleInProjectId = newRole.Id;
+            var updateMemberResult = await _roleApplicationUserServices.UpdateAsync(getMember.Data);
+            if (!updateMemberResult.Status)
+                return ServicesResult<bool>.Failure("Failed to update the member's role.");
+
+            // Retrieve and validate the new position
+            var newPosition = _positions.FirstOrDefault(x => x.PositionName == updateMember.PositionNameInProject);
+            if (newPosition == null)
+                return ServicesResult<bool>.Failure("The specified position is not found in the project.");
+
+            // Retrieve the member's position work record
+            var positionWorkResult = await _positionWorkOfMemberServices.GetAllAsync();
+            if (!positionWorkResult.Status)
+                return ServicesResult<bool>.Failure(positionWorkResult.Message);
+
+            if (positionWorkResult.Data == null)
+                return ServicesResult<bool>.Success(false, "No position work records found in the project.");
+
+            var positionWork = positionWorkResult.Data.FirstOrDefault(x => x.RoleApplicationUserInProjectId == getMember.Data.Id);
+            if (positionWork == null)
+                return ServicesResult<bool>.Failure("The member's position work record was not found.");
+
+            // Update the position work record
+            positionWork.PostitionInProjectId = newPosition.Id;
+            var updatePositionWorkResult = await _positionWorkOfMemberServices.UpdateAsync(positionWork);
+            if (!updatePositionWorkResult.Status)
+                return ServicesResult<bool>.Failure(updatePositionWorkResult.Message);
+
+            // Return success
+            return ServicesResult<bool>.Success(true, "Member information updated successfully.");
+        }
+
+        #endregion
 
 
         #region private method helper
@@ -491,7 +587,44 @@ namespace PM.DomainServices.Logic
             _statuses = statusResult.Data.ToList();
         }
 
+        /// <summary>
+        /// Retrieves the positions associated with the current project.
+        /// </summary>
+        /// <returns>A service result containing the list of positions or an error message.</returns>
+        private async Task<ServicesResult<IEnumerable<PositionInProject>>> GetPositionsInProject()
+        {
+            // Initialize an empty list to hold positions
+            var positions = new List<PositionInProject>();
 
+            // Fetch all positions from the service
+            var getPositions = await _positionInProjectServices.GetAllAsync();
+            if (!getPositions.Status)
+                return ServicesResult<IEnumerable<PositionInProject>>.Failure(getPositions.Message);
+
+            if (getPositions.Data == null)
+                return ServicesResult<IEnumerable<PositionInProject>>.Success(positions, "No positions found in the database.");
+
+            // Filter positions specific to the current project
+            var positionsInProject = getPositions.Data.Where(x => x.ProjectId == _project).ToList();
+            if (positionsInProject.Count == 0)
+                return ServicesResult<IEnumerable<PositionInProject>>.Success(positions, "No positions found for this project.");
+
+            // Assign filtered positions to the instance variable
+            _positions = positionsInProject;
+
+            return ServicesResult<IEnumerable<PositionInProject>>.Success(positionsInProject, string.Empty);
+        }
+
+        private void IntilizePosition()
+        {
+            var data = new ServicesResult<IEnumerable<PositionInProject>>();
+            do
+            {
+                data = GetPositionsInProject().GetAwaiter().GetResult();
+            }
+            while (data.Status == false || data.Data == null);
+            _positions = data.Data.ToList();
+        }
         #endregion
     }
 }
