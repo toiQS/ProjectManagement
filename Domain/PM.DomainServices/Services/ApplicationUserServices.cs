@@ -44,14 +44,14 @@ namespace PM.Persistence.Services
         /// </summary>
         /// <param name="text">The user ID or email.</param>
         /// <returns>A <see cref="ServicesResult{DetailAppUser}"/> containing the user details or an error message.</returns>
-        public async Task<ServicesResult<DetailAppUser>> GetAppUserByIdOrEmail(string text)
+        public async Task<ServicesResult<ApplicationUser>> GetAppUserByIdOrEmail(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
-                return ServicesResult<DetailAppUser>.Failure("Input text cannot be null or empty.");
+                return ServicesResult<ApplicationUser>.Failure("Input text cannot be null or empty.");
 
             try
             {
-                ApplicationUser user;
+                ApplicationUser user = new ApplicationUser();
 
                 // Determine if the input is an email or ID
                 if (text.Contains("@"))
@@ -64,31 +64,15 @@ namespace PM.Persistence.Services
                 }
 
                 if (user == null)
-                    return ServicesResult<DetailAppUser>.Failure("User not found.");
+                    return ServicesResult<ApplicationUser>.Success(new ApplicationUser(),"User not found.");
 
-                var roles = await _userManager.GetRolesAsync(user);
-                if (roles == null || roles.Count == 0)
-                    return ServicesResult<DetailAppUser>.Failure("User roles not found.");
-
-                // Map user details to a DetailAppUser object
-                var detailUser = new DetailAppUser
-                {
-                    FullName = user.FullName,
-                    UserName = user.UserName,
-                    Avata = user.PathImage,
-                    Email = user.Email,
-                    Phone = user.Phone,
-                    Role = roles.FirstOrDefault(), //role in system
-                    UserId = user.Id
-                };
-
-                return ServicesResult<DetailAppUser>.Success(detailUser);
+                return ServicesResult<ApplicationUser>.Success(user,string.Empty);
             }
             catch (Exception ex)
             {
                 // Log exception (placeholder for a logging framework)
                 Console.WriteLine($"Error: {ex.Message}");
-                return ServicesResult<DetailAppUser>.Failure("An error occurred while retrieving user details.");
+                return ServicesResult<ApplicationUser>.Failure("An error occurred while retrieving user details.");
             }
         }
 
@@ -102,7 +86,7 @@ namespace PM.Persistence.Services
         /// <param name="userId">The user ID of the user to update.</param>
         /// <param name="updateAppUser">The new user information.</param>
         /// <returns>A <see cref="ServicesResult{bool}"/> indicating success or failure.</returns>
-        public async Task<ServicesResult<bool>> UpdateInfoUser(string userId, UpdateAppUser updateAppUser)
+        public async Task<ServicesResult<bool>> UpdateInfoUser(string userId, ApplicationUser updateAppUser)
         {
             if (string.IsNullOrEmpty(userId))
                 return ServicesResult<bool>.Failure("User ID cannot be null or empty.");
@@ -128,7 +112,7 @@ namespace PM.Persistence.Services
                 _context.Update(user);
                 await _context.SaveChangesAsync();
 
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true,string.Empty);
             }
             catch (Exception ex)
             {
@@ -149,7 +133,7 @@ namespace PM.Persistence.Services
                 if (user == null) return ServicesResult<string>.Failure("");
                 var role = await _userManager.GetRolesAsync(user);
                 if (role == null) return ServicesResult<string>.Failure("");
-                return ServicesResult<string>.Success(role.First());
+                return ServicesResult<string>.Success(role.First(), string.Empty);
             }
             catch (Exception ex)
             {
