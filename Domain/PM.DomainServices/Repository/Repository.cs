@@ -42,7 +42,7 @@ namespace PM.DomainServices.Repository
             try
             {
                 var getData = await _dbSet.AsNoTracking().ToArrayAsync();
-                return ServicesResult<IEnumerable<T>>.Success(getData);
+                return ServicesResult<IEnumerable<T>>.Success(getData, string.Empty);
             }
             catch (Exception ex)
             {
@@ -60,7 +60,7 @@ namespace PM.DomainServices.Repository
             try
             {
                 var getData = await _dbSet.FindAsync(id);
-                return ServicesResult<T>.Success(getData);
+                return ServicesResult<T>.Success(getData, string.Empty);
             }
             catch (Exception ex)
             {
@@ -79,7 +79,7 @@ namespace PM.DomainServices.Repository
             {
                 await _dbSet.AddAsync(entity);
                 await _context.SaveChangesAsync();
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true, string.Empty);
             }
             catch (Exception ex)
             {
@@ -98,7 +98,7 @@ namespace PM.DomainServices.Repository
             {
                 _dbSet.Update(entity);
                 await _context.SaveChangesAsync();
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true, string.Empty);
             }
             catch (Exception ex)
             {
@@ -122,7 +122,7 @@ namespace PM.DomainServices.Repository
                 }
                 _dbSet.Remove(getEntity);
                 await _context.SaveChangesAsync();
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true, string.Empty);
             }
             catch (Exception ex)
             {
