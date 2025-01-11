@@ -237,7 +237,7 @@ namespace PM.DomainServices.Logic
             {
                 RoleUserInProjectId = memberId,
                 UserName = memberDetails.Data.UserName,
-                UserAvata = memberDetails.Data.Avata,
+                UserAvata = memberDetails.Data.PathImage,
             };
 
             // Retrieve the role information of the member
