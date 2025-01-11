@@ -13,5 +13,6 @@ namespace PM.DomainServices.Logic
         public Task<ServicesResult<RoleInProject>> GetOwnerRole();
         public Task<ServicesResult<RoleInProject>> GetLeaderRole();
         public Task<ServicesResult<RoleInProject>> GetManagerRole();
+        public Task<ServicesResult<RoleInProject>> GetInfoRole(string roleId);
     }
 }
