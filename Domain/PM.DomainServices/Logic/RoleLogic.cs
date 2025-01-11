@@ -16,7 +16,7 @@ namespace PM.DomainServices.Logic
             InitializeRoles();
         }
 
-        #region Role management
+        #region
         /// <summary>
         /// Retrieves all roles in the system.
         /// </summary>
@@ -29,7 +29,8 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<List<RoleInProject>>.Success(rolesResult.Data.ToList(), string.Empty);
         }
-
+        #endregion
+        #region
         /// <summary>
         /// Initializes role data and stores it in the local context.
         /// </summary>
@@ -44,7 +45,8 @@ namespace PM.DomainServices.Logic
 
             _roles = roles.Data.ToList();
         }
-
+        #endregion
+        #region
         /// <summary>
         /// Retrieves the "Owner" role.
         /// </summary>
@@ -57,7 +59,8 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<RoleInProject>.Success(ownerRole, string.Empty);
         }
-
+        #endregion
+        #region
         /// <summary>
         /// Retrieves the "Leader" role.
         /// </summary>
@@ -70,7 +73,8 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<RoleInProject>.Success(leaderRole, string.Empty);
         }
-
+        #endregion
+        #region
         /// <summary>
         /// Retrieves the "Manager" role.
         /// </summary>
@@ -83,6 +87,16 @@ namespace PM.DomainServices.Logic
 
             
             return ServicesResult<RoleInProject>.Success(managerRole, string.Empty);
+        }
+        #endregion
+        #region
+        public async Task<ServicesResult<RoleInProject>> GetInfoRole(string roleId)
+        {
+            if (string.IsNullOrEmpty(roleId)) return ServicesResult<RoleInProject>.Failure("");
+            var infoRole = await _roleInProjectServices.GetValueByPrimaryKeyAsync(roleId);
+            if (infoRole.Status == false) return ServicesResult<RoleInProject>.Failure(infoRole.Message);
+            if (infoRole.Data == null) return ServicesResult<RoleInProject>.Success(new RoleInProject(), $"can't find this role in data {roleId}");
+            return ServicesResult<RoleInProject>.Success(infoRole.Data, string.Empty);
         }
         #endregion
     }
