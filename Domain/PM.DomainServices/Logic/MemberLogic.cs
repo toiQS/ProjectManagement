@@ -1,4 +1,5 @@
-﻿using PM.Domain;
+﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.members;
@@ -66,7 +67,29 @@ namespace PM.DomainServices.Logic
             };
             return ServicesResult<IndexMember>.Success(index, string.Empty);
         }
-
+        public async Task<ServicesResult<IEnumerable<IndexMember>>> GetMemberInProject(string projectId)
+        {
+            var result = new List<IndexMember>();
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<IEnumerable<IndexMember>>.Failure("");
+            var memberProject = _member.Where(x => x.ProjectId == projectId);
+            if (memberProject == null) return ServicesResult<IEnumerable<IndexMember>>.Success(new List<IndexMember>(), "no member in this project");
+            foreach (var member in memberProject)
+            {
+                var ownerProject = _member.FirstOrDefault(x => x.ProjectId == projectId && x.Id == member.Id);
+                if (ownerProject == null) return ServicesResult<IEnumerable<IndexMember>>.Success(new List<IndexMember>(), "no member is owner in this project");
+                var ownerInfo = await _userLogic.GetInfoOtherUserByUserId(ownerProject.ApplicationUserId);
+                if (ownerInfo.Status == false || ownerInfo.Data == null) return ServicesResult<IEnumerable<IndexMember>>.Failure(ownerInfo.Message);
+                var index = new IndexMember()
+                {
+                    UserName = ownerInfo.Data.UserName,
+                    UserAvata = ownerInfo.Data.Avata,
+                    PositionWorkName = string.Empty,
+                    RoleUserInProjectId = ownerProject.Id
+                };
+                result.Add(index);
+            }
+            return ServicesResult<IEnumerable<IndexMember>>.Success(result, string.Empty);
+        }
         #endregion
         #region primary method
         public async Task<ServicesResult<IEnumerable<IndexMember>>> GetAll()
