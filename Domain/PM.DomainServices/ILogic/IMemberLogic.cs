@@ -13,6 +13,7 @@ namespace PM.DomainServices.ILogic
         Task<ServicesResult<string>> GetRoleMemberInProject(string memberId);
         Task<ServicesResult<IndexMember>> GetInfoOfOwnerInProject(string projectId); 
         Task<ServicesResult<IEnumerable<IndexMember>>> GetAll();
+        Task<ServicesResult<IEnumerable<IndexMember>>> GetMemberInProject(string projectId);
 
     }
 }
