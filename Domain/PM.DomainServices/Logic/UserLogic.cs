@@ -10,6 +10,7 @@ namespace PM.DomainServices.Logic
         //intialize services
         private IApplicationUserServices _applicationUserServices;
         //intialize logic
+
         //intialize primary value
         private string _userIdCurrent = string.Empty;
         private DetailAppUser _userCurrent = new DetailAppUser();
