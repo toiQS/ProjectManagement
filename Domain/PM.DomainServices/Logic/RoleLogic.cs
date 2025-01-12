@@ -1,4 +1,5 @@
 ﻿using PM.Domain;
+using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.Persistence.IServices;
 
@@ -99,5 +100,6 @@ namespace PM.DomainServices.Logic
             return ServicesResult<RoleInProject>.Success(infoRole.Data, string.Empty);
         }
         #endregion
+        
     }
 }
