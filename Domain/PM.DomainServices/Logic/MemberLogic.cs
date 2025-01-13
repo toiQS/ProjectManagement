@@ -36,6 +36,7 @@ namespace PM.DomainServices.Logic
             if (getMember.Data == null || getMember.Status == false) return ServicesResult<RoleApplicationUserInProject>.Failure(getMember.Message);
             return ServicesResult<RoleApplicationUserInProject>.Success(getMember.Data, string.Empty);
         }
+        
         #endregion
         #region suport method
         public async Task<ServicesResult<string>> GetRoleMemberInProject(string memberId)
@@ -90,6 +91,32 @@ namespace PM.DomainServices.Logic
             }
             return ServicesResult<IEnumerable<IndexMember>>.Success(result, string.Empty);
         }
+        public async Task<ServicesResult<IEnumerable<string>>> GetListProjectUserHasJoinedByUserId(string userId)
+        {
+            if (userId == null) return ServicesResult<IEnumerable<string>>.Failure("");
+            var projects = _member.Where(x => x.ApplicationUserId == userId).ToList();
+            if (!projects.Any()) return ServicesResult<IEnumerable<string>>.Success(new List<string>(), "user haven't any project");
+            var result = new List<string>();
+            foreach (var project in projects)
+            {
+                result.Add(project.ProjectId);
+            }
+            return ServicesResult<IEnumerable<string>>.Success(result, string.Empty);
+        }
+        public async Task<ServicesResult<IEnumerable<string>>> GetListProjectUserHasOwn(string userId)
+        {
+            var owner = await _roleLogic.GetOwnerRole();
+            if (userId == null) return ServicesResult<IEnumerable<string>>.Failure("");
+            var projects = _member.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == owner.Data.Id).ToList();
+            if (!projects.Any()) return ServicesResult<IEnumerable<string>>.Success(new List<string>(), "user haven't any project");
+            var result = new List<string>();
+            foreach (var project in projects)
+            {
+                result.Add(project.ProjectId);
+            }
+            return ServicesResult<IEnumerable<string>>.Success(result, string.Empty);
+        }
+
         #endregion
         #region primary method
         public async Task<ServicesResult<IEnumerable<IndexMember>>> GetAll()
