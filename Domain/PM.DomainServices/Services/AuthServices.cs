@@ -42,7 +42,7 @@ namespace PM.DomainServices.Services
                 if (user != null && await _userManager.CheckPasswordAsync(user, password))
                 {
                     await _signInManager.SignInAsync(user, isPersistent: false);
-                    return ServicesResult<ApplicationUser>.Success(user);
+                    return ServicesResult<ApplicationUser>.Success(user, string.Empty);
                 }
                 return ServicesResult<ApplicationUser>.Failure("Invalid email or password.");
             }
@@ -73,7 +73,7 @@ namespace PM.DomainServices.Services
                     return ServicesResult<bool>.Failure("User not found.");
 
                 await _signInManager.SignOutAsync();
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true, string.Empty);
             }
             catch (Exception ex)
             {
@@ -115,7 +115,7 @@ namespace PM.DomainServices.Services
                 if (!roleResult.Succeeded)
                     return ServicesResult<bool>.Failure("Failed to assign role to the user.");
 
-                return ServicesResult<bool>.Success(true);
+                return ServicesResult<bool>.Success(true, string.Empty);
             }
             catch (Exception ex)
             {
