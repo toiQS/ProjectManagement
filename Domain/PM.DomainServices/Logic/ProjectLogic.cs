@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+﻿using Microsoft.AspNetCore.Http.Timeouts;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using PM.Domain;
@@ -69,6 +70,7 @@ namespace PM.DomainServices.Logic
             
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
             if (project.Data == null || project.Data == null) return ServicesResult<IndexProject>.Failure(project.Message);
+            if (project.Data.IsDeleted == true) ServicesResult<IndexProject>.Success(new IndexProject(), string.Empty);
             var owner = await _memberLogic.GetInfoOfOwnerInProject(projectId);
             if (owner.Status == false) return ServicesResult<IndexProject>.Failure(owner.Message);
             var result = new IndexProject()
@@ -80,6 +82,39 @@ namespace PM.DomainServices.Logic
             };
             return ServicesResult<IndexProject>.Success(result, string.Empty);
         }
+        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectsUserHasJoined(string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
+            var projects = await _memberLogic.GetListProjectUserHasJoinedByUserId(userId);
+            if (projects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Success(null, projects.Message);
+            if(projects.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
+            var result = new List<IndexProject>();
+            foreach (var item in projects.Data)
+            {
+                var itemProject = await GetIndexProject(item);
+                if(itemProject.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(itemProject.Message);
+                if (itemProject.Data == null) continue;
+                result.Add(itemProject.Data);
+            }
+            return ServicesResult<IEnumerable<IndexProject>>.Success(result, string.Empty);
+        }
+        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectsUserHasOwn(string userId)
+        {
+            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
+            var projects = await _memberLogic.GetListProjectUserHasOwn(userId);
+            if (projects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Success(null, projects.Message);
+            if (projects.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
+            var result = new List<IndexProject>();
+            foreach (var item in projects.Data)
+            {
+                var itemProject = await GetIndexProject(item);
+                if (itemProject.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(itemProject.Message);
+                if (itemProject.Data == null) continue;
+                result.Add(itemProject.Data);
+            }
+            return ServicesResult<IEnumerable<IndexProject>>.Success(result, string.Empty);
+        }
+
         #endregion
         #region primary method
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetIndexProjects()
@@ -89,7 +124,8 @@ namespace PM.DomainServices.Logic
             foreach (var project in _projects)
             {
                 var index = await GetIndexProject(project.Id);
-                if(index.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(index.Message);
+                if (index.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(index.Message);
+                if (index.Data == null)continue;
                 result.Add(index.Data);
             }
             return ServicesResult<IEnumerable<IndexProject>>.Success(result, string.Empty);
