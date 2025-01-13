@@ -76,6 +76,9 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<DetailAppUser>.Success(_userCurrent, string.Empty);
         }
+
+
         #endregion
+
     }
 }
