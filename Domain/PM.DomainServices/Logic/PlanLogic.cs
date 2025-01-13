@@ -7,10 +7,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PM.DomainServices.ILogic;
 
 namespace PM.DomainServices.Logic
 {
-    public class PlanLogic
+    public class PlanLogic : IPlanLogic
     {
         //intialize services
         private readonly IPlanInProjectServices _planInProjectServices;
