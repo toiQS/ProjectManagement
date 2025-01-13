@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 using PM.Domain;
 using PM.DomainServices.ILogic;
@@ -16,6 +17,7 @@ namespace PM.DomainServices.Logic
         //intialize logic
         private readonly IUserLogic _userLogic;
         private readonly IMemberLogic _memberLogic;
+        private readonly IPlanLogic _planLogic;
         //intialize primary value
         private List<Project> _projects;
         private List<Status> _statuses;
@@ -38,23 +40,7 @@ namespace PM.DomainServices.Logic
             while (projects.Status == false);
             _projects = projects.Data.ToList();
         }
-        private async Task<ServicesResult<IndexProject>> GetIndexProject(string projectId)
-        {
-
-            if (string.IsNullOrEmpty(projectId)) return ServicesResult<IndexProject>.Failure("");
-            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
-            if (project.Data == null || project.Data == null) return ServicesResult<IndexProject>.Failure(project.Message);
-            var owner = await _memberLogic.GetInfoOfOwnerInProject(projectId);
-            if(owner.Status == false) return ServicesResult<IndexProject>.Failure(owner.Message);
-            var result = new IndexProject()
-            {
-                OwnerName = owner.Data.UserName,
-                OwnerAvata = owner.Data.UserAvata,
-                ProjectName = project.Data.ProjectName,
-                ProjectId = projectId,
-            };
-            return ServicesResult<IndexProject>.Success(result, string.Empty);
-        }
+        
         private async Task<ServicesResult<string>> GetAllStatus()
         {
             var statuses = await _statusServices.GetAllAsync();
@@ -72,10 +58,28 @@ namespace PM.DomainServices.Logic
             if(getInfo == null) return ServicesResult<string>.Failure($"can't get any this status {statusId}");
             return ServicesResult<string>.Success(getInfo.Value, string.Empty);
         }
-
+       
         #endregion
 
         #region support method
+        public async Task<ServicesResult<IndexProject>> GetIndexProject(string projectId)
+        {
+
+            if (string.IsNullOrEmpty(projectId)) return ServicesResult<IndexProject>.Failure("");
+            
+            var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
+            if (project.Data == null || project.Data == null) return ServicesResult<IndexProject>.Failure(project.Message);
+            var owner = await _memberLogic.GetInfoOfOwnerInProject(projectId);
+            if (owner.Status == false) return ServicesResult<IndexProject>.Failure(owner.Message);
+            var result = new IndexProject()
+            {
+                OwnerName = owner.Data.UserName,
+                OwnerAvata = owner.Data.UserAvata,
+                ProjectName = project.Data.ProjectName,
+                ProjectId = projectId,
+            };
+            return ServicesResult<IndexProject>.Success(result, string.Empty);
+        }
         #endregion
         #region primary method
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetIndexProjects()
@@ -123,7 +127,10 @@ namespace PM.DomainServices.Logic
             if(members.Status == false ) return ServicesResult<DetailProject>.Failure(members.Message); 
             if(members.Data == null) return ServicesResult<DetailProject>.Success(detail, members.Message);
             detail.Members = members.Data.ToList();
-
+            var plans = await _planLogic.GetPlansInProject(projectId);
+            if(plans.Status == false) return ServicesResult<DetailProject>.Failure(plans.Message);
+            if (plans.Data == null) return ServicesResult<DetailProject>.Success(detail, plans.Message);
+            detail.Plans = plans.Data.ToList();
             return ServicesResult<DetailProject>.Success(detail, string.Empty);
 
         }
