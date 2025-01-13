@@ -71,7 +71,7 @@ namespace PM.DomainServices.Logic
             var project = await _projectServices.GetValueByPrimaryKeyAsync(projectId);
             if (project.Data == null || project.Data == null) return ServicesResult<IndexProject>.Failure(project.Message);
             if (project.Data.IsDeleted == true) ServicesResult<IndexProject>.Success(new IndexProject(), string.Empty);
-            var owner = await _memberLogic.GetInfoOfOwnerInProject(projectId);
+            var owner = await _memberLogic.GetInfoOfOwnerInProjectAsync(projectId);
             if (owner.Status == false) return ServicesResult<IndexProject>.Failure(owner.Message);
             var result = new IndexProject()
             {
@@ -85,7 +85,7 @@ namespace PM.DomainServices.Logic
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectsUserHasJoined(string userId)
         {
             if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var projects = await _memberLogic.GetListProjectUserHasJoinedByUserId(userId);
+            var projects = await _memberLogic.GetProjectsUserHasJoinedByUserIdAsync(userId);
             if (projects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Success(null, projects.Message);
             if(projects.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
             var result = new List<IndexProject>();
@@ -101,7 +101,7 @@ namespace PM.DomainServices.Logic
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectsUserHasOwn(string userId)
         {
             if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("");
-            var projects = await _memberLogic.GetListProjectUserHasOwn(userId);
+            var projects = await _memberLogic.GetProjectsUserOwnsAsync(userId);
             if (projects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Success(null, projects.Message);
             if (projects.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
             var result = new List<IndexProject>();
@@ -154,12 +154,12 @@ namespace PM.DomainServices.Logic
             if(getStatus.Status ==false ) return ServicesResult<DetailProject>.Failure(getStatus.Message);
             detail.Status = getStatus.Data;
 
-            var user = await _memberLogic.GetInfoOfOwnerInProject(projectId);
+            var user = await _memberLogic.GetInfoOfOwnerInProjectAsync(projectId);
             if(user.Status == false ) return ServicesResult<DetailProject>.Failure(user.Message);
             detail.OwnerName = user.Data.UserName;
             detail.OwnerAvata = user.Data.UserAvata;
 
-            var members = await _memberLogic.GetMemberInProject(projectId);
+            var members = await _memberLogic.GetMembersInProjectAsync(projectId);
             if(members.Status == false ) return ServicesResult<DetailProject>.Failure(members.Message); 
             if(members.Data == null) return ServicesResult<DetailProject>.Success(detail, members.Message);
             detail.Members = members.Data.ToList();
