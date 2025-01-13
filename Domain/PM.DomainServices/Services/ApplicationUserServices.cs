@@ -86,7 +86,7 @@ namespace PM.Persistence.Services
         /// <param name="userId">The user ID of the user to update.</param>
         /// <param name="updateAppUser">The new user information.</param>
         /// <returns>A <see cref="ServicesResult{bool}"/> indicating success or failure.</returns>
-        public async Task<ServicesResult<bool>> UpdateInfoUser(string userId, ApplicationUser updateAppUser)
+        public async Task<ServicesResult<bool>> UpdateInfoUser(string userId, UpdateAppUser updateAppUser)
         {
             if (string.IsNullOrEmpty(userId))
                 return ServicesResult<bool>.Failure("User ID cannot be null or empty.");
