@@ -1,4 +1,6 @@
-﻿using PM.Domain;
+﻿using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
+using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.Persistence.IServices;
@@ -15,6 +17,13 @@ namespace PM.DomainServices.Logic
         //intialize primary value
         private List<PositionInProject> _positionInProjectList;
         private List<PositionWorkOfMember> _positionWorkOfMemberList;
+        public PositionLogic(IPositionInProjectServices positionInProjectServices, IPositionWorkOfMemberServices positionWorkOfMemberServices)
+        {
+            _positionInProjectServices = positionInProjectServices;
+            _positionWorkOfMemberServices = positionWorkOfMemberServices;
+            Initialize();
+        }
+
 
         #region private method
         /// <summary>
@@ -58,9 +67,38 @@ namespace PM.DomainServices.Logic
             // Store the position works in the list and return a success result with the data
             return ServicesResult<IEnumerable<PositionWorkOfMember>>.Success(_positionWorkOfMemberList, string.Empty);
         }
+        private void Initialize()
+        {
+            var positionInProjectList = new ServicesResult<IEnumerable<PositionInProject>>();
+            var positionWorkOfMemberList = new ServicesResult<IEnumerable<PositionWorkOfMember>>();
+
+            do
+            {
+                positionInProjectList = GetPositionsInProject().GetAwaiter().GetResult();
+                positionWorkOfMemberList = GetPositionWorksInProject().GetAwaiter().GetResult();
+            }
+            while (!positionInProjectList.Status || !positionWorkOfMemberList.Status);
+            _positionInProjectList = positionInProjectList.Data.ToList();
+            _positionWorkOfMemberList = positionWorkOfMemberList.Data.ToList();
+        }
 
         #endregion
         #region suport method
+        public async Task<ServicesResult<PositionWorkOfMember>> GetPositionWorkOfMember(string memberId)
+        {
+            if (string.IsNullOrEmpty(memberId))
+                return ServicesResult<PositionWorkOfMember>.Failure("Member ID is required.");
+
+            // Look for the position work assigned to the member
+            var getPositionWorkOfMember = _positionWorkOfMemberList
+                .Where(x => x.RoleApplicationUserInProjectId == memberId)
+                .FirstOrDefault();
+
+            // If no position work is found for the member, return an error message
+            if (getPositionWorkOfMember == null)
+                return ServicesResult<PositionWorkOfMember>.Failure("Can't find position work for member in the database.");
+            return ServicesResult<PositionWorkOfMember>.Success(getPositionWorkOfMember, string.Empty);
+        }
         #endregion
         #region primary method
         /// <summary>
@@ -71,20 +109,11 @@ namespace PM.DomainServices.Logic
         public async Task<ServicesResult<string>> GetPositionWorkByMemberId(string memberId)
         {
             // Ensure memberId is not null or empty
-            if (string.IsNullOrEmpty(memberId))
-                return ServicesResult<string>.Failure("Member ID is required.");
-
-            // Look for the position work assigned to the member
-            var getPositionWorkOfMember = _positionWorkOfMemberList
-                .Where(x => x.RoleApplicationUserInProjectId == memberId)
-                .FirstOrDefault();
-
-            // If no position work is found for the member, return an error message
-            if (getPositionWorkOfMember == null)
-                return ServicesResult<string>.Failure("Can't find position work for member in the database.");
-
+           
+            var getPositionWorkOfMember = await GetPositionWorkOfMember(memberId);
+            if (getPositionWorkOfMember.Data == null || getPositionWorkOfMember.Status == false) return ServicesResult<string>.Failure(getPositionWorkOfMember.Message);
             // Retrieve the position details from the PositionInProject service
-            var getPosition = await _positionInProjectServices.GetValueByPrimaryKeyAsync(getPositionWorkOfMember.PostitionInProjectId);
+            var getPosition = await _positionInProjectServices.GetValueByPrimaryKeyAsync(getPositionWorkOfMember.Data.PostitionInProjectId);
 
             // If the position data is null or the retrieval failed, return the failure message
             if (getPosition.Data == null || getPosition.Status == false)
