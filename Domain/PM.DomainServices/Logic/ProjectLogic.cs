@@ -1,8 +1,4 @@
-﻿using Microsoft.AspNetCore.Http.Timeouts;
-using Microsoft.EntityFrameworkCore.Metadata.Conventions;
-using Microsoft.EntityFrameworkCore.Query.SqlExpressions;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
-using PM.Domain;
+﻿using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
@@ -22,6 +18,17 @@ namespace PM.DomainServices.Logic
         //intialize primary value
         private List<Project> _projects;
         private List<Status> _statuses;
+
+        public ProjectLogic(IProjectServices projectServices, IStatusServices statusServices, IUserLogic userLogic, IMemberLogic memberLogic, IPlanLogic planLogic)
+        {
+            _projectServices = projectServices;
+            _statusServices = statusServices;
+            _userLogic = userLogic;
+            _memberLogic = memberLogic;
+            _planLogic = planLogic;
+            IntializeProject();
+        }
+
 
         #region private method
         private async Task<ServicesResult<IEnumerable<Project>>> GetProjectAsync()
