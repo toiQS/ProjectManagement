@@ -8,6 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using PM.DomainServices.ILogic;
+using System.Runtime.InteropServices;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 
 namespace PM.DomainServices.Logic
 {
@@ -22,6 +25,15 @@ namespace PM.DomainServices.Logic
         private List<Plan> _planList;
         private List<PlanInProject> _planInProjects;
         private List<Status> _statuses;
+
+        public PlanLogic(IPlanInProjectServices planInProjectServices, IPlanServices planServices, IStatusServices statusServices)
+        {
+            _planInProjectServices = planInProjectServices;
+            _planServices = planServices;
+            _statusServices = statusServices;
+            Initalize();
+        }
+
 
         #region private method
         /// <summary>
@@ -41,8 +53,7 @@ namespace PM.DomainServices.Logic
             if (plans.Status == false)
                 return ServicesResult<IEnumerable<Plan>>.Failure(plans.Message);
 
-            // Store plans in the local list
-            _planList = plans.Data.ToList();
+            
 
             // Return the retrieved plans
             return ServicesResult<IEnumerable<Plan>>.Success(plans.Data, string.Empty);
@@ -65,8 +76,7 @@ namespace PM.DomainServices.Logic
             if (plans.Status == false)
                 return ServicesResult<IEnumerable<PlanInProject>>.Failure(plans.Message);
 
-            // Store plans in the local list
-            _planInProjects = plans.Data.ToList();
+
 
             // Return the retrieved plans in projects
             return ServicesResult<IEnumerable<PlanInProject>>.Success(plans.Data, string.Empty);
@@ -76,24 +86,39 @@ namespace PM.DomainServices.Logic
         /// Retrieves all available statuses from the database.
         /// </summary>
         /// <returns>A service result containing a success message or an error message.</returns>
-        private async Task<ServicesResult<string>> GetAllStatus()
+        private async Task<ServicesResult<IEnumerable<Status>>> GetAllStatus()
         {
             // Fetch statuses asynchronously
             var statuses = await _statusServices.GetAllAsync();
 
             // If no statuses are found, return an empty string with a message
             if (statuses.Data == null)
-                return ServicesResult<string>.Success(string.Empty, "No statuses in database");
+                return ServicesResult<IEnumerable<Status>>.Success(null, "No statuses in database");
 
             // If there's an issue with the status, return a failure result
             if (statuses.Status == false)
-                return ServicesResult<string>.Failure(statuses.Message);
+                return ServicesResult<IEnumerable<Status>>.Failure(statuses.Message);
 
-            // Store statuses in the local list
-            _statuses = statuses.Data.ToList();
+           
 
             // Return a success message
-            return ServicesResult<string>.Success("Success", string.Empty);
+            return ServicesResult<IEnumerable<Status>>.Success(statuses.Data, string.Empty);
+        }
+        private void Initalize()
+        {
+            var statusList = new ServicesResult<IEnumerable<Status>>();
+            var planInProject = new ServicesResult<IEnumerable<PlanInProject>>();
+            var planList = new ServicesResult<IEnumerable<Plan>>();
+            do
+            {
+                statusList = GetAllStatus().GetAwaiter().GetResult();
+                planInProject = GetAllPlanInProjects().GetAwaiter().GetResult();
+                planList = GetAllPlans().GetAwaiter().GetResult();
+            }
+            while (statusList.Status == false || planInProject.Status == false || planList.Status == false);
+            _planInProjects = planInProject.Data.ToList();
+            _statuses = statusList.Data.ToList() ;
+            _planList = planList.Data.ToList() ;
         }
 
         /// <summary>
