@@ -1,9 +1,13 @@
-﻿using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+﻿using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Query.Internal;
 using PM.Domain;
 using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.members;
 using PM.Persistence.IServices;
+using Shared.member;
+using System.Diagnostics;
 
 namespace PM.DomainServices.Logic
 {
@@ -12,13 +16,29 @@ namespace PM.DomainServices.Logic
         //intialize services
         private readonly IRoleApplicationUserInProjectServices _roleApplicationUserInProjectServices;
         private readonly IRoleInProjectServices _roleInProjectServices;
+        private readonly IMemberInTaskServices _memberInTaskServices;
         
         //intialize logic
-        private readonly UserLogic _userLogic;
-        private readonly PositionLogic _positionLogic;
+        private readonly IUserLogic _userLogic;
+        private readonly IPositionLogic _positionLogic;
         private readonly IRoleLogic _roleLogic; 
+
         //intialize primary value
         private List<RoleApplicationUserInProject> _member;
+        private List<MemberInTask> _memberInTask; 
+ 
+        public MemberLogic(IRoleApplicationUserInProjectServices roleApplicationUserInProjectServices, IRoleInProjectServices roleInProjectServices, IMemberInTaskServices memberInTaskServices, IUserLogic userLogic, IPositionLogic positionLogic, IRoleLogic roleLogic)
+        {
+            _roleApplicationUserInProjectServices = roleApplicationUserInProjectServices;
+            _roleInProjectServices = roleInProjectServices;
+            _memberInTaskServices = memberInTaskServices;
+            _userLogic = userLogic;
+            _positionLogic = positionLogic;
+            _roleLogic = roleLogic;
+            Intialize();
+        }
+
+
 
         #region private method
         #region Retrieve all role-application-user mappings
@@ -44,8 +64,7 @@ namespace PM.DomainServices.Logic
             if (!result.Status)
                 return ServicesResult<IEnumerable<RoleApplicationUserInProject>>.Failure(result.Message);
 
-            // Cache the data for future use
-            _member = result.Data.ToList();
+            
 
             return ServicesResult<IEnumerable<RoleApplicationUserInProject>>.Success(result.Data, string.Empty);
         }
@@ -76,9 +95,32 @@ namespace PM.DomainServices.Logic
             return ServicesResult<RoleApplicationUserInProject>.Success(getMember.Data, string.Empty);
         }
         #endregion
+        #region 
+        private async Task<ServicesResult<IEnumerable<MemberInTask>>> GetAllMemberTodo()
+        {
+            var member = await _memberInTaskServices.GetAllAsync();
+            if(member.Status == false ) ServicesResult<IEnumerable<MemberInTask>>.Failure(member.Message);
+            return ServicesResult<IEnumerable<MemberInTask>>.Success(member.Data, string.Empty);
 
-
+        }
         #endregion
+        private void Intialize()
+        {
+            var data1 = new ServicesResult<IEnumerable<RoleApplicationUserInProject>>();
+            var data2 = new ServicesResult<IEnumerable<MemberInTask>>();    
+            
+            do
+            {
+                data1 = GetAllRolesAsync().GetAwaiter().GetResult();
+                data2 = GetAllMemberTodo().GetAwaiter().GetResult();
+
+            }
+            while(!data1.Status || !data2.Status);
+            _member = data1.Data.ToList();
+            _memberInTask = data2.Data.ToList();
+        }
+        #endregion
+
         #region suport method
         #region Get Role of a Member in a Project
         /// <summary>
@@ -221,13 +263,14 @@ namespace PM.DomainServices.Logic
 
         #endregion
         #region primary method
+        #region
         /// <summary>
         /// Retrieves a list of all members with their details, including position and user information.
         /// </summary>
         /// <returns>A service result containing the list of members or an error message if the operation fails.</returns>
         public async Task<ServicesResult<IEnumerable<IndexMember>>> GetAllAsync()
         {
-            if (_member == null || !_member.Any())
+            if (!_member.Any())
                 return ServicesResult<IEnumerable<IndexMember>>.Success(new List<IndexMember>(), "No members found.");
 
             var data = new List<IndexMember>();
@@ -256,6 +299,27 @@ namespace PM.DomainServices.Logic
 
             return ServicesResult<IEnumerable<IndexMember>>.Success(data, string.Empty);
         }
+        #endregion
+
+        #region
+        public async Task<ServicesResult<DetailMember>> GetDetailMember(string memberId)
+        {
+            var member = await GetDetailMemberAsync(memberId);
+            if ((!member.Status)) return ServicesResult<DetailMember>.Failure(member.Message);
+            var user = await _userLogic.GetInfoOtherUserByUserId(member.Data.ApplicationUserId);
+            if(user.Status == false) return ServicesResult<DetailMember>.Failure(user.Message); 
+            var postion = await _positionLogic.GetPositionWorkByMemberId(memberId);
+            if (postion.Status == false) return ServicesResult<DetailMember>.Failure(postion.Message);
+            var detail = new DetailMember()
+            {
+                RoleUserInProjectId = member.Data.Id,
+                RoleUserNameInProject = postion.Data,
+                UserAvata = user.Data.Avata,
+                UserName = user.Data.UserName,
+            };
+            return ServicesResult<DetailMember>.Success(detail, string.Empty);
+        }
+        #endregion
 
         #endregion
     }
