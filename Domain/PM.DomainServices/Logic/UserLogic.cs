@@ -1,10 +1,8 @@
-﻿using Microsoft.AspNetCore.Identity;
-using PM.DomainServices.ILogic;
+﻿using PM.DomainServices.ILogic;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
 using PM.DomainServices.Models.users;
 using PM.Persistence.IServices;
-using System.Runtime.InteropServices;
 
 namespace PM.DomainServices.Logic
 {
@@ -18,6 +16,16 @@ namespace PM.DomainServices.Logic
         //intialize primary value
         private string _userIdCurrent = string.Empty;
         private DetailAppUser _userCurrent = new DetailAppUser();
+
+        public UserLogic(IApplicationUserServices applicationUserServices, IMemberLogic memberLogic, IProjectLogic projectLogic, string userIdCurrent, DetailAppUser userCurrent)
+        {
+            _applicationUserServices = applicationUserServices;
+            _memberLogic = memberLogic;
+            _projectLogic = projectLogic;
+            _userIdCurrent = userIdCurrent;
+            _userCurrent = userCurrent;
+        }
+
 
 
         #region private method
