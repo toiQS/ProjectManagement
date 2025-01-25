@@ -1,7 +1,9 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using PM.DomainServices.ILogic;
+using PM.DomainServices.IServices;
 using PM.DomainServices.Logic;
+using PM.DomainServices.Services;
 using PM.Persistence.IServices;
 using PM.Persistence.Services;
 
@@ -16,17 +18,13 @@ namespace PM.DomainServices
         }
         private static void RegisterLogic(IServiceCollection services)
         {
-            services.AddScoped<IMemberLogic, MemberLogic>();
-            services.AddScoped<IPlanLogic, PlanLogic>();
-            services.AddScoped<IPositionLogic, PositionLogic>();
-            services.AddScoped<IProjectLogic, ProjectLogic>();
-            services.AddScoped<IRoleLogic, RoleLogic>();
             services.AddScoped<IUserLogic, UserLogic>();
+            services.AddScoped<IAuthLogic, AuthLogic>();
         }
         private static void RegisterServices(IServiceCollection services)
         {
             services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
-            services.AddScoped<IApplicationUserServices, ApplicationUserServices>();
+            services.AddScoped<IAuthServices, AuthServices>();
             services.AddScoped<IMemberInTaskServices, MemberInTaskServices>();
             services.AddScoped<IPlanInProjectServices, PlanInProjectServices>();
             services.AddScoped<IPlanServices, PlanServices>();
