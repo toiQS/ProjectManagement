@@ -11,19 +11,14 @@ namespace PM.DomainServices.Logic
         //intialize services
         private IApplicationUserServices _applicationUserServices;
         //intialize logic
-        private readonly IMemberLogic _memberLogic;
-        private readonly IProjectLogic _projectLogic;
+
         //intialize primary value
         private string _userIdCurrent = string.Empty;
         private DetailAppUser _userCurrent = new DetailAppUser();
 
-        public UserLogic(IApplicationUserServices applicationUserServices, IMemberLogic memberLogic, IProjectLogic projectLogic, string userIdCurrent, DetailAppUser userCurrent)
+        public UserLogic(IApplicationUserServices applicationUserServices)
         {
             _applicationUserServices = applicationUserServices;
-            _memberLogic = memberLogic;
-            _projectLogic = projectLogic;
-            _userIdCurrent = userIdCurrent;
-            _userCurrent = userCurrent;
         }
 
 
@@ -62,6 +57,9 @@ namespace PM.DomainServices.Logic
                 FullName = getUser.Data.FullName,
                 Avata = getUser.Data.PathImage
             };
+            var role = await _applicationUserServices.GetRoleOfUserByEmail(userOther.Email);
+            if (role.Status == false) return ServicesResult<DetailAppUser>.Failure(getUser.Message);
+            userOther.Role = role.Data;
 
             // Return success with the user data
             return ServicesResult<DetailAppUser>.Success(userOther, string.Empty);
@@ -105,46 +103,10 @@ namespace PM.DomainServices.Logic
                 FullName = getUser.Data.FullName,
                 Avata = getUser.Data.PathImage
             };
-
+            var role = await _applicationUserServices.GetRoleOfUserByEmail(_userCurrent.Email);
+            if (role.Status == false) return ServicesResult<DetailAppUser>.Failure(getUser.Message);
+            _userCurrent.Role = role.Data;
             return ServicesResult<DetailAppUser>.Success(_userCurrent, string.Empty);
-        }
-        #endregion
-
-        #region Retrieve projects the current user has joined
-        /// <summary>
-        /// Retrieves a list of projects that the currently logged-in user has joined.
-        /// </summary>
-        /// <returns>
-        /// A service result containing a list of <see cref="IndexProject"/> objects if available, 
-        /// or an error message if the operation fails.
-        /// </returns>
-        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetListProjectsUserHasJoined()
-        {
-            // Fetch projects the user has joined
-            var projects = await _projectLogic.GetProjectsUserHasJoined(_userIdCurrent);
-            if (!projects.Status)
-                return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
-
-            return ServicesResult<IEnumerable<IndexProject>>.Success(projects.Data ?? new List<IndexProject>(), projects.Message ?? string.Empty);
-        }
-        #endregion
-
-        #region Retrieve projects the current user owns
-        /// <summary>
-        /// Retrieves a list of projects where the currently logged-in user is the owner.
-        /// </summary>
-        /// <returns>
-        /// A service result containing a list of <see cref="IndexProject"/> objects if available, 
-        /// or an error message if the operation fails.
-        /// </returns>
-        public async Task<ServicesResult<IEnumerable<IndexProject>>> GetListProjectsUserHasOwn()
-        {
-            // Fetch projects the user owns
-            var projects = await _projectLogic.GetProjectsUserHasOwn(_userIdCurrent);
-            if (!projects.Status)
-                return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
-
-            return ServicesResult<IEnumerable<IndexProject>>.Success(projects.Data ?? new List<IndexProject>(), projects.Message ?? string.Empty);
         }
         #endregion
 
