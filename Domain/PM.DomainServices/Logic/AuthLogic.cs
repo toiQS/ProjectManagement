@@ -2,10 +2,11 @@
 using PM.DomainServices.Models.auths;
 using PM.DomainServices.Models;
 using PM.Persistence.IServices;
+using PM.DomainServices.ILogic;
 
 namespace PM.DomainServices.Logic
 {
-    public class AuthLogic
+    public class AuthLogic:IAuthLogic
     {
         private readonly IAuthServices _authServices;
         private readonly IApplicationUserServices _applicationUserServices;
