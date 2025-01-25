@@ -23,6 +23,8 @@ namespace AuthAPI.Controllers
         {
             var login = await _authLogic.Login(loginModel);
             if(login.Status == false) return ServicesResult<string>.Failure(login.Message);
+            var token = _jwtHelper.GenerateTokenString(login.Data.Email, login.Data.RoleUser);
+            return ServicesResult<string>.Success(token, string.Empty);
         }
     }
 }
