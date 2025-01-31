@@ -17,14 +17,14 @@ namespace PM.Persistence.Context
         public DbSet<MemberInTask> MemberInTask { get; set; }
         public DbSet<Plan> Plan { get; set; }
         public DbSet<PlanInProject> PlanInProject { get; set; }
-        public DbSet<PositionWorkOfMember> PositionWorkOfMember { get; set; }
         public DbSet<PositionInProject> PositionInProject { get; set; }
         public DbSet<Project> Project { get; set; }
-        public DbSet<RoleApplicationUserInProject> RoleApplicationUserInProject { get; set; }
+        public DbSet<MemberProject> MemberProject { get; set; }
         public DbSet<RoleInProject> RoleInProject { get; set; }
         public DbSet<TaskDTO> TaskDTO { get; set; }
         public DbSet<TaskInPlan> TaskInPlan { get; set; }
         public DbSet<Status> Status { get; set; }
+        public DbSet<RefreshToken> RefreshToken { get; set; }
         #endregion
 
 
@@ -52,11 +52,12 @@ namespace PM.Persistence.Context
                 .WithMany()
                 .HasForeignKey(pip => pip.ProjectId)
                 .OnDelete(DeleteBehavior.NoAction); // Chặn cascade delete
+
             modelBuilder.Entity<TaskInPlan>()
-    .HasOne(tip => tip.TaskDTO)
-    .WithMany()
-    .HasForeignKey(tip => tip.TaskId)
-    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
+                .HasOne(tip => tip.TaskDTO)
+                .WithMany()
+                .HasForeignKey(tip => tip.TaskId)
+                .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
 
             modelBuilder.Entity<TaskInPlan>()
                 .HasOne(tip => tip.Plan)
@@ -64,18 +65,11 @@ namespace PM.Persistence.Context
                 .HasForeignKey(tip => tip.PlanId)
                 .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
 
-            modelBuilder.Entity<PositionWorkOfMember>()
-    .HasOne(p => p.RoleApplicationUserInProject)
-    .WithMany()
-    .HasForeignKey(p => p.RoleApplicationUserInProjectId)
-    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
-
             modelBuilder.Entity<MemberInTask>()
-    .HasOne(mit => mit.TaskDTO)
-    .WithMany()
-    .HasForeignKey(mit => mit.TaskId)
-    .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
-
+                .HasOne(mit => mit.TaskDTO)
+                .WithMany()
+                .HasForeignKey(mit => mit.TaskId)
+                .OnDelete(DeleteBehavior.NoAction); // Ngăn chặn cascade delete
         }
 
     }
