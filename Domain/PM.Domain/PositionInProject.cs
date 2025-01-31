@@ -20,6 +20,6 @@ namespace PM.Domain
         [ForeignKey(nameof(Project))]
         [Column(name: "Project Id")]
         public string ProjectId { get; set; } = string.Empty;
-        public virtual Project Project { get; set; }
+        public  Project Project { get; set; }
     }
 }
