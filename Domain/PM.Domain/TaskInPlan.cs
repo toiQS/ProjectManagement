@@ -16,10 +16,10 @@ namespace PM.Domain
         [ForeignKey(nameof(Plan))]
         [Column(name: "Plan Id")]
         public string PlanId { get; set; } = string.Empty;
-        public virtual Plan Plan { get; set; }
+        public  Plan Plan { get; set; }
         [ForeignKey(nameof(TaskDTO))]
         [Column(name: "Task Id")]
         public string TaskId { get; set; } = string.Empty;
-        public virtual TaskDTO TaskDTO { get; set; }
+        public  TaskDTO TaskDTO { get; set; }
     }
 }
