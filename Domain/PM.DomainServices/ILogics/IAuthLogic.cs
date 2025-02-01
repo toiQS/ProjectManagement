@@ -7,6 +7,6 @@ namespace PM.DomainServices.ILogics
     {
         public Task<ServicesResult<LoginModel>> LoginAsync(LoginModel loginModel);
         public Task<ServicesResult<RegisterModel>> RegisterAsync(RegisterModel registerModel);
-        public Task<ServicesResult<bool>> LogOutAsync(string token);
+        public Task<ServicesResult<bool>> LogOutAsync();
     }
 }
