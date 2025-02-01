@@ -1,12 +1,14 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using PM.Domain;
+using PM.DomainServices.ILogics;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.auths;
 using PM.DomainServices.Repository;
 
 namespace PM.DomainServices.Logics
 {
-    public class AuthLogic
+    public class AuthLogic : IAuthLogic
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
@@ -41,6 +43,10 @@ namespace PM.DomainServices.Logics
             {
                 return ServicesResult<LoginModel>.Failure($"An error occurred: {ex.Message}");
             }
+            finally
+            {
+                Dispose();
+            }
         }
 
         public async Task<ServicesResult<RegisterModel>> RegisterAsync(RegisterModel registerModel)
@@ -66,6 +72,10 @@ namespace PM.DomainServices.Logics
             {
                 return ServicesResult<RegisterModel>.Failure($"An error occurred: {ex.Message}");
             }
+            finally
+            {
+                Dispose();
+            }
         }
 
         public async Task<ServicesResult<bool>> LogOutAsync()
@@ -79,6 +89,10 @@ namespace PM.DomainServices.Logics
             {
                 return ServicesResult<bool>.Failure($"An error occurred: {ex.Message}");
             }
+        }
+        public void Dispose()
+        {
+            _userManager.Dispose();
         }
     }
 }
