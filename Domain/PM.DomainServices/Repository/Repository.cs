@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using PM.DomainServices.Models;
 using PM.Persistence.Context;
-using System.Diagnostics;
 
 namespace PM.DomainServices.Repository
 {
@@ -14,127 +13,141 @@ namespace PM.DomainServices.Repository
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _dbSet = _context.Set<T>();
-
         }
+
         public async Task<ServicesResult<IEnumerable<T>>> GetAllAsync()
         {
             try
             {
                 var response = await _dbSet.AsNoTracking().AsSplitQuery().ToListAsync();
-                if (response == null) return ServicesResult<IEnumerable<T>>.Success(null, "No data in table");
                 return ServicesResult<IEnumerable<T>>.Success(response, string.Empty);
             }
             catch (Exception ex)
             {
-                return ServicesResult<IEnumerable<T>>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                return ServicesResult<IEnumerable<T>>.Failure($"Database access error: {ex.Message}");
             }
         }
+
         public async Task<ServicesResult<T>> GetValueByPrimaryKey(string primaryKey)
         {
-            if (string.IsNullOrEmpty(primaryKey)) return ServicesResult<T>.Failure("Id is request");
+            if (string.IsNullOrEmpty(primaryKey)) return ServicesResult<T>.Failure("Primary key is required");
+
             try
             {
                 var response = await _dbSet.FindAsync(primaryKey);
-                if (response == null) return ServicesResult<T>.Success(null, "No data in table");
-                return ServicesResult<T>.Success(response, string.Empty);
+                return response != null
+                    ? ServicesResult<T>.Success(response, string.Empty)
+                    : ServicesResult<T>.Failure("No data found");
             }
             catch (Exception ex)
             {
-                return ServicesResult<T>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                return ServicesResult<T>.Failure($"Database access error: {ex.Message}");
             }
         }
+
         public async Task<ServicesResult<T>> GetValueByPrimaryKey(int primaryKey)
         {
-            if (primaryKey <= 0) return ServicesResult<T>.Failure("Id is request");
+            if (primaryKey <= 0) return ServicesResult<T>.Failure("Invalid primary key");
+
             try
             {
                 var response = await _dbSet.FindAsync(primaryKey);
-                if (response == null) return ServicesResult<T>.Success(null, "No data in table");
-                return ServicesResult<T>.Success(response, string.Empty);
+                return response != null
+                    ? ServicesResult<T>.Success(response, string.Empty)
+                    : ServicesResult<T>.Failure("No data found");
             }
             catch (Exception ex)
             {
-                return ServicesResult<T>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                return ServicesResult<T>.Failure($"Database access error: {ex.Message}");
             }
         }
+
         public async Task<ServicesResult<bool>> AddAsync(T entity)
         {
-            if (entity is null) return ServicesResult<bool>.Failure("Entity is request");
-            using (var trasaction = await _context.Database.BeginTransactionAsync())
+            if (entity is null) return ServicesResult<bool>.Failure("Entity is required");
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    await _dbSet.AddRangeAsync(entity);
+                    await _dbSet.AddAsync(entity);
                     await _context.SaveChangesAsync();
-                    await trasaction.CommitAsync();
+                    await transaction.CommitAsync();
                     return ServicesResult<bool>.Success(true, string.Empty);
                 }
                 catch (Exception ex)
                 {
-                    await trasaction.RollbackAsync();
-                    return ServicesResult<bool>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                    await transaction.RollbackAsync();
+                    return ServicesResult<bool>.Failure($"Database access error: {ex.Message}");
                 }
             }
         }
+
         public async Task<ServicesResult<bool>> UpdateAsync(T entity)
         {
-            if (entity is null) return ServicesResult<bool>.Failure("Entity is request");
-            using (var trasaction = await _context.Database.BeginTransactionAsync())
+            if (entity is null) return ServicesResult<bool>.Failure("Entity is required");
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    _dbSet.UpdateRange(entity);
+                    _dbSet.Update(entity);
                     await _context.SaveChangesAsync();
-                    await trasaction.CommitAsync();
+                    await transaction.CommitAsync();
                     return ServicesResult<bool>.Success(true, string.Empty);
                 }
                 catch (Exception ex)
                 {
-                    await trasaction.RollbackAsync();
-                    return ServicesResult<bool>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                    await transaction.RollbackAsync();
+                    return ServicesResult<bool>.Failure($"Database access error: {ex.Message}");
                 }
             }
         }
+
         public async Task<ServicesResult<bool>> DeleteAsync(string primaryKey)
         {
-            if (primaryKey == null) return ServicesResult<bool>.Failure("Primary Key is request");
-            using (var trasaction = await _context.Database.BeginTransactionAsync())
+            if (string.IsNullOrEmpty(primaryKey)) return ServicesResult<bool>.Failure("Primary key is required");
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var response = await _dbSet.FindAsync(primaryKey);
-                    if (response == null) return ServicesResult<bool>.Failure("No data in table");
-                    _dbSet.Remove(response);
+                    var entity = await _dbSet.FindAsync(primaryKey);
+                    if (entity == null) return ServicesResult<bool>.Failure("No data found");
+
+                    _dbSet.Remove(entity);
                     await _context.SaveChangesAsync();
-                    await trasaction.CommitAsync();
+                    await transaction.CommitAsync();
                     return ServicesResult<bool>.Success(true, string.Empty);
                 }
                 catch (Exception ex)
                 {
-                    await trasaction.RollbackAsync();
-                    return ServicesResult<bool>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                    await transaction.RollbackAsync();
+                    return ServicesResult<bool>.Failure($"Database access error: {ex.Message}");
                 }
             }
-
         }
+
         public async Task<ServicesResult<bool>> DeleteAsync(int primaryKey)
         {
-            if (primaryKey <= 0) return ServicesResult<bool>.Failure("Primary Key is request");
-            using (var trasaction = await _context.Database.BeginTransactionAsync())
+            if (primaryKey <= 0) return ServicesResult<bool>.Failure("Invalid primary key");
+
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 try
                 {
-                    var response = await _dbSet.FindAsync(primaryKey);
-                    if (response == null) return ServicesResult<bool>.Failure("No data in table");
-                    _dbSet.Remove(response);
+                    var entity = await _dbSet.FindAsync(primaryKey);
+                    if (entity == null) return ServicesResult<bool>.Failure("No data found");
+
+                    _dbSet.Remove(entity);
                     await _context.SaveChangesAsync();
-                    await trasaction.CommitAsync();
+                    await transaction.CommitAsync();
                     return ServicesResult<bool>.Success(true, string.Empty);
                 }
                 catch (Exception ex)
                 {
-                    await trasaction.RollbackAsync();
-                    return ServicesResult<bool>.Failure($"There is a issue when connect to data table. " + ex.Source);
+                    await transaction.RollbackAsync();
+                    return ServicesResult<bool>.Failure($"Database access error: {ex.Message}");
                 }
             }
         }
