@@ -20,6 +20,6 @@ namespace PM.Domain
         public ApplicationUser ApplicationUser { get; set; }
         [ForeignKey(nameof(PositionInProject))]
         public string PositionInProjectId {  get; set; } = string.Empty;
-        public PositionInProject PositionInProject {  get; set; }
+        public PositionInProject? PositionInProject {  get; set; }
     }
 }
