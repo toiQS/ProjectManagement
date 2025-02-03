@@ -153,41 +153,60 @@ namespace PM.DomainServices.Logics
         }
         #endregion
 
+        #region Get List of Projects User Owns
+        /// <summary>
+        /// Retrieves a list of projects where the user is the owner.
+        /// </summary>
+        /// <param name="userId">The ID of the user.</param>
+        /// <returns>A service result containing a collection of index projects.</returns>
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetListProjectUserHasOwner(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("id is request");
+            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID is required");
 
+            // Retrieve all roles and find the owner role
             var roles = await _unitOfWork.RoleInProjectRepository.GetAllAsync();
-            if (roles.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(roles.Message);
-            var roleOwner = roles.Data.Where(x => x.RoleName == "Owner").FirstOrDefault();
+            if (!roles.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(roles.Message);
+            var roleOwner = roles.Data.FirstOrDefault(x => x.RoleName == "Owner");
+            if (roleOwner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found");
 
+            // Get projects where the user is the owner
             var projectJoined = await _context.MemberProject.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner.Id).ToListAsync();
-            if (projectJoined == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("User is not join any projects");
+            if (projectJoined == null || !projectJoined.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("User has not joined any projects as an owner");
+
+            // Retrieve user details
             var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
-            if(user.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(user.Message);
-            /// find position of user in each project
+            if (!user.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(user.Message);
+
+            // Find the user's position in each project
             var positionList = new List<PositionInProject>();
             foreach (var index in projectJoined)
             {
                 var position = await _unitOfWork.PositionInProjectRepository.GetValueByPrimaryKey(index.PositionInProjectId);
-                if (position.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(position.Message);
+                if (!position.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(position.Message);
                 positionList.Add(position.Data);
             }
+
+            // Retrieve project details
             var projectList = new List<IndexProject>();
-            foreach (var index in positionList)
+            foreach (var position in positionList)
             {
-                var project = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(index.ProjectId);
-                if (project.Status == false) return ServicesResult<IEnumerable<IndexProject>>.Failure(project.Message);
+                var project = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(position.ProjectId);
+                if (!project.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(project.Message);
+
                 var indexProject = new IndexProject()
                 {
-                    OwnerName = user.Data.UserName ??"Error",
-                    ProjectName = project.Data.ProjectName??"Error",
+                    OwnerName = user.Data.UserName ?? "Error",
+                    ProjectName = project.Data.ProjectName ?? "Error",
                     OwnerAvata = user.Data.PathImage ?? "Error",
-                    ProjectId = index.ProjectId,
+                    ProjectId = position.ProjectId,
                 };
+
                 projectList.Add(indexProject);
             }
+
             return ServicesResult<IEnumerable<IndexProject>>.Success(projectList, string.Empty);
         }
+        #endregion
+
     }
 }
