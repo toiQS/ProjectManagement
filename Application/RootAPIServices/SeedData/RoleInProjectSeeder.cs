@@ -13,23 +13,23 @@ namespace RootAPIServices.SeedData
                 new RoleInProject()
                 {
                     RoleName = "Owner",
-                    Id = $"1002-123456-{DateTime.Now.AddMinutes(1)}",
+                    Id = $"1002-123456-{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}-{DateTime.Now.Hour}-{DateTime.Now.Minute}-{DateTime.Now.Minute}-{DateTime.Now.Ticks}",
                     RoleDescription = ""
                 },
                 new RoleInProject()
                 {
                     RoleName = "Leader",
-                    Id = $"1002-123456-{DateTime.Now.AddMinutes(2)}",
+                    Id = $"1002-123456-{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}-{DateTime.Now.Hour}-{DateTime.Now.AddMinutes(1).Minute}-{DateTime.Now.Minute}-{DateTime.Now.Ticks}}",
                     RoleDescription = ""
                 }, new RoleInProject()
                 {
                     RoleName = "Manager",
-                    Id = $"1002-123456-{DateTime.Now.AddMinutes(3)}",
+                    Id = $"1002-123456-{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}-{DateTime.Now.Hour}-{DateTime.Now.AddMinutes(2).Minute}-{DateTime.Now.Minute}-{DateTime.Now.Ticks}",
                     RoleDescription = ""
                 }, new RoleInProject()
                 {
                     RoleName = "Member",
-                    Id = $"1002-123456-{DateTime.Now.AddMinutes(4)}",
+                    Id = $"1002-123456-{DateTime.Now.Day}-{DateTime.Now.Month}-{DateTime.Now.Year}-{DateTime.Now.Hour}-{DateTime.Now.AddMinutes(3).Minute}-{DateTime.Now.Minute}-{DateTime.Now.Ticks}",
                     RoleDescription = ""
                 }
                 );
