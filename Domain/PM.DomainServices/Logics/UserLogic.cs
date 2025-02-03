@@ -4,6 +4,7 @@ using PM.DomainServices.ILogics;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.users;
 using PM.DomainServices.UnitOfWorks;
+using System.Linq;
 
 namespace PM.DomainServices.Logics
 {
@@ -14,33 +15,43 @@ namespace PM.DomainServices.Logics
 
         public UserLogic(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
-            _unitOfWork = unitOfWork;
-            _userManager = userManager;
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+            _userManager = userManager ?? throw new ArgumentNullException(nameof(userManager));
+        }
+
+        // Helper method to reduce redundancy
+        private async Task<ServicesResult<ApplicationUser>> GetUserByIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return ServicesResult<ApplicationUser>.Failure("User ID is required");
+
+            var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
+            if (!user.Status)
+                return ServicesResult<ApplicationUser>.Failure(user.Message);
+
+            return ServicesResult<ApplicationUser>.Success(user.Data, string.Empty);
         }
 
         public async Task<ServicesResult<DetailAppUser>> DetailUserCurrent(string userId)
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(userId))
-                    return ServicesResult<DetailAppUser>.Failure("User ID is required");
+                var userResult = await GetUserByIdAsync(userId);
+                if (!userResult.Status)
+                    return ServicesResult<DetailAppUser>.Failure(userResult.Message);
 
-                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
-                if (!user.Status)
-                    return ServicesResult<DetailAppUser>.Failure(user.Message);
-
-                var role = await _userManager.GetRolesAsync(user.Data);
+                var role = await _userManager.GetRolesAsync(userResult.Data);
                 if (!role.Any())
                     return ServicesResult<DetailAppUser>.Failure("User does not have a role");
 
                 var detail = new DetailAppUser
                 {
-                    UserId = userId,
-                    FullName = user.Data.FullName,
-                    UserName = user.Data.UserName,
-                    Avata = user.Data.PathImage,
-                    Email = user.Data.Email,
-                    Phone = user.Data.Phone,
+                    UserId = userResult.Data.Id,
+                    FullName = userResult.Data.FullName,
+                    UserName = userResult.Data.UserName,
+                    Avata = userResult.Data.PathImage,
+                    Email = userResult.Data.Email,
+                    Phone = userResult.Data.Phone,
                     Role = role.SingleOrDefault()
                 };
 
@@ -59,39 +70,43 @@ namespace PM.DomainServices.Logics
                 if (string.IsNullOrWhiteSpace(userId) || newInfo == null)
                     return ServicesResult<DetailAppUser>.Failure("Invalid input");
 
-                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
-                if (!user.Status)
-                    return ServicesResult<DetailAppUser>.Failure(user.Message);
+                var userResult = await GetUserByIdAsync(userId);
+                if (!userResult.Status)
+                    return ServicesResult<DetailAppUser>.Failure(userResult.Message);
 
-                // Kiểm tra giá trị null trước khi cập nhật
-                user.Data.FirstName = newInfo.FirstName?.Trim() ?? user.Data.FirstName;
-                user.Data.LastName = newInfo.LastName?.Trim() ?? user.Data.LastName;
-                user.Data.FullName = $"{user.Data.FirstName} {user.Data.LastName}".Trim();
-                user.Data.Phone = newInfo.Phone?.Trim() ?? user.Data.Phone;
-                user.Data.Email = newInfo.Email?.Trim() ?? user.Data.Email;
-                user.Data.PathImage = newInfo.PathImage?.Trim() ?? user.Data.PathImage;
+                var user = userResult.Data;
 
-                var role = await _userManager.GetRolesAsync(user.Data);
+                // Cập nhật các trường thông tin
+                user.FirstName = newInfo.FirstName?.Trim() ?? user.FirstName;
+                user.LastName = newInfo.LastName?.Trim() ?? user.LastName;
+                user.FullName = $"{user.FirstName} {user.LastName}".Trim();
+                user.Phone = newInfo.Phone?.Trim() ?? user.Phone;
+                user.Email = newInfo.Email?.Trim() ?? user.Email;
+                user.PathImage = newInfo.PathImage?.Trim() ?? user.PathImage;
+
+                // Lấy và kiểm tra quyền
+                var role = await _userManager.GetRolesAsync(user);
                 if (!role.Any())
                     return ServicesResult<DetailAppUser>.Failure("User does not have a role");
 
-                var update = await _unitOfWork.ApplicationUserRepository.UpdateAsync(user.Data);
-                if (!update.Status)
-                    return ServicesResult<DetailAppUser>.Failure(update.Message);
+                var updateResult = await _unitOfWork.ApplicationUserRepository.UpdateAsync(user);
+                if (!updateResult.Status)
+                    return ServicesResult<DetailAppUser>.Failure(updateResult.Message);
 
-                // Lưu thay đổi vào database
                 await _unitOfWork.SaveChangesAsync();
 
-                return ServicesResult<DetailAppUser>.Success(new DetailAppUser()
+                var updatedDetail = new DetailAppUser
                 {
-                    UserId = user.Data.Id,
-                    FullName = user.Data.FullName,
-                    UserName = user.Data.UserName,
-                    Avata = user.Data.PathImage,
-                    Email = user.Data.Email,
-                    Phone = user.Data.Phone,
+                    UserId = user.Id,
+                    FullName = user.FullName,
+                    UserName = user.UserName,
+                    Avata = user.PathImage,
+                    Email = user.Email,
+                    Phone = user.Phone,
                     Role = role.SingleOrDefault()
-                }, string.Empty);
+                };
+
+                return ServicesResult<DetailAppUser>.Success(updatedDetail, string.Empty);
             }
             catch (Exception ex)
             {
