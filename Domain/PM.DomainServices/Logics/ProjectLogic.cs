@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.SqlServer.Server;
 using PM.Domain;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.projects;
@@ -13,200 +12,211 @@ namespace PM.DomainServices.Logics
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly ApplicationDbContext _context;
+
+        public ProjectLogic(IUnitOfWork unitOfWork, ApplicationDbContext context)
+        {
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
+        }
+
+        #region Helper Methods
+
+        private async Task<ServicesResult<ApplicationUser>> GetUserByIdAsync(string userId)
+        {
+            if (string.IsNullOrWhiteSpace(userId))
+                return ServicesResult<ApplicationUser>.Failure("User ID is required");
+
+            var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
+            if (!user.Status || user.Data == null)
+                return ServicesResult<ApplicationUser>.Failure(user.Message);
+
+            return ServicesResult<ApplicationUser>.Success(user.Data, string.Empty);
+        }
+
+        private async Task<ServicesResult<PositionInProject>> GetPositionInProjectAsync(string positionId)
+        {
+            var position = await _unitOfWork.PositionInProjectRepository.GetValueByPrimaryKey(positionId);
+            if (!position.Status)
+                return ServicesResult<PositionInProject>.Failure(position.Message);
+
+            return ServicesResult<PositionInProject>.Success(position.Data, string.Empty);
+        }
+
+        private async Task<ServicesResult<IEnumerable<RoleInProject>>> GetRolesAsync()
+        {
+            var roles = await _unitOfWork.RoleInProjectRepository.GetAllAsync();
+            if (!roles.Status || roles.Data == null)
+                return ServicesResult<IEnumerable<RoleInProject>>.Failure("Roles not found");
+
+            return ServicesResult<IEnumerable<RoleInProject>>.Success(roles.Data, string.Empty);
+        }
+
+        #endregion
+
         #region Get Index Projects
-        /// <summary>
-        /// Retrieves a list of index projects asynchronously.
-        /// </summary>
-        /// <returns>A service result containing a collection of index projects.</returns>
+
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetIndexProjectsAsync()
         {
-            var response = new List<IndexProject>();
-
-            // Fetch all projects from the repository
-            var projects = await _unitOfWork.ProjectRepository.GetAllAsync();
-            if (!projects.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(projects.Message);
-            if (projects.Data == null) return ServicesResult<IEnumerable<IndexProject>>.Success(response, projects.Message);
-
-            foreach (var project in projects.Data)
+            try
             {
-                // Retrieve positions associated with the project
-                var positions = await _context.PositionInProject.Where(x => x.ProjectId == project.Id).ToListAsync();
-                if (positions == null || positions.Count == 0) return ServicesResult<IEnumerable<IndexProject>>.Failure("No Position In Project");
+                var projectsResult = await _unitOfWork.ProjectRepository.GetAllAsync();
+                if (!projectsResult.Status || projectsResult.Data == null)
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("No projects found");
 
-                var memberProjects = new List<MemberProject>();
+                var projects = projectsResult.Data;
+                var projectIds = projects.Select(p => p.Id).ToList();
 
-                // Fetch members for each position
-                foreach (var position in positions)
+                var positions = await _context.PositionInProject
+                    .Where(x => projectIds.Contains(x.ProjectId))
+                    .ToListAsync();
+
+                var positionIds = positions.Select(p => p.Id).ToList();
+                var members = await _context.MemberProject
+                    .Where(x => positionIds.Contains(x.PositionInProjectId))
+                    .ToListAsync();
+
+                var rolesResult = await GetRolesAsync();
+                if (!rolesResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(rolesResult.Message);
+
+                var roleOwner = rolesResult.Data.FirstOrDefault(x => x.RoleName == "Owner");
+                if (roleOwner == null)
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found");
+
+                var owners = members.Where(m => m.RoleInProjectId == roleOwner.Id).ToList();
+                var userDictionary = new Dictionary<string, ApplicationUser>();
+
+                foreach (var owner in owners)
                 {
-                    var members = await _context.MemberProject.Where(x => x.PositionInProjectId == position.Id).ToListAsync();
-                    if (members != null && members.Any())
+                    var userResult = await GetUserByIdAsync(owner.ApplicationUserId);
+                    if (userResult.Status && userResult.Data != null)
                     {
-                        memberProjects.AddRange(members);
+                        userDictionary[owner.ApplicationUserId] = userResult.Data;
                     }
                 }
 
-                // Retrieve all roles in the project
-                var roles = await _unitOfWork.RoleInProjectRepository.GetAllAsync();
-                if (!roles.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(roles.Message);
-
-                // Find the owner role
-                var roleOwner = roles.Data.FirstOrDefault(x => x.RoleName == "Owner");
-                if (roleOwner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found in project");
-
-                // Find the owner of the project
-                var owner = memberProjects.FirstOrDefault(x => x.RoleInProjectId == roleOwner.Id);
-                if (owner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("Project owner not found");
-
-                // Fetch owner details
-                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(owner.ApplicationUserId);
-                if (!user.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(user.Message);
-
-                // Create project index entry
-                var indexProject = new IndexProject()
+                var response = projects.Select(project =>
                 {
-                    OwnerAvata = user.Data.PathImage ?? "Error",
-                    OwnerName = user.Data.UserName ?? "Error",
-                    ProjectName = project.ProjectName,
-                    ProjectId = project.Id,
-                };
+                    var owner = owners.FirstOrDefault(o => positions.Any(p => p.ProjectId == project.Id && p.Id == o.PositionInProjectId));
+                    if (owner == null || !userDictionary.ContainsKey(owner.ApplicationUserId)) return null;
 
-                response.Add(indexProject);
+                    var user = userDictionary[owner.ApplicationUserId];
+                    return new IndexProject()
+                    {
+                        OwnerAvata = user.PathImage ?? "Error",
+                        OwnerName = user.UserName ?? "Error",
+                        ProjectName = project.ProjectName,
+                        ProjectId = project.Id,
+                    };
+                }).Where(p => p != null).ToList();
+
+                return ServicesResult<IEnumerable<IndexProject>>.Success(response, string.Empty);
             }
-
-            return ServicesResult<IEnumerable<IndexProject>>.Success(response, string.Empty);
+            catch (Exception ex)
+            {
+                return ServicesResult<IEnumerable<IndexProject>>.Failure($"Error: {ex.Message}");
+            }
         }
+
         #endregion
+
         #region Get Project List User Has Joined
-        /// <summary>
-        /// Retrieves a list of projects that a user has joined.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>A service result containing a collection of index projects.</returns>
+
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetProjectListUserHasJoined(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID is required");
-
-            // Get projects the user has joined
-            var projectJoined = await _context.MemberProject.Where(x => x.ApplicationUserId == userId).ToListAsync();
-            if (projectJoined == null || !projectJoined.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("User has not joined any projects");
-
-            // Find user's positions in projects
-            var positionList = new List<PositionInProject>();
-            foreach (var index in projectJoined)
+            try
             {
-                var position = await _unitOfWork.PositionInProjectRepository.GetValueByPrimaryKey(index.PositionInProjectId);
-                if (!position.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(position.Message);
-                positionList.Add(position.Data);
-            }
+                if (string.IsNullOrEmpty(userId))
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID is required");
 
-            // Retrieve projects
-            var projectList = new List<Project>();
-            foreach (var index in positionList)
-            {
-                var project = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(index.ProjectId);
-                if (!project.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(project.Message);
-                projectList.Add(project.Data);
-            }
+                var projectJoined = await _context.MemberProject
+                    .Where(x => x.ApplicationUserId == userId)
+                    .ToListAsync();
 
-            var response = new List<IndexProject>();
+                if (!projectJoined.Any())
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("User has not joined any projects");
 
-            foreach (var project in projectList)
-            {
-                var positionsInProject = await _context.PositionInProject.Where(x => x.ProjectId == project.Id).ToListAsync();
-                if (positionsInProject == null || !positionsInProject.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("No positions found in project");
+                var rolesResult = await GetRolesAsync();
+                if (!rolesResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(rolesResult.Message);
 
-                var memberProjects = new List<MemberProject>();
+                var roleOwner = rolesResult.Data.FirstOrDefault(x => x.RoleName == "Owner");
+                if (roleOwner == null)
+                    return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found");
 
-                foreach (var position in positionsInProject)
+                var indexProjects = new List<IndexProject>();
+                foreach (var project in projectJoined)
                 {
-                    var members = await _context.MemberProject.Where(x => x.PositionInProjectId == position.Id).ToListAsync();
-                    if (members != null && members.Any())
+                    var positionResult = await GetPositionInProjectAsync(project.PositionInProjectId);
+                    if (!positionResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(positionResult.Message);
+
+                    var projectResult = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(positionResult.Data.ProjectId);
+                    if (!projectResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(projectResult.Message);
+
+                    var userResult = await GetUserByIdAsync(project.ApplicationUserId);
+                    if (!userResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(userResult.Message);
+
+                    indexProjects.Add(new IndexProject()
                     {
-                        memberProjects.AddRange(members);
-                    }
+                        OwnerAvata = userResult.Data.PathImage ?? "Error",
+                        OwnerName = userResult.Data.UserName ?? "Error",
+                        ProjectName = projectResult.Data.ProjectName,
+                        ProjectId = projectResult.Data.Id,
+                    });
                 }
 
-                var roles = await _unitOfWork.RoleInProjectRepository.GetAllAsync();
-                if (!roles.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(roles.Message);
-
-                var roleOwner = roles.Data.FirstOrDefault(x => x.RoleName == "Owner");
-                if (roleOwner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("No owner found in project");
-
-                var owner = memberProjects.FirstOrDefault(x => x.RoleInProjectId == roleOwner.Id);
-                if (owner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("Project owner not found");
-
-                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(owner.ApplicationUserId);
-                if (!user.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(user.Message);
-
-                var indexProject = new IndexProject()
-                {
-                    OwnerAvata = user.Data.PathImage ?? "Error",
-                    OwnerName = user.Data.UserName ?? "Error",
-                    ProjectName = project.ProjectName,
-                    ProjectId = project.Id,
-                };
-
-                response.Add(indexProject);
+                return ServicesResult<IEnumerable<IndexProject>>.Success(indexProjects, string.Empty);
             }
-
-            return ServicesResult<IEnumerable<IndexProject>>.Success(response, string.Empty);
+            catch (Exception ex)
+            {
+                return ServicesResult<IEnumerable<IndexProject>>.Failure($"Error: {ex.Message}");
+            }
         }
+
         #endregion
 
         #region Get List of Projects User Owns
-        /// <summary>
-        /// Retrieves a list of projects where the user is the owner.
-        /// </summary>
-        /// <param name="userId">The ID of the user.</param>
-        /// <returns>A service result containing a collection of index projects.</returns>
+
         public async Task<ServicesResult<IEnumerable<IndexProject>>> GetListProjectUserHasOwner(string userId)
         {
-            if (string.IsNullOrEmpty(userId)) return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID is required");
+            if (string.IsNullOrEmpty(userId))
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User ID is required");
 
-            // Retrieve all roles and find the owner role
-            var roles = await _unitOfWork.RoleInProjectRepository.GetAllAsync();
-            if (!roles.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(roles.Message);
-            var roleOwner = roles.Data.FirstOrDefault(x => x.RoleName == "Owner");
+            var rolesResult = await GetRolesAsync();
+            if (!rolesResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(rolesResult.Message);
+
+            var roleOwner = rolesResult.Data.FirstOrDefault(x => x.RoleName == "Owner");
             if (roleOwner == null) return ServicesResult<IEnumerable<IndexProject>>.Failure("Owner role not found");
 
-            // Get projects where the user is the owner
-            var projectJoined = await _context.MemberProject.Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner.Id).ToListAsync();
-            if (projectJoined == null || !projectJoined.Any()) return ServicesResult<IEnumerable<IndexProject>>.Failure("User has not joined any projects as an owner");
+            var projectJoined = await _context.MemberProject
+                .Where(x => x.ApplicationUserId == userId && x.RoleInProjectId == roleOwner.Id)
+                .ToListAsync();
 
-            // Retrieve user details
-            var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
-            if (!user.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(user.Message);
+            if (!projectJoined.Any())
+                return ServicesResult<IEnumerable<IndexProject>>.Failure("User has not joined any projects as an owner");
 
-            // Find the user's position in each project
-            var positionList = new List<PositionInProject>();
-            foreach (var index in projectJoined)
+            var userResult = await GetUserByIdAsync(userId);
+            if (!userResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(userResult.Message);
+
+            var indexProjects = new List<IndexProject>();
+            foreach (var project in projectJoined)
             {
-                var position = await _unitOfWork.PositionInProjectRepository.GetValueByPrimaryKey(index.PositionInProjectId);
-                if (!position.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(position.Message);
-                positionList.Add(position.Data);
-            }
+                var positionResult = await GetPositionInProjectAsync(project.PositionInProjectId);
+                if (!positionResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(positionResult.Message);
 
-            // Retrieve project details
-            var projectList = new List<IndexProject>();
-            foreach (var position in positionList)
-            {
-                var project = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(position.ProjectId);
-                if (!project.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(project.Message);
+                var projectResult = await _unitOfWork.ProjectRepository.GetValueByPrimaryKey(positionResult.Data.ProjectId);
+                if (!projectResult.Status) return ServicesResult<IEnumerable<IndexProject>>.Failure(projectResult.Message);
 
-                var indexProject = new IndexProject()
+                indexProjects.Add(new IndexProject()
                 {
-                    OwnerName = user.Data.UserName ?? "Error",
-                    ProjectName = project.Data.ProjectName ?? "Error",
-                    OwnerAvata = user.Data.PathImage ?? "Error",
-                    ProjectId = position.ProjectId,
-                };
-
-                projectList.Add(indexProject);
+                    OwnerName = userResult.Data.UserName ?? "Error",
+                    ProjectName = projectResult.Data.ProjectName ?? "Error",
+                    OwnerAvata = userResult.Data.PathImage ?? "Error",
+                    ProjectId = positionResult.Data.ProjectId,
+                });
             }
 
-            return ServicesResult<IEnumerable<IndexProject>>.Success(projectList, string.Empty);
+            return ServicesResult<IEnumerable<IndexProject>>.Success(indexProjects, string.Empty);
         }
-        #endregion
 
+        #endregion
     }
 }
