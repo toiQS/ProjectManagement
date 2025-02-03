@@ -3,21 +3,18 @@ using PM.Domain;
 using PM.DomainServices.ILogics;
 using PM.DomainServices.Models;
 using PM.DomainServices.Models.users;
-using PM.DomainServices.Repository;
-using PM.Persistence.Context;
+using PM.DomainServices.UnitOfWorks;
 
 namespace PM.DomainServices.Logics
 {
     public class UserLogic : IUserLogic
     {
-        private readonly IRepository<ApplicationUser> _repository;
+        private readonly IUnitOfWork _unitOfWork;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ApplicationDbContext _context;
 
-        public UserLogic(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public UserLogic(IUnitOfWork unitOfWork, UserManager<ApplicationUser> userManager)
         {
-            _context = context;
-            _repository = new Repository<ApplicationUser>(context);
+            _unitOfWork = unitOfWork;
             _userManager = userManager;
         }
 
@@ -25,80 +22,81 @@ namespace PM.DomainServices.Logics
         {
             try
             {
-                if (string.IsNullOrEmpty(userId))
+                if (string.IsNullOrWhiteSpace(userId))
                     return ServicesResult<DetailAppUser>.Failure("User ID is required");
 
-                var responseUser = await _repository.GetValueByPrimaryKey(userId);
-                if (!responseUser.Status)
-                    return ServicesResult<DetailAppUser>.Failure(responseUser.Message);
+                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
+                if (!user.Status)
+                    return ServicesResult<DetailAppUser>.Failure(user.Message);
 
-                var role = await _userManager.GetRolesAsync(responseUser.Data);
-                var response = new DetailAppUser()
+                var role = await _userManager.GetRolesAsync(user.Data);
+                if (!role.Any())
+                    return ServicesResult<DetailAppUser>.Failure("User does not have a role");
+
+                var detail = new DetailAppUser
                 {
-                    Email = responseUser.Data.Email,
-                    FullName = responseUser.Data.FullName,
-                    UserName = responseUser.Data.UserName,
-                    Avata = responseUser.Data.PathImage,
-                    Phone = responseUser.Data.Phone,
                     UserId = userId,
-                    Role = role.FirstOrDefault()
+                    FullName = user.Data.FullName,
+                    UserName = user.Data.UserName,
+                    Avata = user.Data.PathImage,
+                    Email = user.Data.Email,
+                    Phone = user.Data.Phone,
+                    Role = role.SingleOrDefault()
                 };
-                return ServicesResult<DetailAppUser>.Success(response, string.Empty);
+
+                return ServicesResult<DetailAppUser>.Success(detail, string.Empty);
             }
             catch (Exception ex)
             {
-                return ServicesResult<DetailAppUser>.Failure("error at logic layer:"+ ex.Source);
-            }
-            finally
-            {
-                Dispose();
+                return ServicesResult<DetailAppUser>.Failure($"Error at logic layer: {ex.Message}");
             }
         }
 
-        public async Task<ServicesResult<DetailAppUser>> UpdateInfo(string userId, DetailAppUser newInfo)
+        public async Task<ServicesResult<DetailAppUser>> UpdateInfo(string userId, UpdateAppUser newInfo)
         {
             try
             {
-                if (string.IsNullOrEmpty(userId) || newInfo == null)
+                if (string.IsNullOrWhiteSpace(userId) || newInfo == null)
                     return ServicesResult<DetailAppUser>.Failure("Invalid input");
 
-                var currentUser = await _repository.GetValueByPrimaryKey(userId);
-                if (!currentUser.Status)
-                    return ServicesResult<DetailAppUser>.Failure(currentUser.Message);
+                var user = await _unitOfWork.ApplicationUserRepository.GetValueByPrimaryKey(userId);
+                if (!user.Status)
+                    return ServicesResult<DetailAppUser>.Failure(user.Message);
 
-                var arr = newInfo.FullName.Split(" ");
-                if (arr.Length == 1)
-                {
-                    currentUser.Data.LastName = arr[0];
-                }
-                else if (arr.Length >= 2)
-                {
-                    currentUser.Data.FirstName = arr[0];
-                    currentUser.Data.LastName = arr[arr.Length - 1];
-                }
+                // Kiểm tra giá trị null trước khi cập nhật
+                user.Data.FirstName = newInfo.FirstName?.Trim() ?? user.Data.FirstName;
+                user.Data.LastName = newInfo.LastName?.Trim() ?? user.Data.LastName;
+                user.Data.FullName = $"{user.Data.FirstName} {user.Data.LastName}".Trim();
+                user.Data.Phone = newInfo.Phone?.Trim() ?? user.Data.Phone;
+                user.Data.Email = newInfo.Email?.Trim() ?? user.Data.Email;
+                user.Data.PathImage = newInfo.PathImage?.Trim() ?? user.Data.PathImage;
 
-                currentUser.Data.Email = newInfo.Email;
-                currentUser.Data.Phone = newInfo.Phone;
-                currentUser.Data.PathImage = newInfo.Avata;
-                currentUser.Data.UserName = newInfo.UserName;
+                var role = await _userManager.GetRolesAsync(user.Data);
+                if (!role.Any())
+                    return ServicesResult<DetailAppUser>.Failure("User does not have a role");
 
-                var update = await _repository.UpdateAsync(currentUser.Data);
+                var update = await _unitOfWork.ApplicationUserRepository.UpdateAsync(user.Data);
                 if (!update.Status)
                     return ServicesResult<DetailAppUser>.Failure(update.Message);
-                return ServicesResult<DetailAppUser>.Success(newInfo, string.Empty);
+
+                // Lưu thay đổi vào database
+                await _unitOfWork.SaveChangesAsync();
+
+                return ServicesResult<DetailAppUser>.Success(new DetailAppUser()
+                {
+                    UserId = user.Data.Id,
+                    FullName = user.Data.FullName,
+                    UserName = user.Data.UserName,
+                    Avata = user.Data.PathImage,
+                    Email = user.Data.Email,
+                    Phone = user.Data.Phone,
+                    Role = role.SingleOrDefault()
+                }, string.Empty);
             }
             catch (Exception ex)
             {
-                return ServicesResult<DetailAppUser>.Failure("error at logic layer:" + ex.Source);
+                return ServicesResult<DetailAppUser>.Failure($"Error at logic layer: {ex.Message}");
             }
-            finally
-            {
-                Dispose();
-            }
-        }
-        public void Dispose()
-        {
-            _userManager.Dispose();
         }
     }
 }
