@@ -1,0 +1,72 @@
+﻿<Page x:Class="PM.WPF.Views.Pages.Pages_of_MainWindow.RecentlyPage"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:models="clr-namespace:PM.WPF.Models.projects"
+      xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+      xmlns:local="clr-namespace:PM.WPF.Views.Pages.Pages_of_MainWindow"
+      mc:Ignorable="d" 
+      d:DesignHeight="450" d:DesignWidth="800"
+      Title="RecentlyPage">
+
+    <!-- Main layout grid for the page with margin -->
+    <Grid Margin="10">
+
+        <!-- ListView for displaying project items with project image and details -->
+        <ui:ListView x:Name="ProjectListView"
+                 Grid.Column="0"
+                 d:ItemsSource="{d:SampleData ItemCount=10}" 
+                 ItemsSource="{Binding ProjectItemList, Mode=TwoWay}" 
+                 SelectionMode="Single"
+                 SelectionChanged="ProjectListView_SelectionChanged">
+
+            <!-- ItemTemplate defining the appearance of each item in the ListView -->
+            <ui:ListView.ItemTemplate>
+                <DataTemplate DataType="{x:Type models:ProjectItem}">
+
+                    <!-- Grid layout for each ListView item with rows and columns -->
+                    <Grid Margin="8,0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Ellipse element for displaying project image -->
+                        <Ellipse x:Name="ProjectImageEllipse"
+                             Grid.RowSpan="2"
+                             Width="32"
+                             Height="32"
+                             Margin="6"
+                             HorizontalAlignment="Center"
+                             VerticalAlignment="Center">
+                            <Ellipse.Fill>
+                                <ImageBrush ImageSource="{Binding ProjectImage}" />
+                            </Ellipse.Fill>
+                        </Ellipse>
+
+                        <!-- TextBlock for displaying project name -->
+                        <TextBlock x:Name="ProjectNameTextBlock"
+                               Grid.Row="0"
+                               Grid.Column="1"
+                               Margin="12,6,0,0"
+                               FontWeight="Bold"
+                               Text="{Binding ProjectName, Mode=OneWay}" />
+
+                        <!-- TextBlock for displaying project owner -->
+                        <TextBlock x:Name="ProjectOwnerTextBlock"
+                               Grid.Row="1"
+                               Grid.Column="1"
+                               Margin="12,0,0,6"
+                               Foreground="{ui:ThemeResource TextFillColorSecondaryBrush}"
+                               Text="{Binding ProjectOwner, Mode=OneWay}" />
+                    </Grid>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+    </Grid>
+</Page>

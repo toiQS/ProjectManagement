@@ -1,0 +1,92 @@
+{
+  "GlobalConfiguration": {
+    "BaseUrl": "https://localhost:5000"
+  },
+  "Route": [
+    /// route of project
+    {
+      "DownstreamPathTemplate": "/api/Project/joined-projects",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/project/joined-projects"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Project/owned-projects",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5002,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/project/owned-projects"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Project/joined-project-details",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5002,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Get" ],
+      "UpstreamPathTemplate": "/project/joined-project-details"
+    },
+    {
+      "DownstreamPathTemplate": "/Project/add-project",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Port": 5002,
+          "Host": "localhost"
+        }
+      ],
+      "UpstreamHttpMethod": [ "Post" ],
+      "UpstreamPathTemplate": "/project/add-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Project/update-project",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Put" ],
+      "UpstreamPathTemplate": "/project/update-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Project/delete-project",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Delete" ],
+      "UpstreamPathTemplate": "project/delete-project"
+    },
+    {
+      "DownstreamPathTemplate": "/api/Project/update-is-delete",
+      "DownstreamScheme": "https",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5002
+        }
+      ],
+      "UpstreamHttpMethod": [ "Patch" ],
+      "UpstreamPathTemplate": "/project/update-is-delete"
+    }
+  ]
+}
