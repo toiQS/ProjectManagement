@@ -3,9 +3,32 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Domain Layer", "Domain Layer", "{57F8931B-B067-4D3F-B7AD-713307E9C283}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructer Layer", "Infrastructer Layer", "{A76DC348-3B3F-4EE2-82FF-5D26EE9A201B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Presistence Layer", "Presistence Layer", "{7B04864A-B47A-45C8-8B35-640A3A2692E0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "APIs Layer", "APIs Layer", "{323CABDA-0099-4D54-9496-250668AD18B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PM.Domain", "Domain Layer\PM.Domain\PM.Domain.csproj", "{894F6D3B-CE19-42A9-B645-D4F3FC786E28}"
+EndProject
 Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{894F6D3B-CE19-42A9-B645-D4F3FC786E28}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{894F6D3B-CE19-42A9-B645-D4F3FC786E28}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{894F6D3B-CE19-42A9-B645-D4F3FC786E28}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{894F6D3B-CE19-42A9-B645-D4F3FC786E28}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{894F6D3B-CE19-42A9-B645-D4F3FC786E28} = {57F8931B-B067-4D3F-B7AD-713307E9C283}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {03407894-8CF7-4F7F-A9B7-AB98E1541054}
